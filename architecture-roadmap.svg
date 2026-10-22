@@ -1,0 +1,181 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
+  <title id="title">CDLU Triveni Yuva Mahotsav 2026 Web Platform Roadmap</title>
+  <desc id="desc">A five-phase roadmap from the current static application to a secure production event management platform.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#081225"/>
+      <stop offset="1" stop-color="#172554"/>
+    </linearGradient>
+    <linearGradient id="header" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f59e0b"/>
+      <stop offset="1" stop-color="#f97316"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#020617" flood-opacity=".35"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0 0 L12 6 L0 12 Z" fill="#fbbf24"/>
+    </marker>
+    <style>
+      .font { font-family: Inter, Segoe UI, Arial, sans-serif; }
+      .title { fill: #fff; font-size: 34px; font-weight: 800; }
+      .subtitle { fill: #cbd5e1; font-size: 16px; }
+      .phase { fill: #fff; font-size: 19px; font-weight: 800; }
+      .phaseNo { fill: #111827; font-size: 16px; font-weight: 900; }
+      .cardTitle { fill: #f8fafc; font-size: 17px; font-weight: 750; }
+      .body { fill: #cbd5e1; font-size: 13px; }
+      .small { fill: #94a3b8; font-size: 12px; }
+      .label { fill: #0f172a; font-size: 12px; font-weight: 800; }
+      .line { stroke: #fbbf24; stroke-width: 4; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1000" fill="url(#background)"/>
+  <circle cx="1450" cy="80" r="190" fill="#f59e0b" opacity=".08"/>
+  <circle cx="80" cy="900" r="230" fill="#38bdf8" opacity=".06"/>
+
+  <g class="font">
+    <text x="80" y="72" class="title">CDLU Triveni Yuva Mahotsav 2026</text>
+    <text x="80" y="105" class="subtitle">Event Management Web Platform — Product and Architecture Roadmap</text>
+    <rect x="1260" y="56" width="250" height="46" rx="23" fill="url(#header)"/>
+    <text x="1385" y="85" text-anchor="middle" class="label">STATIC WEB + SUPABASE</text>
+
+    <line x1="170" y1="220" x2="1430" y2="220" class="line"/>
+
+    <g transform="translate(70 150)">
+      <circle cx="100" cy="70" r="28" fill="#f59e0b"/>
+      <text x="100" y="76" text-anchor="middle" class="phaseNo">1</text>
+      <text x="145" y="58" class="phase">Current Foundation</text>
+      <text x="145" y="82" class="small">Completed / baseline</text>
+      <rect x="0" y="120" width="260" height="430" rx="20" fill="#0f1d38" stroke="#334155" filter="url(#shadow)"/>
+      <text x="24" y="160" class="cardTitle">Static application shell</text>
+      <text x="24" y="195" class="body">• HTML, CSS and browser JavaScript</text>
+      <text x="24" y="223" class="body">• Public registration website</text>
+      <text x="24" y="251" class="body">• Judge and admin portal</text>
+      <text x="24" y="279" class="body">• Responsive bilingual interface</text>
+      <line x1="24" y1="305" x2="236" y2="305" stroke="#334155"/>
+      <text x="24" y="342" class="cardTitle">Core services</text>
+      <text x="24" y="377" class="body">• db-service.js data layer</text>
+      <text x="24" y="405" class="body">• Supabase client integration</text>
+      <text x="24" y="433" class="body">• LocalStorage fallback</text>
+      <text x="24" y="461" class="body">• Official event registry</text>
+      <text x="24" y="489" class="body">• I-card generation</text>
+      </g>
+
+    <g transform="translate(380 150)">
+      <circle cx="100" cy="70" r="28" fill="#38bdf8"/>
+      <text x="100" y="76" text-anchor="middle" class="phaseNo">2</text>
+      <text x="145" y="58" class="phase">Operational Completion</text>
+      <text x="145" y="82" class="small">Immediate priority</text>
+      <rect x="0" y="120" width="260" height="430" rx="20" fill="#10243a" stroke="#334155" filter="url(#shadow)"/>
+      <text x="24" y="160" class="cardTitle">Registration completeness</text>
+      <text x="24" y="195" class="body">• 21-college master registry</text>
+      <text x="24" y="223" class="body">• Fixed college IDs 2601–2621</text>
+      <text x="24" y="251" class="body">• Contingent registration</text>
+      <text x="24" y="279" class="body">• Stage I–IV in-charges</text>
+      <text x="24" y="307" class="body">• Principal certification</text>
+      <line x1="24" y1="333" x2="236" y2="333" stroke="#334155"/>
+      <text x="24" y="370" class="cardTitle">Documents and identity</text>
+      <text x="24" y="405" class="body">• Participant photographs</text>
+      <text x="24" y="433" class="body">• Annexure uploads</text>
+      <text x="24" y="461" class="body">• Eligibility review</text>
+      <text x="24" y="489" class="body">• QR-enabled I-cards</text>
+      </g>
+
+    <g transform="translate(690 150)">
+      <circle cx="100" cy="70" r="28" fill="#34d399"/>
+      <text x="100" y="76" text-anchor="middle" class="phaseNo">3</text>
+      <text x="145" y="58" class="phase">Judging and Results</text>
+      <text x="145" y="82" class="small">Scoring compliance</text>
+      <rect x="0" y="120" width="260" height="430" rx="20" fill="#102d35" stroke="#334155" filter="url(#shadow)"/>
+      <text x="24" y="160" class="cardTitle">Official judging workflow</text>
+      <text x="24" y="195" class="body">• Official judge directory</text>
+      <text x="24" y="223" class="body">• Event/category assignments</text>
+      <text x="24" y="251" class="body">• Three judges per event</text>
+      <text x="24" y="279" class="body">• Criteria-wise marks</text>
+      <text x="24" y="307" class="body">• Draft and final lock</text>
+      <line x1="24" y1="333" x2="236" y2="333" stroke="#334155"/>
+      <text x="24" y="370" class="cardTitle">Result engine</text>
+      <text x="24" y="405" class="body">• Combined score calculation</text>
+      <text x="24" y="433" class="body">• Event positions</text>
+      <text x="24" y="461" class="body">• 10 / 8 / 5 trophy points</text>
+      <text x="24" y="489" class="body">• College average ranking</text>
+      </g>
+
+    <g transform="translate(1000 150)">
+      <circle cx="100" cy="70" r="28" fill="#a78bfa"/>
+      <text x="100" y="76" text-anchor="middle" class="phaseNo">4</text>
+      <text x="145" y="58" class="phase">Governance and Security</text>
+      <text x="145" y="82" class="small">Production readiness</text>
+      <rect x="0" y="120" width="260" height="430" rx="20" fill="#211d42" stroke="#334155" filter="url(#shadow)"/>
+      <text x="24" y="160" class="cardTitle">Secure access</text>
+      <text x="24" y="195" class="body">• Supabase Auth</text>
+      <text x="24" y="223" class="body">• Role-based RLS</text>
+      <text x="24" y="251" class="body">• Remove plaintext credentials</text>
+      <text x="24" y="279" class="body">• Server-side authorization</text>
+      <line x1="24" y1="305" x2="236" y2="305" stroke="#334155"/>
+      <text x="24" y="342" class="cardTitle">Governance</text>
+      <text x="24" y="377" class="body">• Audit log</text>
+      <text x="24" y="405" class="body">• Approval history</text>
+      <text x="24" y="433" class="body">• Result versions</text>
+      <text x="24" y="461" class="body">• Soft deletion</text>
+      <text x="24" y="489" class="body">• Publication controls</text>
+      </g>
+
+    <g transform="translate(1310 150)">
+      <circle cx="100" cy="70" r="28" fill="#fb7185"/>
+      <text x="100" y="76" text-anchor="middle" class="phaseNo">5</text>
+      <text x="145" y="58" class="phase">Advanced Platform</text>
+      <text x="145" y="82" class="small">Future expansion</text>
+      <rect x="0" y="120" width="220" height="430" rx="20" fill="#351d36" stroke="#334155" filter="url(#shadow)"/>
+      <text x="24" y="160" class="cardTitle">Event operations</text>
+      <text x="24" y="195" class="body">• Programme schedule</text>
+      <text x="24" y="223" class="body">• Stage management</text>
+      <text x="24" y="251" class="body">• QR attendance</text>
+      <text x="24" y="279" class="body">• Check-in dashboard</text>
+      <line x1="24" y1="305" x2="196" y2="305" stroke="#334155"/>
+      <text x="24" y="342" class="cardTitle">Services</text>
+      <text x="24" y="377" class="body">• Notices and downloads</text>
+      <text x="24" y="405" class="body">• Accommodation</text>
+      <text x="24" y="433" class="body">• Transport and food</text>
+      <text x="24" y="461" class="body">• Helpdesk</text>
+      <text x="24" y="489" class="body">• Mobile/PWA support</text>
+      </g>
+
+    <rect x="80" y="670" width="1440" height="230" rx="24" fill="#0b1630" stroke="#334155" filter="url(#shadow)"/>
+    <text x="115" y="715" class="phase">Target platform architecture</text>
+    <text x="115" y="742" class="small">The roadmap connects the current static experience to a secure, auditable event operating system.</text>
+
+    <g transform="translate(115 775)">
+      <rect width="220" height="76" rx="14" fill="#172554" stroke="#3b82f6"/>
+      <text x="110" y="31" text-anchor="middle" class="cardTitle">Public Web</text>
+      <text x="110" y="55" text-anchor="middle" class="small">Registration + I-cards</text>
+    </g>
+    <text x="350" y="817" fill="#fbbf24" font-size="28">→</text>
+    <g transform="translate(395 775)">
+      <rect width="220" height="76" rx="14" fill="#172554" stroke="#38bdf8"/>
+      <text x="110" y="31" text-anchor="middle" class="cardTitle">Judge Portal</text>
+      <text x="110" y="55" text-anchor="middle" class="small">Assignments + scoring</text>
+    </g>
+    <text x="630" y="817" fill="#fbbf24" font-size="28">→</text>
+    <g transform="translate(675 775)">
+      <rect width="220" height="76" rx="14" fill="#172554" stroke="#34d399"/>
+      <text x="110" y="31" text-anchor="middle" class="cardTitle">Admin Portal</text>
+      <text x="110" y="55" text-anchor="middle" class="small">Review + results</text>
+    </g>
+    <text x="910" y="817" fill="#fbbf24" font-size="28">→</text>
+    <g transform="translate(955 775)">
+      <rect width="220" height="76" rx="14" fill="#172554" stroke="#a78bfa"/>
+      <text x="110" y="31" text-anchor="middle" class="cardTitle">Supabase</text>
+      <text x="110" y="55" text-anchor="middle" class="small">Auth + PostgreSQL + RLS</text>
+    </g>
+    <text x="1190" y="817" fill="#fbbf24" font-size="28">→</text>
+    <g transform="translate(1235 775)">
+      <rect width="220" height="76" rx="14" fill="#172554" stroke="#fb7185"/>
+      <text x="110" y="31" text-anchor="middle" class="cardTitle">Reports</text>
+      <text x="110" y="55" text-anchor="middle" class="small">Audit + publication</text>
+    </g>
+
+    <text x="80" y="955" class="small">CDLU Directorate of Youth Welfare • 13th Triveni Yuva Mahotsav 2026 • Architecture roadmap</text>
+  </g>
+</svg>

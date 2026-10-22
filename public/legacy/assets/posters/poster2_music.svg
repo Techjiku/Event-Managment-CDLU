@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 750" width="100%" height="100%">
+  <defs>
+    <linearGradient id="musicBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#022c22" />
+      <stop offset="40%" stop-color="#064e3b" />
+      <stop offset="75%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#041f17" />
+    </linearGradient>
+    <linearGradient id="tealGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2dd4bf" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+    <linearGradient id="goldM" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fde047" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1600" height="750" fill="url(#musicBg)" />
+
+  <!-- Ambient light -->
+  <circle cx="250" cy="200" r="280" fill="#10b981" opacity="0.22" />
+  <circle cx="1350" cy="500" r="320" fill="#38bdf8" opacity="0.18" />
+
+  <!-- Sound Waves Graphic -->
+  <g opacity="0.25" stroke="#2dd4bf" stroke-width="3" fill="none">
+    <path d="M50,400 Q200,250 350,400 T650,400 T950,400 T1250,400 T1550,400" />
+    <path d="M50,450 Q200,300 350,450 T650,450 T950,450 T1250,450 T1550,450" />
+    <path d="M50,350 Q200,200 350,350 T650,350 T950,350 T1250,350 T1550,350" />
+  </g>
+
+  <!-- Musical Notes Floating -->
+  <g fill="#2dd4bf" opacity="0.4">
+    <!-- Note 1 -->
+    <path transform="translate(200, 250) scale(1.4)" d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+    <!-- Note 2 -->
+    <path transform="translate(1380, 220) scale(1.6)" d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+    <!-- Note 3 -->
+    <path transform="translate(1250, 480) scale(1.2)" d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+  </g>
+
+  <!-- Top Badge -->
+  <g transform="translate(800, 100)" text-anchor="middle">
+    <rect x="-260" y="-25" width="520" height="50" rx="25" fill="#ffffff" fill-opacity="0.1" stroke="#34d399" stroke-width="1.5" />
+    <text y="7" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="16" fill="#34d399" letter-spacing="3">
+      13th TRIVENI YUVA MAHOTSAV 2026 • CDLU
+    </text>
+  </g>
+
+  <!-- Category Title -->
+  <g transform="translate(800, 230)" text-anchor="middle">
+    <text font-family="'Segoe UI', sans-serif" font-weight="900" font-size="78" fill="#ffffff" letter-spacing="2">
+      SUR SANGAM
+    </text>
+    <text y="68" font-family="'Segoe UI', sans-serif" font-weight="800" font-size="52" fill="url(#tealGlow)" letter-spacing="4">
+      MUSIC COMPETITIONS
+    </text>
+  </g>
+
+  <!-- Subtitle -->
+  <g transform="translate(800, 360)" text-anchor="middle">
+    <text font-family="'Segoe UI', sans-serif" font-weight="500" font-size="20" fill="#a7f3d0" letter-spacing="2">
+      Classical Vocal • Light Indian • Qawwali • Folk Orchestra • Western Solo &amp; Group
+    </text>
+  </g>
+
+  <!-- Event Grid Highlights -->
+  <g transform="translate(800, 480)">
+    <g transform="translate(-480, 0)">
+      <rect x="-105" y="-45" width="210" height="90" rx="14" fill="#065f46" fill-opacity="0.5" stroke="#34d399" stroke-width="1.2" />
+      <text y="-10" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="16" fill="#ffffff" text-anchor="middle">Classical Solo</text>
+      <text y="16" font-family="'Segoe UI', sans-serif" font-size="13" fill="#6ee7b7" text-anchor="middle">Vocal &amp; Instrumental</text>
+    </g>
+    <g transform="translate(-160, 0)">
+      <rect x="-105" y="-45" width="210" height="90" rx="14" fill="#065f46" fill-opacity="0.5" stroke="#34d399" stroke-width="1.2" />
+      <text y="-10" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="16" fill="#ffffff" text-anchor="middle">Folk Orchestra</text>
+      <text y="16" font-family="'Segoe UI', sans-serif" font-size="13" fill="#6ee7b7" text-anchor="middle">Up to 9 Performers</text>
+    </g>
+    <g transform="translate(160, 0)">
+      <rect x="-105" y="-45" width="210" height="90" rx="14" fill="#065f46" fill-opacity="0.5" stroke="#34d399" stroke-width="1.2" />
+      <text y="-10" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="16" fill="#ffffff" text-anchor="middle">Qawwali</text>
+      <text y="16" font-family="'Segoe UI', sans-serif" font-size="13" fill="#6ee7b7" text-anchor="middle">Devotional &amp; Sufi Beats</text>
+    </g>
+    <g transform="translate(480, 0)">
+      <rect x="-105" y="-45" width="210" height="90" rx="14" fill="#065f46" fill-opacity="0.5" stroke="#34d399" stroke-width="1.2" />
+      <text y="-10" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="16" fill="#ffffff" text-anchor="middle">Group Songs</text>
+      <text y="16" font-family="'Segoe UI', sans-serif" font-size="13" fill="#6ee7b7" text-anchor="middle">Indian &amp; Western Choirs</text>
+    </g>
+  </g>
+
+  <!-- Venue Details -->
+  <g transform="translate(800, 630)" text-anchor="middle">
+    <rect x="-280" y="-24" width="560" height="48" rx="24" fill="url(#goldM)" />
+    <text y="8" font-family="'Segoe UI', sans-serif" font-weight="800" font-size="18" fill="#064e3b" letter-spacing="2">
+      VENUE: UNIVERSITY MAIN AUDITORIUM (STAGE I)
+    </text>
+  </g>
+</svg>

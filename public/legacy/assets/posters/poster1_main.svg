@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 750" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="40%" stop-color="#1e1b4b" />
+      <stop offset="80%" stop-color="#311042" />
+      <stop offset="100%" stop-color="#090514" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fde047" />
+      <stop offset="50%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#6366f1" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1600" height="750" fill="url(#bgGrad1)" />
+
+  <!-- Ambient Glow Circles -->
+  <circle cx="200" cy="150" r="300" fill="#6366f1" opacity="0.25" filter="url(#glow)" />
+  <circle cx="1400" cy="550" r="350" fill="#ec4899" opacity="0.2" filter="url(#glow)" />
+  <circle cx="800" cy="700" r="280" fill="#f59e0b" opacity="0.15" filter="url(#glow)" />
+
+  <!-- Decorative Festival Waves & Grid -->
+  <path d="M-100,550 Q400,300 800,520 T1700,420" fill="none" stroke="#f59e0b" stroke-width="2.5" opacity="0.35" />
+  <path d="M-100,600 Q500,350 900,570 T1700,480" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.25" />
+
+  <!-- University Header Badge -->
+  <g transform="translate(800, 105)" text-anchor="middle">
+    <rect x="-380" y="-35" width="760" height="58" rx="29" fill="#ffffff" fill-opacity="0.08" stroke="#fde047" stroke-width="1.5" />
+    <text y="2" font-family="'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="20" fill="#fde047" letter-spacing="3">
+      CHAUDHARY DEVI LAL UNIVERSITY, SIRSA
+    </text>
+    <text y="38" font-family="'Segoe UI', Roboto, sans-serif" font-weight="500" font-size="14" fill="#cbd5e1" letter-spacing="2">
+      (Established by the Haryana State Legislature Act 9 of 2003) | NAAC ACCREDITED
+    </text>
+  </g>
+
+  <!-- Directorate Tag -->
+  <g transform="translate(800, 195)" text-anchor="middle">
+    <text font-family="'Segoe UI', Roboto, sans-serif" font-weight="600" font-size="18" fill="#38bdf8" letter-spacing="4">
+      DIRECTORATE OF YOUTH WELFARE PRESENTS
+    </text>
+  </g>
+
+  <!-- Main Fest Title -->
+  <g transform="translate(800, 290)" text-anchor="middle">
+    <text font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="82" fill="#ffffff" letter-spacing="2" filter="url(#glow)">
+      13<tspan font-size="46" dy="-32">th</tspan><tspan font-size="82" dy="32"> TRIVENI</tspan>
+    </text>
+    <text y="78" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="76" fill="url(#goldGrad)" letter-spacing="4">
+      YUVA MAHOTSAV 2026
+    </text>
+  </g>
+
+  <!-- Fest Hindi Subtitle / Theme -->
+  <g transform="translate(800, 420)" text-anchor="middle">
+    <rect x="-290" y="-24" width="580" height="48" rx="24" fill="#f59e0b" fill-opacity="0.2" stroke="#f59e0b" stroke-width="1.2" />
+    <text y="9" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="22" fill="#fef08a" letter-spacing="3">
+      " युवा शक्ति, संस्कृति एवं राष्ट्र निर्माण "
+    </text>
+  </g>
+
+  <!-- Key Highlights Badges -->
+  <g transform="translate(800, 520)">
+    <!-- Stage I -->
+    <g transform="translate(-450, 0)">
+      <rect x="-100" y="-30" width="200" height="60" rx="12" fill="#ffffff" fill-opacity="0.07" stroke="#6366f1" stroke-width="1.5" />
+      <text x="0" y="-4" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="16" fill="#ffffff" text-anchor="middle">STAGE I</text>
+      <text x="0" y="18" font-family="'Segoe UI', sans-serif" font-weight="500" font-size="13" fill="#a5b4fc" text-anchor="middle">Auditorium</text>
+    </g>
+    <!-- Stage II -->
+    <g transform="translate(-150, 0)">
+      <rect x="-100" y="-30" width="200" height="60" rx="12" fill="#ffffff" fill-opacity="0.07" stroke="#ec4899" stroke-width="1.5" />
+      <text x="0" y="-4" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="16" fill="#ffffff" text-anchor="middle">STAGE II</text>
+      <text x="0" y="18" font-family="'Segoe UI', sans-serif" font-weight="500" font-size="13" fill="#f472b6" text-anchor="middle">Open Air Theatre</text>
+    </g>
+    <!-- Stage III -->
+    <g transform="translate(150, 0)">
+      <rect x="-100" y="-30" width="200" height="60" rx="12" fill="#ffffff" fill-opacity="0.07" stroke="#10b981" stroke-width="1.5" />
+      <text x="0" y="-4" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="16" fill="#ffffff" text-anchor="middle">STAGE III</text>
+      <text x="0" y="18" font-family="'Segoe UI', sans-serif" font-weight="500" font-size="13" fill="#6ee7b7" text-anchor="middle">Seminar Hall</text>
+    </g>
+    <!-- Stage IV -->
+    <g transform="translate(450, 0)">
+      <rect x="-100" y="-30" width="200" height="60" rx="12" fill="#ffffff" fill-opacity="0.07" stroke="#f59e0b" stroke-width="1.5" />
+      <text x="0" y="-4" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="16" fill="#ffffff" text-anchor="middle">STAGE IV</text>
+      <text x="0" y="18" font-family="'Segoe UI', sans-serif" font-weight="500" font-size="13" fill="#fcd34d" text-anchor="middle">Fine Arts Studio</text>
+    </g>
+  </g>
+
+  <!-- Bottom CTA ribbon -->
+  <g transform="translate(800, 640)" text-anchor="middle">
+    <rect x="-350" y="-28" width="700" height="56" rx="28" fill="url(#goldGrad)" filter="url(#glow)" />
+    <text y="8" font-family="'Segoe UI', sans-serif" font-weight="800" font-size="20" fill="#0f172a" letter-spacing="2">
+      ✦ ONLINE REGISTRATIONS OPEN NOW • 28+ CULTURAL EVENTS ✦
+    </text>
+  </g>
+</svg>

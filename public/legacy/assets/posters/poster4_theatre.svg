@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 750" width="100%" height="100%">
+  <defs>
+    <linearGradient id="theatreBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#18181b" />
+      <stop offset="35%" stop-color="#3b0764" />
+      <stop offset="70%" stop-color="#581c87" />
+      <stop offset="100%" stop-color="#090514" />
+    </linearGradient>
+    <linearGradient id="amberGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#f97316" />
+    </linearGradient>
+    <linearGradient id="purpleGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#c084fc" />
+      <stop offset="100%" stop-color="#a855f7" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1600" height="750" fill="url(#theatreBg)" />
+
+  <!-- Stage Spotlights Cone -->
+  <polygon points="200,0 50,750 450,750" fill="#fbbf24" opacity="0.12" />
+  <polygon points="1400,0 1150,750 1550,750" fill="#c084fc" opacity="0.12" />
+
+  <!-- Theatre Comedy & Tragedy Mask Silhouettes -->
+  <g opacity="0.2" fill="#ffffff" transform="translate(1320, 150) scale(0.6)">
+    <!-- Tragedy / Drama mask -->
+    <path d="M100 20C44.8 20 0 64.8 0 120c0 55.2 44.8 140 100 140s100-84.8 100-140c0-55.2-44.8-100-100-100zm-40 80c11 0 20 9 20 20s-9 20-20 20-20-9-20-20 9-20 20-20zm80 0c11 0 20 9 20 20s-9 20-20 20-20-9-20-20 9-20 20-20zm-40 110c-25 0-45-15-50-25h100c-5 10-25 25-50 25z"/>
+  </g>
+
+  <!-- Top Badge -->
+  <g transform="translate(800, 100)" text-anchor="middle">
+    <rect x="-260" y="-25" width="520" height="50" rx="25" fill="#ffffff" fill-opacity="0.1" stroke="#c084fc" stroke-width="1.5" />
+    <text y="7" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="16" fill="#e9d5ff" letter-spacing="3">
+      13th TRIVENI YUVA MAHOTSAV 2026 • CDLU
+    </text>
+  </g>
+
+  <!-- Category Title -->
+  <g transform="translate(800, 230)" text-anchor="middle">
+    <text font-family="'Segoe UI', sans-serif" font-weight="900" font-size="78" fill="#ffffff" letter-spacing="2">
+      RANGMANCH
+    </text>
+    <text y="68" font-family="'Segoe UI', sans-serif" font-weight="800" font-size="52" fill="url(#amberGlow)" letter-spacing="4">
+      THEATRE &amp; DRAMA
+    </text>
+  </g>
+
+  <!-- Subtitle -->
+  <g transform="translate(800, 360)" text-anchor="middle">
+    <text font-family="'Segoe UI', sans-serif" font-weight="500" font-size="20" fill="#e9d5ff" letter-spacing="2">
+      One Act Play • Social Skit • Silent Mime • Solo Mimicry
+    </text>
+  </g>
+
+  <!-- Event Grid Highlights -->
+  <g transform="translate(800, 480)">
+    <g transform="translate(-480, 0)">
+      <rect x="-105" y="-45" width="210" height="90" rx="14" fill="#3b0764" fill-opacity="0.7" stroke="#c084fc" stroke-width="1.2" />
+      <text y="-10" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="16" fill="#ffffff" text-anchor="middle">One Act Play</text>
+      <text y="16" font-family="'Segoe UI', sans-serif" font-size="13" fill="#e9d5ff" text-anchor="middle">25-30 Min Stagecraft</text>
+    </g>
+    <g transform="translate(-160, 0)">
+      <rect x="-105" y="-45" width="210" height="90" rx="14" fill="#3b0764" fill-opacity="0.7" stroke="#c084fc" stroke-width="1.2" />
+      <text y="-10" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="16" fill="#ffffff" text-anchor="middle">Skit</text>
+      <text y="16" font-family="'Segoe UI', sans-serif" font-size="13" fill="#e9d5ff" text-anchor="middle">Satire &amp; Social Message</text>
+    </g>
+    <g transform="translate(160, 0)">
+      <rect x="-105" y="-45" width="210" height="90" rx="14" fill="#3b0764" fill-opacity="0.7" stroke="#c084fc" stroke-width="1.2" />
+      <text y="-10" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="16" fill="#ffffff" text-anchor="middle">Mime</text>
+      <text y="16" font-family="'Segoe UI', sans-serif" font-size="13" fill="#e9d5ff" text-anchor="middle">Silent Expressions (4-6)</text>
+    </g>
+    <g transform="translate(480, 0)">
+      <rect x="-105" y="-45" width="210" height="90" rx="14" fill="#3b0764" fill-opacity="0.7" stroke="#c084fc" stroke-width="1.2" />
+      <text y="-10" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="16" fill="#ffffff" text-anchor="middle">Mimicry</text>
+      <text y="16" font-family="'Segoe UI', sans-serif" font-size="13" fill="#e9d5ff" text-anchor="middle">Voice Modulation Solo</text>
+    </g>
+  </g>
+
+  <!-- Venue Details -->
+  <g transform="translate(800, 630)" text-anchor="middle">
+    <rect x="-280" y="-24" width="560" height="48" rx="24" fill="url(#amberGlow)" />
+    <text y="8" font-family="'Segoe UI', sans-serif" font-weight="800" font-size="18" fill="#18181b" letter-spacing="2">
+      VENUE: UNIVERSITY AUDITORIUM MAIN STAGE
+    </text>
+  </g>
+</svg>

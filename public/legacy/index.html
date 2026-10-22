@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <base href="/legacy/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>13th Triveni Yuva Mahotsav 2026 | Chaudhary Devi Lal University (CDLU), Sirsa</title>
+    <meta name="description" content="Official Event Management Portal for 13th Triveni Yuva Mahotsav 2026 - Directorate of Youth Welfare, Chaudhary Devi Lal University, Sirsa (Haryana)">
+
+    <!-- Google Fonts & Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cdlu: {
+                            dark: '#0a0f1d',
+                            surface: '#0f172a',
+                            border: '#1e293b',
+                            gold: '#f59e0b',
+                            goldLight: '#fde047',
+                            accent: '#6366f1'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- SweetAlert2 for modern interactive alerts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Canvas Confetti for celebrations -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <!-- Supabase JS Client v2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="assets/js/i18n.js?v=11" defer></script>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-emerald-100 selection:text-slate-900">
+
+    <!-- ========================================================================= -->
+    <!-- 1. UNIVERSITY BRANDING                                                    -->
+    <!-- ========================================================================= -->
+    <header class="site-branding z-50">
+        <div class="branding-inner">
+            <button class="brand-mark brand-mark-left" type="button" aria-label="Back to home" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                <img src="assets/img/cdlu-emblem.jpeg" alt="Chaudhary Devi Lal University emblem">
+            </button>
+            <div class="branding-copy">
+                <span class="branding-kicker">Directorate of Youth Welfare</span>
+                <h1>Chaudhary Devi Lal University</h1>
+                <p>13th Triveni Yuva Mahotsav 2026 <span aria-hidden="true">·</span> Sirsa, Haryana</p>
+            </div>
+            <div class="brand-mark brand-mark-right" aria-label="University logo">
+                <img src="assets/img/cdlu-logo.png" alt="Chaudhary Devi Lal University logo">
+            </div>
+        </div>
+    </header>
+
+    <!-- ========================================================================= -->
+    <!-- 2. COMPACT SITE NAVIGATION                                                -->
+    <!-- ========================================================================= -->
+    <nav class="site-nav sticky top-0 z-40 glass-nav" aria-label="Main navigation">
+        <!-- Desktop Nav Bar (visible on md: screens and above) -->
+        <div class="site-nav-inner">
+            <div class="site-nav-links">
+                <a href="#hero-section" class="text-gray-300 hover:text-amber-400 transition"><i class="fas fa-house" aria-hidden="true"></i> Home</a>
+                <a href="#events-section" class="text-gray-300 hover:text-amber-400 transition"><i class="fas fa-calendar-days" aria-hidden="true"></i> Events</a>
+                <a href="#registration-section" class="text-amber-400 font-bold hover:text-amber-300 transition"><i class="fas fa-user-plus" aria-hidden="true"></i> Registration</a>
+                <a href="#lookup-section" class="text-gray-300 hover:text-amber-400 transition"><i class="fas fa-id-card" aria-hidden="true"></i> I-card Lookup</a>
+                <a href="uploaded_contents/Programme%20Chart%2013th%20TYM-2026.pdf" target="_blank" class="text-gray-300 hover:text-amber-400 transition"><i class="fas fa-file-lines" aria-hidden="true"></i> Programme Guide</a>
+            </div>
+            <div class="site-nav-actions">
+                <button type="button" class="site-language-toggle" data-language-toggle onclick="CDLUI18n.toggle()" aria-label="Change language">
+                    <i class="fas fa-language" aria-hidden="true"></i>
+                    <span>हिंदी</span>
+                </button>
+                <a href="#registration-section" class="nav-register bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 transition"><i class="fas fa-pencil" aria-hidden="true"></i> <span>Register Now</span></a>
+                <a href="portal.html#officer-login" class="nav-officer-login"><i class="fas fa-user-shield" aria-hidden="true"></i> Officer Login</a>
+            </div>
+        </div>
+
+        <!-- Mobile Nav Bar (visible on phone, hidden on laptop/desktop) -->
+        <div class="site-nav-mobile">
+            <!-- 3 Lines Hamburger Button -->
+            <button id="mobile-sidebar-toggle-btn" type="button" aria-label="Open Navigation Menu" onclick="App.openMobileMenu()" class="mobile-hamburger-btn flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm active:scale-95">
+                <i class="fas fa-bars text-sm text-emerald-700"></i>
+                <span class="text-xs font-extrabold text-slate-800">Menu</span>
+            </button>
+
+            <!-- Center Tag / Festival Kicker -->
+            <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-black text-emerald-800">
+                <i class="fas fa-award text-amber-500 text-xs"></i>
+                <span>TYM 2026</span>
+            </div>
+
+            <!-- Quick Action Button -->
+            <button type="button" onclick="document.getElementById('registration-section').scrollIntoView({behavior: 'smooth'})" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs shadow-sm transition active:scale-95">
+                <i class="fas fa-pencil text-[10px]"></i>
+                <span>Register</span>
+            </button>
+            <button type="button" class="site-language-toggle site-language-toggle-mobile" data-language-toggle onclick="CDLUI18n.toggle()" aria-label="Change language">
+                <i class="fas fa-language" aria-hidden="true"></i>
+                <span>हिंदी</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Slideover Drawer & Backdrop (Outside <nav> to preserve desktop links indexing) -->
+    <div id="mobile-sidebar-backdrop" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 transition-opacity duration-300 opacity-0 pointer-events-none" onclick="App.closeMobileMenu()"></div>
+
+    <aside id="mobile-sidebar" class="fixed top-0 left-0 bottom-0 w-[84vw] max-w-xs bg-white text-slate-800 z-50 shadow-2xl flex flex-col justify-between transition-transform duration-300 -translate-x-full overflow-hidden" aria-label="Mobile Navigation Sidebar">
+        <!-- Sidebar Header -->
+        <div class="p-4 border-b border-gray-200 bg-gradient-to-r from-emerald-50 via-teal-50 to-white flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <img src="assets/img/cdlu-emblem.jpeg" alt="CDLU Emblem" class="w-9 h-9 rounded-lg object-contain shadow-sm border border-emerald-200 p-0.5 bg-white">
+                <div>
+                    <h4 class="text-xs font-black text-emerald-950 leading-tight">CDLU Sirsa</h4>
+                    <p class="text-[10px] font-bold text-gray-500">13th Triveni Yuva Mahotsav</p>
+                </div>
+            </div>
+            <button type="button" aria-label="Close navigation menu" class="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center transition active:scale-90" onclick="App.closeMobileMenu()">
+                <i class="fas fa-xmark text-sm"></i>
+            </button>
+        </div>
+
+        <!-- Sidebar Navigation Options -->
+        <div class="flex-1 overflow-y-auto py-3 px-3 space-y-1">
+            <span class="px-3 text-[10px] font-black uppercase tracking-wider text-gray-400 block mb-1">Navigation Menu</span>
+
+            <a href="#hero-section" onclick="App.closeMobileMenu()" class="mobile-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-bold text-sm text-gray-700 hover:text-emerald-700 hover:bg-emerald-50 transition">
+                <div class="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center text-xs">
+                    <i class="fas fa-house"></i>
+                </div>
+                <span>Home</span>
+            </a>
+
+            <a href="#events-section" onclick="App.closeMobileMenu()" class="mobile-nav-link flex items-center justify-between px-3 py-2.5 rounded-xl font-bold text-sm text-gray-700 hover:text-emerald-700 hover:bg-emerald-50 transition">
+                <div class="flex items-center gap-3">
+                    <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center text-xs">
+                        <i class="fas fa-calendar-days"></i>
+                    </div>
+                    <span>Competitions & Events</span>
+                </div>
+                <span class="text-[10px] font-mono font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full border border-amber-300">35</span>
+            </a>
+
+            <a href="#registration-section" onclick="App.closeMobileMenu()" class="mobile-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-extrabold text-sm text-emerald-900 bg-emerald-50 border border-emerald-200 shadow-sm transition">
+                <div class="w-7 h-7 rounded-lg bg-emerald-700 text-white flex items-center justify-center text-xs">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <span>Student & Team Registration</span>
+            </a>
+
+            <a href="#lookup-section" onclick="App.closeMobileMenu()" class="mobile-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-bold text-sm text-gray-700 hover:text-emerald-700 hover:bg-emerald-50 transition">
+                <div class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center text-xs">
+                    <i class="fas fa-id-card"></i>
+                </div>
+                <span>I-Card Lookup & Download</span>
+            </a>
+
+            <a href="uploaded_contents/Programme%20Chart%2013th%20TYM-2026.pdf" target="_blank" onclick="App.closeMobileMenu()" class="mobile-nav-link flex items-center justify-between px-3 py-2.5 rounded-xl font-bold text-sm text-gray-700 hover:text-emerald-700 hover:bg-emerald-50 transition">
+                <div class="flex items-center gap-3">
+                    <div class="w-7 h-7 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center text-xs">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <span>Programme Guide (PDF)</span>
+                </div>
+                <i class="fas fa-arrow-up-right-from-square text-[10px] text-gray-400"></i>
+            </a>
+
+            <a href="portal.html#officer-login" onclick="App.closeMobileMenu()" class="mobile-nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-extrabold text-sm text-indigo-900 bg-indigo-50 border border-indigo-200 shadow-sm transition">
+                <div class="w-7 h-7 rounded-lg bg-indigo-700 text-white flex items-center justify-center text-xs">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <span>Officer Login</span>
+            </a>
+
+        </div>
+
+        <!-- Sidebar Footer Action -->
+        <div class="p-3 border-t border-gray-200 bg-gray-50/90 space-y-2">
+            <button type="button" onclick="App.closeMobileMenu(); document.getElementById('registration-section').scrollIntoView({behavior:'smooth'})" class="w-full py-2.5 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-sm transition active:scale-95">
+                <i class="fas fa-pencil"></i>
+                <span>Register for Mahotsav</span>
+            </button>
+            <div class="text-center text-[10px] text-gray-500 font-semibold pt-0.5">
+                Directorate of Youth Welfare, CDLU Sirsa
+            </div>
+        </div>
+    </aside>
+
+    <!-- ========================================================================= -->
+    <!-- 3. HERO POSTER CAROUSEL (POSTER SLIDER)                                   -->
+    <!-- ========================================================================= -->
+    <section id="hero-section" class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-4">
+        <!-- Carousel Outer Container -->
+        <div id="poster-carousel" class="relative w-full aspect-[16/7.5] min-h-[380px] max-h-[520px] rounded-3xl overflow-hidden shadow-2xl border border-gray-800 bg-gray-950">
+            
+            <!-- Slide 1: Official Triveni Yuva Mahotsav 2026 Banner -->
+            <div class="carousel-slide absolute inset-0 w-full h-full opacity-100 z-10 transition-opacity duration-700 bg-[#f8f0d9]">
+                <img src="assets/img/Triveni%20Yuva%20Mahotsav%202026%20Banner.png" alt="Official 13th Triveni Yuva Mahotsav 2026 banner at Chaudhary Devi Lal University, Sirsa" class="w-full h-full object-contain">
+            </div>
+
+            <!-- Slide 2: Official Triveni Yuva Mahotsav 2026 Banner -->
+            <div class="carousel-slide absolute inset-0 w-full h-full opacity-0 pointer-events-none transition-opacity duration-700 bg-[#f8f0d9]">
+                <img src="assets/img/Triveni%20Yuva%20Mahotsav%202026%20Banner.png" alt="Official 13th Triveni Yuva Mahotsav 2026 banner at Chaudhary Devi Lal University, Sirsa" class="w-full h-full object-contain">
+            </div>
+
+            <!-- Slide 3: Official Triveni Yuva Mahotsav 2026 Banner -->
+            <div class="carousel-slide absolute inset-0 w-full h-full opacity-0 pointer-events-none transition-opacity duration-700 bg-[#f8f0d9]">
+                <img src="assets/img/Triveni%20Yuva%20Mahotsav%202026%20Banner.png" alt="Official 13th Triveni Yuva Mahotsav 2026 banner at Chaudhary Devi Lal University, Sirsa" class="w-full h-full object-contain">
+            </div>
+
+            <!-- Slide 4: Official Triveni Yuva Mahotsav 2026 Banner -->
+            <div class="carousel-slide absolute inset-0 w-full h-full opacity-0 pointer-events-none transition-opacity duration-700 bg-[#f8f0d9]">
+                <img src="assets/img/Triveni%20Yuva%20Mahotsav%202026%20Banner.png" alt="Official 13th Triveni Yuva Mahotsav 2026 banner at Chaudhary Devi Lal University, Sirsa" class="w-full h-full object-contain">
+            </div>
+
+            <!-- Slide 5: Official Triveni Yuva Mahotsav 2026 Banner -->
+            <div class="carousel-slide absolute inset-0 w-full h-full opacity-0 pointer-events-none transition-opacity duration-700 bg-[#f8f0d9]">
+                <img src="assets/img/Triveni%20Yuva%20Mahotsav%202026%20Banner.png" alt="Official 13th Triveni Yuva Mahotsav 2026 banner at Chaudhary Devi Lal University, Sirsa" class="w-full h-full object-contain">
+            </div>
+
+            <!-- Left / Right Navigation Controls -->
+            <button onclick="App.prevSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-slate-950/70 hover:bg-amber-500 hover:text-black text-white border border-white/20 flex items-center justify-center transition backdrop-blur shadow-lg">
+                <i class="fas fa-chevron-left text-sm"></i>
+            </button>
+            <button onclick="App.nextSlide()" class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-slate-950/70 hover:bg-amber-500 hover:text-black text-white border border-white/20 flex items-center justify-center transition backdrop-blur shadow-lg">
+                <i class="fas fa-chevron-right text-sm"></i>
+            </button>
+
+            <!-- Bottom Indicator Dots -->
+            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-slate-950/60 backdrop-blur px-4 py-2 rounded-full border border-white/10">
+                <button onclick="App.showSlide(0)" class="carousel-dot w-8 h-2.5 rounded-full bg-amber-400 transition-all"></button>
+                <button onclick="App.showSlide(1)" class="carousel-dot w-2.5 h-2.5 rounded-full bg-gray-500/60 hover:bg-gray-400 transition-all"></button>
+                <button onclick="App.showSlide(2)" class="carousel-dot w-2.5 h-2.5 rounded-full bg-gray-500/60 hover:bg-gray-400 transition-all"></button>
+                <button onclick="App.showSlide(3)" class="carousel-dot w-2.5 h-2.5 rounded-full bg-gray-500/60 hover:bg-gray-400 transition-all"></button>
+                <button onclick="App.showSlide(4)" class="carousel-dot w-2.5 h-2.5 rounded-full bg-gray-500/60 hover:bg-gray-400 transition-all"></button>
+            </div>
+        </div>
+
+        <!-- Real-time Stats Cards Bar -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
+            <div class="glass-panel rounded-2xl p-4 border border-gray-800 flex items-center gap-3.5">
+                <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl shrink-0">
+                    <i class="fas fa-users-viewfinder"></i>
+                </div>
+                <div>
+                    <span id="hero-stat-students" class="text-2xl font-black text-white block">--</span>
+                    <span class="text-xs text-gray-400 font-medium">कुल पंजीकृत विद्यार्थी</span>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-4 border border-gray-800 flex items-center gap-3.5">
+                <div class="w-12 h-12 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xl shrink-0">
+                    <i class="fas fa-people-group"></i>
+                </div>
+                <div>
+                    <span id="hero-stat-teams" class="text-2xl font-black text-white block">--</span>
+                    <span class="text-xs text-gray-400 font-medium">कुल पंजीकृत दल (Teams)</span>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-4 border border-gray-800 flex items-center gap-3.5">
+                <div class="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl shrink-0">
+                    <i class="fas fa-building-columns"></i>
+                </div>
+                <div>
+                    <span id="hero-stat-colleges" class="text-2xl font-black text-white block">--</span>
+                    <span class="text-xs text-gray-400 font-medium">संबद्ध महाविद्यालय</span>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-4 border border-gray-800 flex items-center gap-3.5">
+                <div class="w-12 h-12 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-xl shrink-0">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div>
+                    <span id="hero-stat-events" class="text-2xl font-black text-white block">35</span>
+                    <span class="text-xs text-gray-400 font-medium">युवा महोत्सव प्रतियोगिताएं</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 4. REGISTRATION LOOKUP & I-CARD BAR                                       -->
+    <!-- ========================================================================= -->
+    <section id="lookup-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="bg-gradient-to-r from-gray-900 via-gray-900 to-indigo-950/60 p-6 rounded-3xl border border-indigo-500/20 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xl shrink-0 border border-indigo-500/30">
+                    <i class="fas fa-address-card"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-white">पंजीकरण स्थिति व आई-कार्ड डाउनलोड</h3>
+                    <p class="text-xs text-gray-400">अपना CDLU रोल नंबर अथवा रजिस्ट्रेशन आईडी दर्ज करके आधिकारिक आई-कार्ड डाउनलोड करें।</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 w-full md:w-auto">
+                <input type="text" id="public-search-input" placeholder="Roll No. या Reg ID दर्ज करें..." class="bg-gray-950 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 w-full md:w-72" />
+                <button onclick="App.lookupRegistration(document.getElementById('public-search-input').value)" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm px-5 py-2.5 rounded-xl transition shrink-0 flex items-center gap-2 shadow">
+                    <i class="fas fa-search"></i> खोजें
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 5. STUDENT REGISTRATION FORM (STUDENT REGISTERATION KA CHAIYA)             -->
+    <!-- ========================================================================= -->
+    <section id="registration-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div class="text-center max-w-3xl mx-auto mb-10">
+            <span class="px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                Student & Team Registration Form
+            </span>
+            <h2 class="text-3xl sm:text-4xl font-black text-white mt-3 tracking-tight">
+                विद्यार्थी एवं दल ऑनलाइन पंजीकरण
+            </h2>
+            <p class="text-sm text-gray-400 mt-2">
+                13वें त्रिवेणी युवा महोत्सव 2026 के लिए आधिकारिक एनेक्सचर (Annexure I-VI) नियमों के अनुसार विवरण भरें।
+            </p>
+        </div>
+
+        <div class="glass-panel rounded-3xl p-6 sm:p-10 border border-gray-800 shadow-2xl">
+            <form id="registration-form" onsubmit="App.handleRegistrationSubmit(event)">
+                
+                <!-- Step 1: Select Event Category & Event -->
+                <div class="mb-8">
+                    <div class="flex items-center gap-2.5 text-amber-400 font-bold text-base mb-4 pb-2 border-b border-gray-800">
+                        <span class="w-7 h-7 rounded-lg bg-amber-500/20 flex items-center justify-center text-xs">1</span>
+                        इवेंट श्रेणी व प्रतियोगिता का चयन (Event Selection)
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">इवेंट श्रेणी (Category) <span class="text-rose-400">*</span></label>
+                            <select id="reg-category" onchange="App.onCategoryChange(this.value)" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-500 font-medium">
+                                <option value="">-- श्रेणी चुनें (Select Category) --</option>
+                                <option value="Music">1. Music (संगीत)</option>
+                                <option value="Dance">2. Dance (नृत्य)</option>
+                                <option value="Theatre">3. Theatre (रंगमंच एवं नाटक)</option>
+                                <option value="Literary">4. Literary (साहित्यिक)</option>
+                                <option value="Fine Arts">5. Fine Arts (ललित कलाएं)</option>
+                                <option value="Procession">6. Cultural Procession (सांस्कृतिक शोभा यात्रा - No Age Limit)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">प्रतियोगिता का नाम (Event Name) <span class="text-rose-400">*</span></label>
+                            <select id="reg-event" onchange="App.onEventChange(this.value)" disabled required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-500 font-medium disabled:opacity-50">
+                                <option value="">-- पहले श्रेणी चुनें --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Guidelines Helper Box -->
+                    <div id="event-guidelines-box" class="hidden mt-4 p-4 rounded-2xl bg-indigo-950/40 border border-indigo-800/60 text-xs">
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                            <span id="helper-event-name" class="font-bold text-amber-300 text-sm"></span>
+                            <span id="helper-event-stage" class="bg-indigo-900/80 text-indigo-200 px-2.5 py-0.5 rounded-full font-semibold"></span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-gray-300">
+                            <div><i class="fas fa-clock text-amber-400 mr-1.5"></i> <strong>समय सीमा:</strong> <span id="helper-event-time"></span></div>
+                            <div><i class="fas fa-user-group text-blue-400 mr-1.5"></i> <span id="helper-event-participants"></span></div>
+                            <div><i class="fas fa-calendar-check text-emerald-400 mr-1.5"></i> <strong>आयु सीमा (Age Limit):</strong> <span id="helper-event-age" class="font-bold"></span></div>
+                        </div>
+                        <p class="mt-2 text-gray-400 border-t border-indigo-900/60 pt-2"><i class="fas fa-circle-info text-amber-400 mr-1"></i> <strong>नियम व दिशा-निर्देश:</strong> <span id="helper-event-rules"></span></p>
+                    </div>
+                </div>
+
+                <!-- Step 2: College / Institution Details -->
+                <div class="mb-8">
+                    <div class="flex items-center gap-2.5 text-amber-400 font-bold text-base mb-4 pb-2 border-b border-gray-800">
+                        <span class="w-7 h-7 rounded-lg bg-amber-500/20 flex items-center justify-center text-xs">2</span>
+                        महाविद्यालय / विभाग का विवरण (College / Institute Details)
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1.5">महाविद्यालय / संस्थान का नाम <span class="text-rose-400">*</span></label>
+                        <select id="reg-college" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-500">
+                            <option value="">-- महाविद्यालय चुनें (Select Affiliated College) --</option>
+                            <option value="University Teaching Departments (UTD), CDLU Sirsa">University Teaching Departments (UTD), CDLU Sirsa</option>
+                            <option value="Govt. National College, Sirsa">Govt. National College, Sirsa</option>
+                            <option value="CMK National PG Girls College, Sirsa">CMK National PG Girls College, Sirsa</option>
+                            <option value="Shah Satnam Ji College, Sirsa">Shah Satnam Ji College, Sirsa</option>
+                            <option value="Janta Girls College, Ellenabad">Janta Girls College, Ellenabad</option>
+                            <option value="Govt. College, Bhattu Kalan">Govt. College, Bhattu Kalan</option>
+                            <option value="Govt. College, Rania">Govt. College, Rania</option>
+                            <option value="Govt. College, Mandi Dabwali">Govt. College, Mandi Dabwali</option>
+                            <option value="JCD Memorial College, Sirsa">JCD Memorial College, Sirsa</option>
+                            <option value="Govt. College for Women, Sirsa">Govt. College for Women, Sirsa</option>
+                            <option value="M.M. PG College, Fatehabad">M.M. PG College, Fatehabad</option>
+                            <option value="Govt. College, Bhuna">Govt. College, Bhuna</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Step 3: Primary Participant Details -->
+                <div class="mb-8">
+                    <div class="flex items-center gap-2.5 text-amber-400 font-bold text-base mb-4 pb-2 border-b border-gray-800">
+                        <span class="w-7 h-7 rounded-lg bg-amber-500/20 flex items-center justify-center text-xs">3</span>
+                        मुख्य प्रतिभागी विवरण (Primary Participant Details)
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">प्रतिभागी का नाम (Full Name) <span class="text-rose-400">*</span></label>
+                            <input type="text" id="reg-participant-name" placeholder="अंग्रेजी के बड़े अक्षरों में (In BLOCK LETTERS)" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">पिता का नाम (Father's Name) <span class="text-rose-400">*</span></label>
+                            <input type="text" id="reg-father-name" placeholder="पिता का नाम" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">लिंग (Gender) <span class="text-rose-400">*</span></label>
+                            <select id="reg-gender" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500">
+                                <option value="Male">पुरुष (Male)</option>
+                                <option value="Female">महिला (Female)</option>
+                                <option value="Other">अन्य (Other)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">कक्षा (Class / Semester) <span class="text-rose-400">*</span></label>
+                            <input type="text" id="reg-class" placeholder="उदा. BA 2nd Year, MA, B.Sc" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">विश्वविद्यालय रोल नंबर (Univ. Roll No) <span class="text-rose-400">*</span></label>
+                            <input type="text" id="reg-roll" placeholder="उदा. 220101004" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 font-mono" />
+                        </div>
+
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label class="block text-xs font-semibold text-gray-300">जन्म तिथि (Date of Birth) <span class="text-rose-400">*</span></label>
+                                <span id="reg-dob-rule-hint" class="text-[11px] font-bold text-amber-400"></span>
+                            </div>
+                            <input type="date" id="reg-dob" required oninput="App.onDobChange()" onchange="App.onDobChange()" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 transition" />
+                            <div id="reg-dob-feedback" class="mt-2 hidden"></div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">मोबाइल नंबर (Mobile No) <span class="text-rose-400">*</span></label>
+                            <input type="tel" id="reg-phone" placeholder="10 अंकों का मोबाइल नंबर" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">ईमेल आईडी (Email ID) <span class="text-rose-400">*</span></label>
+                            <input type="email" id="reg-email" placeholder="student@example.com" required class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Dynamic Team Members Section (Appears only for multi-participant events) -->
+                <div id="team-members-section" class="hidden mb-8">
+                    <div class="flex items-center justify-between gap-2.5 text-amber-400 font-bold text-base mb-3 pb-2 border-b border-gray-800">
+                        <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-lg bg-amber-500/20 flex items-center justify-center text-xs">4</span>
+                            <span>दल के अन्य सदस्य (Other Team Members)</span>
+                            <span id="team-max-notice" class="text-xs font-normal text-gray-400"></span>
+                        </div>
+                        <button type="button" onclick="App.addTeamMember()" class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition flex items-center gap-1.5 shadow">
+                            <i class="fas fa-plus"></i> सदस्य जोड़ें
+                        </button>
+                    </div>
+
+                    <div id="team-members-container" class="space-y-2">
+                        <!-- Populated dynamically by JS -->
+                    </div>
+                </div>
+
+                <!-- Step 5: Dynamic Accompanists Section (Annexure II-IV) -->
+                <div id="accompanists-section" class="hidden mb-8">
+                    <div class="flex items-center justify-between gap-2.5 text-indigo-400 font-bold text-base mb-3 pb-2 border-b border-gray-800">
+                        <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-lg bg-indigo-500/20 flex items-center justify-center text-xs">5</span>
+                            <span>संगतकार विवरण (Accompanists - Student / Professional)</span>
+                            <span id="accomp-max-notice" class="text-xs font-normal text-gray-400"></span>
+                        </div>
+                        <button type="button" onclick="App.addAccompanist()" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition flex items-center gap-1.5 shadow">
+                            <i class="fas fa-plus"></i> संगतकार जोड़ें
+                        </button>
+                    </div>
+
+                    <div id="accompanists-container" class="space-y-2">
+                        <!-- Populated dynamically by JS -->
+                    </div>
+                </div>
+
+                <!-- Step 6: Team Manager / Incharge Info (Annexure I) -->
+                <div class="mb-8">
+                    <div class="flex items-center gap-2.5 text-amber-400 font-bold text-base mb-4 pb-2 border-b border-gray-800">
+                        <span class="w-7 h-7 rounded-lg bg-amber-500/20 flex items-center justify-center text-xs">6</span>
+                        दल प्रभारी / टीम मैनेजर विवरण (Contingent In-Charge / Team Manager)
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">टीम मैनेजर / प्रभारी का नाम</label>
+                            <input type="text" id="reg-tm-name" placeholder="उदा. Dr. R. K. Sharma" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">प्रभारी मोबाइल नंबर</label>
+                            <input type="tel" id="reg-tm-phone" placeholder="मोबाइल नंबर" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500" />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">प्रभारी आधिकारिक ईमेल</label>
+                            <input type="email" id="reg-tm-email" placeholder="cultural@college.ac.in" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button and Guarantee -->
+                <div class="pt-4 border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <p class="text-xs text-gray-400 flex items-center gap-2">
+                        <i class="fas fa-check-shield text-emerald-400 text-sm"></i>
+                        प्रमाणित किया जाता है कि सभी विवरण सीडीएलयू यूथ फेस्टिवल नियमों के अनुसार सत्य हैं।
+                    </p>
+                    <button type="submit" class="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-500 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-sm tracking-wide shadow-xl shadow-amber-500/25 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                        <i class="fas fa-paper-plane"></i> ऑनलाइन पंजीकरण सबमिट करें व आई-कार्ड पाएं
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 6. EVENTS & STAGE EXPLORER (35 OFFICIAL EVENTS)                           -->
+    <!-- ========================================================================= -->
+    <section id="events-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div class="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8">
+            <div>
+                <span class="px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                    Official Programme Chart
+                </span>
+                <h2 class="text-3xl font-black text-white mt-2">महोत्सव प्रतियोगिताएं एवं मंच स्थल</h2>
+                <p class="text-xs text-gray-400 mt-1">स्टेज 1 (ऑडिटोरियम), स्टेज 2 (ओपन एयर), स्टेज 3 (सेमिनार हॉल), स्टेज 4 (फाइन आर्ट्स)</p>
+            </div>
+
+            <!-- Right Upper Area: Number of Competitions Badge & Category Filter Buttons -->
+            <div class="flex flex-col items-start md:items-end gap-3.5 shrink-0">
+                <!-- Number of Competitions Badge -->
+                <div id="chart-competition-badge" class="inline-flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-gradient-to-r from-amber-500/15 via-indigo-500/15 to-purple-500/15 border border-amber-500/30 text-amber-300 shadow-md backdrop-blur">
+                    <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs shadow-inner">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="flex items-baseline gap-1.5">
+                        <span class="text-xs font-bold text-gray-300">Number of Competitions:</span>
+                        <span id="chart-competition-count" class="text-base font-black text-white font-mono bg-amber-500/20 px-2.5 py-0.5 rounded-lg border border-amber-400/40">35</span>
+                    </div>
+                </div>
+
+                <!-- Category filter buttons with counts -->
+                <div class="flex flex-wrap gap-2 justify-start md:justify-end">
+                    <button onclick="App.renderEventExplorer('All')" data-category="All" class="category-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-500 text-gray-950 transition flex items-center gap-1.5 shadow-sm ring-2 ring-amber-400">
+                        <span>सभी (All)</span>
+                        <span class="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-black/20 text-gray-900">35</span>
+                    </button>
+                    <button onclick="App.renderEventExplorer('Music')" data-category="Music" class="category-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-950 text-emerald-300 border border-emerald-800 hover:bg-emerald-900 transition flex items-center gap-1.5 shadow-sm">
+                        <span>संगीत (Music)</span>
+                        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-emerald-900/80 text-emerald-200 font-bold">11</span>
+                    </button>
+                    <button onclick="App.renderEventExplorer('Dance')" data-category="Dance" class="category-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-rose-950 text-rose-300 border border-rose-800 hover:bg-rose-900 transition flex items-center gap-1.5 shadow-sm">
+                        <span>नृत्य (Dance)</span>
+                        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-rose-900/80 text-rose-200 font-bold">7</span>
+                    </button>
+                    <button onclick="App.renderEventExplorer('Theatre')" data-category="Theatre" class="category-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-purple-950 text-purple-300 border border-purple-800 hover:bg-purple-900 transition flex items-center gap-1.5 shadow-sm">
+                        <span>रंगमंच (Theatre)</span>
+                        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-purple-900/80 text-purple-200 font-bold">4</span>
+                    </button>
+                    <button onclick="App.renderEventExplorer('Literary')" data-category="Literary" class="category-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-sky-950 text-sky-300 border border-sky-800 hover:bg-sky-900 transition flex items-center gap-1.5 shadow-sm">
+                        <span>साहित्यिक (Literary)</span>
+                        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-sky-900/80 text-sky-200 font-bold">6</span>
+                    </button>
+                    <button onclick="App.renderEventExplorer('Fine Arts')" data-category="Fine Arts" class="category-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-950 text-amber-300 border border-amber-800 hover:bg-amber-900 transition flex items-center gap-1.5 shadow-sm">
+                        <span>ललित कला (Fine Arts)</span>
+                        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-amber-900/80 text-amber-200 font-bold">6</span>
+                    </button>
+                    <button onclick="App.renderEventExplorer('Procession')" data-category="Procession" class="category-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-pink-950 text-pink-300 border border-pink-800 hover:bg-pink-900 transition flex items-center gap-1.5 shadow-sm">
+                        <span>शोभा यात्रा (Procession)</span>
+                        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-pink-900/80 text-pink-200 font-bold">1</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="events-explorer-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <!-- Dynamically populated by App.renderEventExplorer -->
+        </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 9. OFFICIAL MODALS                                                        -->
+    <!-- ========================================================================= -->
+
+    <!-- 9A. Printable / Downloadable Official I-Card Modal (as per uploaded i-card.pdf) -->
+    <div id="icard-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 hidden">
+        <div class="bg-gray-900 border border-gray-700 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+            <div class="p-4 border-b border-gray-800 flex items-center justify-between no-print">
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Official CDLU Festival Pass</span>
+                <button onclick="App.closePrintCardModal()" class="text-gray-400 hover:text-white"><i class="fas fa-times text-lg"></i></button>
+            </div>
+
+            <div class="p-6 overflow-y-auto flex justify-center">
+                <!-- PRINTABLE CARD CONTAINER -->
+                <div id="icard-printable-area" class="bg-white text-slate-950 p-6 rounded-2xl border-4 border-slate-900 shadow font-sans">
+                    <!-- University Header in Card -->
+                    <div class="text-center border-b-2 border-slate-900 pb-3 mb-3">
+                        <div class="flex items-center justify-center gap-3 mb-1">
+                            <img src="assets/img/cdlu-logo.png" alt="CDLU Logo" class="h-10 w-auto object-contain">
+                            <div class="text-left">
+                                <h4 class="text-xs font-black tracking-tight uppercase leading-tight">Chaudhary Devi Lal University, Sirsa</h4>
+                                <p class="text-[9px] font-bold text-gray-700">Directorate of Youth Welfare • 13th Triveni Yuva Mahotsav</p>
+                            </div>
+                        </div>
+                        <div class="inline-block bg-slate-950 text-amber-300 font-black text-[10px] uppercase tracking-wider px-3 py-0.5 rounded-full mt-1">
+                            Official Participant Identity Pass
+                        </div>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="flex items-start gap-4">
+                        <!-- Photo placeholder -->
+                        <div class="w-24 h-28 border-2 border-slate-400 bg-gray-100 flex flex-col items-center justify-center text-center p-2 rounded shrink-0">
+                            <i class="fas fa-user text-gray-400 text-3xl mb-1"></i>
+                            <span class="text-[8px] text-gray-500 uppercase font-semibold">Passport Photo Space</span>
+                        </div>
+
+                        <!-- Details -->
+                        <div class="flex-1 text-xs space-y-1">
+                            <div class="flex justify-between items-center">
+                                <span class="font-mono font-black text-amber-700 text-sm" id="card-id-display"></span>
+                                <span class="bg-slate-900 text-white font-extrabold px-2 py-0.5 rounded text-[11px]">CHEST: <span id="card-chest-display"></span></span>
+                            </div>
+                            <p class="font-black text-sm text-slate-950 leading-tight" id="card-name-display"></p>
+                            <p class="text-[11px] text-gray-800"><strong>पिता:</strong> <span id="card-father-display"></span></p>
+                            <p class="text-[11px] text-gray-800 font-semibold" id="card-college-display"></p>
+                            <p class="text-[10px] text-gray-700" id="card-class-roll-display"></p>
+                            <p class="text-[10px] text-gray-700"><strong>जन्म तिथि (DOB):</strong> <span id="card-dob-display" class="font-semibold text-slate-900"></span></p>
+                            <p class="text-[11px] font-bold text-indigo-900 mt-1" id="card-event-display"></p>
+                            <p class="text-[10px] text-gray-600" id="card-contact-display"></p>
+                            <p class="text-[10px] font-bold text-emerald-700">स्थिति: <span id="card-status-display">Eligible</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic team / accompanists inside slip -->
+                    <div id="card-members-container" class="hidden"></div>
+                    <div id="card-accomp-container" class="hidden"></div>
+
+                    <!-- Signatures footer in Card -->
+                    <div class="mt-6 pt-3 border-t border-slate-900 flex justify-between items-end text-[10px] font-bold">
+                        <div class="text-center">
+                            <div class="h-6"></div>
+                            <span>प्रतिभागी के हस्ताक्षर</span>
+                        </div>
+                        <div class="text-center">
+                            <div class="h-6"></div>
+                            <span>प्राचार्य / सांस्कृतिक प्रभारी मुहर</span>
+                        </div>
+                        <div class="text-center text-amber-900">
+                            <div class="h-6 font-black flex items-center justify-center"><i class="fas fa-stamp text-lg"></i></div>
+                            <span>CDLU DYW अधिकृत</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-gray-800 flex justify-end gap-3 no-print bg-gray-950">
+                <button onclick="App.closePrintCardModal()" class="px-4 py-2 rounded-xl bg-gray-800 text-gray-300 font-medium text-xs">बंद करें</button>
+                <button onclick="App.printRegistrationCard()" class="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition flex items-center gap-1.5 shadow">
+                    <i class="fas fa-print"></i> आधिकारिक आई-कार्ड प्रिंट करें
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 10. OFFICIAL FOOTER                                                       -->
+    <!-- ========================================================================= -->
+    <footer class="mt-auto border-t border-gray-800 bg-gray-950 text-gray-400 text-xs py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="md:col-span-2">
+                <div class="flex items-center gap-3 mb-3">
+                    <img src="assets/img/cdlu-logo.png" alt="CDLU Logo" class="h-10 w-auto object-contain">
+                    <div>
+                        <h4 class="text-white font-bold text-sm">Chaudhary Devi Lal University, Sirsa</h4>
+                        <p class="text-[11px] text-gray-400">Directorate of Youth Welfare (DYW)</p>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-400 leading-relaxed max-w-md">
+                    13वां त्रिवेणी युवा महोत्सव 2026 - हरियाणा राज्य की सांस्कृतिक धरोहर, युवा ऊर्जा एवं बौद्धिक चेतना का महाकुंभ। विश्वविद्यालय से संबद्ध सभी महाविद्यालयों के लिए ऑनलाइन प्रबंधन पोर्टल।
+                </p>
+                <div class="flex items-center gap-3 mt-4 text-gray-400">
+                    <span class="px-2.5 py-1 rounded bg-gray-900 border border-gray-800 text-amber-400 font-mono text-[11px]">
+                        Supabase Cloud: mloifpvurnppsykpjtgc.supabase.co
+                    </span>
+                </div>
+            </div>
+
+            <div>
+                <h5 class="text-white font-bold text-xs uppercase tracking-wider mb-3">त्वरित लिंक्स</h5>
+                <ul class="space-y-2">
+                    <li><a href="#hero-section" class="hover:text-amber-400 transition">पोस्टर गैलरी व हाइलाइट्स</a></li>
+                    <li><a href="#registration-section" class="hover:text-amber-400 transition">विद्यार्थी ऑनलाइन पंजीकरण</a></li>
+                    <li><a href="#lookup-section" class="hover:text-amber-400 transition">आई-कार्ड डाउनलोड व सत्यापन</a></li>
+                    <li><a href="uploaded_contents/Programme%20Chart%2013th%20TYM-2026.pdf" target="_blank" class="hover:text-amber-400 transition">आधिकारिक प्रोग्राम चार्ट (PDF)</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h5 class="text-white font-bold text-xs uppercase tracking-wider mb-3">संपर्क व सहायता</h5>
+                <p class="text-xs text-gray-300 mb-1"><i class="fas fa-location-dot text-amber-400 mr-2"></i> Barnala Road, Sirsa - 125055 (Haryana)</p>
+                <p class="text-xs text-gray-300 mb-1"><i class="fas fa-envelope text-amber-400 mr-2"></i> dyw@cdlu.ac.in</p>
+                <p class="text-xs text-gray-300 mb-3"><i class="fas fa-phone text-amber-400 mr-2"></i> 01666-248052</p>
+                <span class="inline-block px-3 py-1 rounded-full bg-emerald-950 text-emerald-300 text-[10px] font-bold border border-emerald-800">
+                    ● Portal Active &amp; Ready
+                </span>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pt-6 border-t border-gray-850 flex flex-col sm:flex-row items-center justify-between text-[11px] text-gray-500">
+            <p>© 2026 Chaudhary Devi Lal University, Sirsa. All Rights Reserved.</p>
+            <p>13th Triveni Yuva Mahotsav • Designed for Directorate of Youth Welfare</p>
+        </div>
+    </footer>
+
+    <!-- App Scripts -->
+    <script src="assets/js/supabase-config.js"></script>
+    <script src="assets/js/db-service.js"></script>
+    <script src="assets/js/app.js"></script>
+
+    <script>
+        // I-card template matching the supplied official CDLU reference design.
+        document.addEventListener('DOMContentLoaded', () => {
+            const card = document.getElementById('icard-printable-area');
+            if (!card) return;
+            card.className = 'icard-reference';
+            card.innerHTML = `
+                <div class="icard-gold-frame">
+                    <header class="icard-header">
+                        <img src="assets/img/cdlu-emblem.jpeg" alt="CDLU emblem" class="icard-logo">
+                        <p class="icard-serial">Sr. No. <span id="card-id-display"></span></p>
+                        <img src="assets/img/image2.png" alt="University founder" class="icard-founder">
+                    </header>
+                    <h4 class="icard-university">Chaudhary Devi Lal University, Sirsa</h4>
+                    <div class="icard-festival">13<sup>th</sup> Triveni Yuva Mahotsav</div>
+                    <p class="icard-tagline">Youth Energy, Culture and Creativity</p>
+                    <p class="icard-validity">Valid from<br><strong>25.10.2026 to 28.10.2026</strong></p>
+                    <div class="icard-title">Participating Student I-Card</div>
+                    <p class="icard-college"><span>College</span><strong id="card-college-display"></strong></p>
+                    <div class="icard-details">
+                        <div class="icard-photo-placeholder"><i class="fas fa-user"></i><span>Paste passport-size photo<br>with dean/principal stamp</span></div>
+                        <div class="icard-fields">
+                            <p><span>Name</span><strong id="card-name-display"></strong></p>
+                            <p><span>Class</span><strong id="card-class-display"></strong></p>
+                            <p><span>Department / Course</span><strong id="card-department-display"></strong></p>
+                            <p><span>Event</span><strong id="card-event-display"></strong></p>
+                            <p class="icard-roll-row"><span>Roll No.</span><strong id="card-roll-display"></strong></p>
+                        </div>
+                    </div>
+                    <div id="card-members-container" class="hidden"></div>
+                    <div id="card-accomp-container" class="hidden"></div>
+                    <footer class="icard-signatures"><span>Holder's signature</span><span>Dean / Principal sign.</span></footer>
+                </div>`;
+            const modalActions = document.querySelectorAll('#icard-modal .bg-gray-950 button');
+            if (modalActions[0]) modalActions[0].textContent = 'Close';
+            if (modalActions[1]) modalActions[1].innerHTML = '<i class="fas fa-print"></i> Print I-card';
+        });
+    </script>
+
+    <script>
+        // Public-facing copy cleanup for a clear, English-first event portal.
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('nav a');
+            const navCopy = ['Home', 'Events', 'Registration', 'Registration Lookup', 'Programme Guide', 'Register Now'];
+            navLinks.forEach((link, index) => {
+                if (navCopy[index]) link.lastChild.textContent = ` ${navCopy[index]}`;
+            });
+
+            const statLabels = ['Registered students', 'Registered entries', 'Participating colleges', 'Official competitions'];
+            document.querySelectorAll('#hero-section .glass-panel .text-xs').forEach((label, index) => {
+                if (statLabels[index]) label.textContent = statLabels[index];
+            });
+            const competitionCount = document.querySelectorAll('#hero-section .glass-panel .text-2xl')[3];
+            if (competitionCount) competitionCount.textContent = '35';
+
+            const lookupHeading = document.querySelector('#lookup-section h3');
+            const lookupDescription = document.querySelector('#lookup-section p');
+            const lookupButton = document.querySelector('#lookup-section button');
+            const lookupInput = document.getElementById('public-search-input');
+            if (lookupHeading) lookupHeading.textContent = 'Find your registration and I-card';
+            if (lookupDescription) lookupDescription.textContent = 'Use your CDLU roll number or registration ID to view and print the official I-card.';
+            if (lookupInput) lookupInput.placeholder = 'Enter roll no. or registration ID';
+            if (lookupButton) lookupButton.lastChild.textContent = ' Find';
+        });
+    </script>
+
+    <script>
+        // English public-interface pass for static labels and dynamic programme cards.
+        document.addEventListener('DOMContentLoaded', () => {
+            const text = (selector, value) => { const element = document.querySelector(selector); if (element) element.textContent = value; };
+            const label = (id, value) => { const control = document.getElementById(id); const item = control?.closest('div')?.querySelector('label'); if (item) item.textContent = value; };
+            const option = (id, value, copy) => { const item = document.querySelector(`#${id} option[value="${value}"]`); if (item) item.textContent = copy; };
+            const cards = () => {
+                document.querySelectorAll('#events-explorer-grid .space-y-1').forEach((details) => {
+                    const copy = ['Venue:', 'Participants:', 'Accompanists:', 'Age limit:'];
+                    Array.from(details.children).forEach((row, index) => { const strong = row.querySelector('strong'); const value = copy[index] || ''; if (strong && strong.textContent !== value) strong.textContent = value; });
+                    const participant = details.children[1]?.querySelector('span');
+                    const accompanist = details.children[2]?.querySelector('span');
+                    const age = details.children[3]?.querySelector('span');
+                    if (participant) { const value = participant.textContent.includes('Solo') ? 'Solo (1)' : participant.textContent.replace(/[^0-9\- ]/g, '').trim().replace(/\s+/g, ' '); const markup = `<strong>Participants:</strong> ${value}`; if (participant.innerHTML !== markup) participant.innerHTML = markup; }
+                    if (accompanist) { const markup = `<strong>Accompanists:</strong> Maximum ${accompanist.textContent.match(/\d+/)?.[0] || '0'}`; if (accompanist.innerHTML !== markup) accompanist.innerHTML = markup; }
+                    if (age) { const markup = `<strong>Age limit:</strong> ${age.textContent.includes('25') ? 'Maximum 25 years' : 'No age limit'}`; if (age.innerHTML !== markup) age.innerHTML = markup; }
+                });
+                document.querySelectorAll('#events-explorer-grid h4').forEach((heading) => { heading.textContent = heading.textContent.replace(/\s*\([^)]*[\u0900-\u097F][^)]*\)/g, ''); });
+                document.querySelectorAll('#events-explorer-grid button').forEach((button) => { if (button.lastChild.textContent !== ' Register for this event') button.lastChild.textContent = ' Register for this event'; });
+            };
+
+            const links = document.querySelectorAll('nav a');
+            ['Home', 'Events', 'Registration', 'Registration Lookup', 'Programme Guide'].forEach((copy, index) => {
+                if (links[index]?.lastChild) links[index].lastChild.textContent = ` ${copy}`;
+            });
+            if (links[4]) { links[4].href = 'uploaded_contents/Programme%20Chart%2013th%20TYM-2026.pdf'; links[4].target = '_blank'; }
+
+            text('#registration-section h2', 'Student and Team Registration');
+            text('#registration-section > div:first-child p', 'Complete the official form using the 13th Triveni Yuva Mahotsav 2026 programme guidelines.');
+            const sectionHeadings = ['Event selection', 'College or institute details', 'Primary participant details', 'Other team members', 'Accompanist details', 'Contingent in-charge or team manager'];
+            document.querySelectorAll('#registration-form > div.mb-8').forEach((section, index) => {
+                const heading = Array.from(section.children).find((child) => child.classList?.contains('border-b') && child.classList?.contains('font-bold'));
+                const headingText = heading?.lastChild;
+                if (headingText && sectionHeadings[index]) headingText.textContent = ` ${sectionHeadings[index]}`;
+            });
+            [['reg-category', 'Event category *'], ['reg-event', 'Event name *'], ['reg-college', 'Affiliated college or institute *'], ['reg-participant-name', 'Full name *'], ['reg-father-name', "Father's name *"], ['reg-gender', 'Gender *'], ['reg-class', 'Class or semester *'], ['reg-roll', 'University roll number *'], ['reg-dob', 'Date of birth *'], ['reg-phone', 'Mobile number *'], ['reg-email', 'Email address *'], ['reg-tm-name', 'Team manager or in-charge name'], ['reg-tm-phone', 'In-charge mobile number'], ['reg-tm-email', 'Official in-charge email']].forEach(([id, copy]) => label(id, copy));
+            option('reg-category', '', '-- Select a category --');
+            [['Music', '1. Music'], ['Dance', '2. Dance'], ['Theatre', '3. Theatre'], ['Literary', '4. Literary'], ['Fine Arts', '5. Fine Arts'], ['Procession', '6. Cultural Procession (No age limit)']].forEach(([value, copy]) => option('reg-category', value, copy));
+            option('reg-event', '', '-- Select a category first --');
+            option('reg-college', '', '-- Select an affiliated college --');
+            ['Male', 'Female', 'Other'].forEach((value) => option('reg-gender', value, value));
+            [['reg-participant-name', 'Enter name in capital letters'], ['reg-father-name', "Enter father's name"], ['reg-class', 'Example: BA 2nd Year, MA, B.Sc.'], ['reg-roll', 'Example: 220101004'], ['reg-phone', '10-digit mobile number'], ['reg-tm-name', 'Example: Dr. R. K. Sharma'], ['reg-tm-phone', 'Mobile number']].forEach(([id, copy]) => { const input = document.getElementById(id); if (input) input.placeholder = copy; });
+            text('#registration-form > div:last-child p', 'I certify that the information provided is correct and follows CDLU Youth Festival rules.');
+            text('#registration-form button[type="submit"]', 'Submit registration and get I-card');
+            text('#events-section h2', 'Festival competitions and venues');
+            text('#events-section > div:first-child p', 'Stage I · Auditorium  |  Stage II · Open Air Theatre  |  Stage III · Seminar Hall  |  Stage IV · Fine Arts');
+            const catCounts = { 'All': 35, 'Music': 11, 'Dance': 7, 'Theatre': 4, 'Literary': 6, 'Fine Arts': 6, 'Procession': 1 };
+            ['All', 'Music', 'Dance', 'Theatre', 'Literary', 'Fine Arts', 'Procession'].forEach((copy) => {
+                const button = document.querySelector(`#events-section button[data-category="${copy}"]`);
+                if (button) button.innerHTML = `<span>${copy}</span> <span class="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-white/10 text-amber-300 font-bold">${catCounts[copy] || ''}</span>`;
+            });
+            const footer = document.querySelector('footer');
+            if (footer) {
+                const footerParagraphs = footer.querySelectorAll('p');
+                footerParagraphs.forEach((paragraph) => { if (/[\u0900-\u097F]/.test(paragraph.textContent)) paragraph.textContent = 'The official online management portal for affiliated colleges participating in the 13th Triveni Yuva Mahotsav 2026.'; });
+                ['Quick links', 'Contact and support'].forEach((copy, index) => { const heading = footer.querySelectorAll('h5')[index]; if (heading) heading.textContent = copy; });
+                ['Poster gallery and highlights', 'Student registration', 'I-card lookup', 'Judge portal', 'Admin console'].forEach((copy, index) => { const link = footer.querySelectorAll('li a')[index]; if (link) link.textContent = copy; });
+            }
+            cards();
+            const originalRender = App.renderEventExplorer;
+            App.renderEventExplorer = async (...args) => { await originalRender(...args); cards(); };
+            [500, 1200, 2200].forEach((delay) => setTimeout(cards, delay));
+            const originalCategoryChange = App.onCategoryChange;
+            App.onCategoryChange = async (...args) => { await originalCategoryChange(...args); option('reg-event', '', '-- Select an event --'); };
+            const originalEventChange = App.onEventChange;
+            App.onEventChange = async (...args) => {
+                await originalEventChange(...args);
+                const helperLabels = ['Time limit:', 'Age limit:', 'Rules and guidance:'];
+                document.querySelectorAll('#event-guidelines-box strong').forEach((item, index) => { if (helperLabels[index]) item.textContent = helperLabels[index]; });
+                text('#helper-event-participants', document.getElementById('helper-event-participants')?.textContent.replace(/[^0-9\- ]/g, '').trim() ? `Participants: ${document.getElementById('helper-event-participants').textContent.replace(/[^0-9\- ]/g, '').trim()}` : 'Participants:');
+                text('#helper-event-age', document.getElementById('helper-event-age')?.textContent.includes('25') ? 'Maximum age: 25 years' : 'No age limit');
+                text('#reg-dob-rule-hint', document.getElementById('reg-dob-rule-hint')?.textContent.includes('25') ? 'Maximum age: 25 years' : 'No age limit');
+                text('#team-members-section > div > div > span:nth-child(2)', 'Other team members');
+                text('#accompanists-section > div > div > span:nth-child(2)', 'Accompanist details');
+                text('#team-max-notice', 'Add members within the event limit.');
+                text('#accomp-max-notice', 'Add accompanists within the event limit.');
+                text('#team-members-container p', 'Use “Add team member” to include additional participants.');
+                text('#accompanists-container p', 'Use “Add accompanist” to include approved accompanists.');
+                text('#team-members-section button', 'Add team member');
+                text('#accompanists-section button', 'Add accompanist');
+            };
+            const originalAddTeamMember = App.addTeamMember;
+            App.addTeamMember = () => {
+                originalAddTeamMember();
+                document.querySelectorAll('#team-members-container input').forEach((input, index) => { input.placeholder = ['Member name', "Father's name", 'Class or semester', 'Roll number', 'Date of birth'][index % 5]; if (input.type === 'date') input.title = 'Date of birth'; });
+                text('#team-members-container .text-amber-400', 'Team member');
+                text('#team-members-container button', 'Remove');
+            };
+            const originalAddAccompanist = App.addAccompanist;
+            App.addAccompanist = () => { originalAddAccompanist(); document.querySelectorAll('#accompanists-container input').forEach((input, index) => { input.placeholder = ['Accompanist name', "Father's name", 'Instrument'][index % 3]; }); };
+            setTimeout(cards, 600);
+        });
+    </script>
+
+    <script>
+        // Global Bootstrap
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log("Initializing CDLU Triveni Event Management System...");
+            await DBService.init();
+            await App.init();
+        });
+    </script>
+</body>
+</html>
+
+

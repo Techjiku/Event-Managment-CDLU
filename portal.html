@@ -1,0 +1,1753 @@
+﻿<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+        <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Official Portal (Judges & Admin) | 13th Triveni Yuva Mahotsav 2026 - CDLU Sirsa</title>
+    <meta name="description" content="Official Evaluation & Management Console for Judges, Stage Incharge, and Super Admin - 13th Triveni Yuva Mahotsav 2026, Chaudhary Devi Lal University, Sirsa">
+    <script src="assets/js/i18n.js?v=11" defer></script>
+    <script>
+        function updatePortalThemeButton() {
+            const isDark = document.documentElement.dataset.theme === 'dark';
+            const button = document.getElementById('theme-toggle');
+            const icon = document.getElementById('theme-toggle-icon');
+            const label = document.getElementById('theme-toggle-label');
+            if (!button || !icon || !label) return;
+
+            button.setAttribute('aria-pressed', String(isDark));
+            button.setAttribute('aria-label', `Switch to ${isDark ? 'light' : 'dark'} theme`);
+            icon.className = `fas ${isDark ? 'fa-sun' : 'fa-moon'}`;
+            label.textContent = isDark ? 'Light mode' : 'Dark mode';
+        }
+
+        function togglePortalTheme() {
+            const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+            document.documentElement.dataset.theme = nextTheme;
+            updatePortalThemeButton();
+            try {
+                localStorage.setItem('cdlu-portal-theme', nextTheme);
+            } catch (error) {
+                console.error('Unable to save portal theme preference.', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', updatePortalThemeButton);
+    </script>
+
+    <script>
+        try {
+            document.documentElement.dataset.theme =
+                localStorage.getItem('cdlu-portal-theme') === 'dark' ? 'dark' : 'light';
+        } catch (error) {
+            console.error('Unable to restore portal theme preference.', error);
+            document.documentElement.dataset.theme = 'light';
+        }
+    </script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cdlu: {
+                            dark: '#0a0f1d',
+                            surface: '#0f172a',
+                            border: '#1e293b',
+                            gold: '#f59e0b',
+                            goldLight: '#fde047',
+                            accent: '#6366f1'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- SweetAlert2 for interactive alerts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <!-- Supabase JS Client v2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        body {
+            background:
+                radial-gradient(ellipse at 12% 0%, rgba(99, 102, 241, 0.14), transparent 34rem),
+                radial-gradient(ellipse at 88% 8%, rgba(245, 158, 11, 0.09), transparent 30rem),
+                #080d18;
+            color: #f1f5f9;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            min-height: 100vh;
+        }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(51, 65, 85, 0.6);
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 8px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        #unified-login-gateway { padding-top: 1.25rem; }
+        #unified-login-gateway > div:first-child { max-width: 54rem; }
+        #unified-login-gateway > div:first-child > span {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .5rem .85rem;
+            letter-spacing: .13em;
+            background: rgba(245, 158, 11, .1);
+            box-shadow: 0 0 28px rgba(245, 158, 11, .08);
+        }
+        #unified-login-gateway > div:first-child > span::before {
+            content: "";
+            width: .45rem;
+            height: .45rem;
+            border-radius: 50%;
+            background: #34d399;
+            box-shadow: 0 0 12px rgba(52, 211, 153, .75);
+        }
+        #unified-login-gateway h2 {
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            letter-spacing: -.04em;
+            line-height: 1.2;
+        }
+        #unified-login-gateway > div:nth-child(2) {
+            background: linear-gradient(145deg, rgba(17, 27, 48, .94), rgba(13, 20, 36, .9));
+            border-color: rgba(99, 102, 241, .24);
+            box-shadow: 0 24px 70px rgba(0, 0, 0, .2);
+        }
+        #unified-login-gateway > div:nth-child(2) > div:last-child > div {
+            min-height: 8rem;
+            background: rgba(8, 13, 24, .58);
+            border-color: rgba(148, 163, 184, .12);
+        }
+        #judge-auth-container, #admin-auth-container {
+            background: linear-gradient(155deg, rgba(19, 29, 49, .98), rgba(11, 17, 30, .98));
+            border-color: rgba(148, 163, 184, .16);
+            box-shadow: 0 30px 90px rgba(0, 0, 0, .36);
+        }
+        #judge-auth-container > div:first-child, #admin-auth-container > div:first-child {
+            box-shadow: 0 12px 30px rgba(245, 158, 11, .1);
+        }
+        #judge-dashboard-container {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(155deg, rgba(16, 25, 44, .98), rgba(9, 15, 28, .98));
+            border-color: rgba(148, 163, 184, .16);
+            box-shadow: 0 30px 90px rgba(0, 0, 0, .32);
+        }
+        #judge-dashboard-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #f59e0b, #818cf8 52%, transparent);
+        }
+        #judge-dashboard-container > div:first-child { border-color: rgba(148, 163, 184, .16); }
+        #judge-dashboard-container > div:first-child > div:first-child > div:first-child {
+            background: linear-gradient(145deg, rgba(245, 158, 11, .2), rgba(245, 158, 11, .06));
+            box-shadow: inset 0 1px rgba(255,255,255,.08), 0 10px 30px rgba(245, 158, 11, .08);
+        }
+        .judge-stat-card {
+            position: relative;
+            overflow: hidden;
+            min-height: 7rem;
+            padding: 1.1rem;
+            border: 1px solid rgba(148, 163, 184, .14);
+            border-radius: 1rem;
+            background: linear-gradient(145deg, rgba(30, 41, 59, .72), rgba(15, 23, 42, .72));
+        }
+        .judge-stat-card::after {
+            content: "";
+            position: absolute;
+            width: 5rem;
+            height: 5rem;
+            right: -1.6rem;
+            top: -1.8rem;
+            border-radius: 50%;
+            background: var(--stat-glow, rgba(245, 158, 11, .12));
+            filter: blur(2px);
+        }
+        .judge-stat-card span { position: relative; z-index: 1; }
+        .judge-stat-value {
+            display: block;
+            margin-top: .5rem;
+            font-size: 1.8rem;
+            line-height: 1;
+            font-weight: 900;
+            letter-spacing: -.04em;
+            color: #f8fafc;
+        }
+        .judge-filter-panel {
+            padding: 1rem;
+            border: 1px solid rgba(148, 163, 184, .14);
+            border-radius: 1rem;
+            background: rgba(8, 13, 24, .52);
+        }
+        .judge-filter-panel input, .judge-filter-panel select {
+            min-height: 2.8rem;
+            background-color: #0b1220;
+            border-color: rgba(148, 163, 184, .2);
+            color: #e2e8f0;
+        }
+        .judge-participant-card {
+            background: linear-gradient(115deg, rgba(23, 33, 53, .94), rgba(15, 23, 42, .88));
+            border-color: rgba(148, 163, 184, .16);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .12);
+        }
+        .judge-participant-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(245, 158, 11, .32);
+            box-shadow: 0 16px 36px rgba(0, 0, 0, .2);
+        }
+        #judge-event-filter { min-height: 2.9rem; background-color: #0b1220; }
+        @media (max-width: 640px) {
+            #judge-dashboard-container { padding: 1.1rem; border-radius: 1.25rem; }
+            .judge-stat-card { min-height: 6rem; padding: .85rem; }
+            .judge-stat-value { font-size: 1.5rem; }
+        }
+
+        :root {
+            color-scheme: light;
+            --portal-ink: #172b45;
+            --portal-muted: #66758a;
+            --portal-line: #dce4ee;
+            --portal-blue: #245b88;
+            --portal-blue-soft: #edf4fa;
+            --portal-gold: #a96f0b;
+            --portal-canvas: #f4f7fb;
+        }
+        body {
+            background:
+                radial-gradient(ellipse at 8% 0%, rgba(36, 91, 136, .07), transparent 34rem),
+                linear-gradient(180deg, #f8fafc 0%, var(--portal-canvas) 100%);
+            color: var(--portal-ink);
+        }
+        header.bg-gray-900\/90 {
+            background: rgba(255, 255, 255, .96) !important;
+            border-color: var(--portal-line) !important;
+            box-shadow: 0 4px 18px rgba(30, 58, 87, .06);
+        }
+        header h1 { color: var(--portal-ink) !important; }
+        header .text-amber-400 { color: var(--portal-gold) !important; }
+        header a.bg-gray-800 {
+            background: var(--portal-blue-soft) !important;
+            color: var(--portal-blue) !important;
+            border-color: #d5e2ee !important;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, .96);
+            border-color: var(--portal-line);
+            box-shadow: 0 14px 40px rgba(28, 55, 82, .07);
+            backdrop-filter: blur(12px);
+        }
+        #unified-login-gateway > div:first-child > span {
+            color: #875b0c;
+            background: #fff8e8;
+            border-color: #f0dfb8;
+            box-shadow: none;
+        }
+        #unified-login-gateway h2 { color: var(--portal-ink); }
+        #unified-login-gateway > div:first-child > p { color: var(--portal-muted); }
+        #unified-login-gateway > div:nth-child(2) {
+            background: linear-gradient(145deg, #fff, #f8fbff);
+            border-color: var(--portal-line);
+            box-shadow: 0 16px 40px rgba(28, 55, 82, .07);
+        }
+        #unified-login-gateway > div:nth-child(2) > div:first-child { color: var(--portal-blue); }
+        #unified-login-gateway > div:nth-child(2) > div:last-child > div {
+            background: #fff;
+            border-color: #e2e8f0;
+        }
+        #judge-auth-container, #admin-auth-container {
+            background: linear-gradient(155deg, #fff, #f9fbfe);
+            border-color: var(--portal-line);
+            box-shadow: 0 20px 56px rgba(28, 55, 82, .12);
+        }
+        #judge-auth-container h3, #admin-auth-container h3 { color: var(--portal-ink); }
+        #judge-auth-container > p, #admin-auth-container > p { color: var(--portal-muted); }
+        #judge-auth-container > div:first-child, #admin-auth-container > div:first-child {
+            box-shadow: 0 8px 20px rgba(36, 91, 136, .1);
+        }
+        #judge-dashboard-container, #admin-dashboard-container {
+            background: #fff;
+            border-color: var(--portal-line);
+            box-shadow: 0 18px 54px rgba(28, 55, 82, .09);
+        }
+        #judge-dashboard-container::before {
+            background: linear-gradient(90deg, var(--portal-blue), #7da6c7 60%, transparent);
+        }
+        #judge-dashboard-container > div:first-child,
+        #admin-dashboard-container > div:first-child {
+            border-color: var(--portal-line);
+        }
+        #judge-dashboard-container > div:first-child > div:first-child > div:first-child {
+            background: linear-gradient(145deg, #eaf2f9, #f5f8fc);
+            color: var(--portal-blue);
+            border-color: #d6e4f0;
+            box-shadow: 0 8px 20px rgba(36, 91, 136, .08);
+        }
+        .judge-stat-card {
+            background: linear-gradient(145deg, #fff, #f8fafd);
+            border-color: #e1e8f0;
+            box-shadow: 0 4px 12px rgba(28, 55, 82, .035);
+        }
+        .judge-stat-card::after { opacity: .55; }
+        .judge-stat-value { color: var(--portal-ink); }
+        .judge-filter-panel {
+            background: #f7f9fc;
+            border-color: #e1e8f0;
+        }
+        .judge-participant-card {
+            background: #fff;
+            border-color: #e1e8f0;
+            box-shadow: 0 5px 18px rgba(28, 55, 82, .05);
+        }
+        .judge-participant-card:hover {
+            border-color: #b6cadd;
+            box-shadow: 0 10px 24px rgba(28, 55, 82, .09);
+        }
+        #judge-event-filter { background-color: #fff; }
+        #judge-dashboard-container input,
+        #judge-dashboard-container select,
+        #scoring-modal textarea,
+        #scoring-modal input[type="number"] {
+            background-color: #fff;
+            color: var(--portal-ink);
+            border-color: #cbd6e2;
+        }
+        #judge-dashboard-container input::placeholder,
+        #scoring-modal textarea::placeholder { color: #8694a6; }
+        #judge-dashboard-container input:focus,
+        #judge-dashboard-container select:focus,
+        #scoring-modal textarea:focus {
+            border-color: var(--portal-blue);
+            outline: 3px solid rgba(36, 91, 136, .12);
+        }
+        #scoring-modal > div:last-child {
+            background: #fff;
+            color: var(--portal-ink);
+            border-color: var(--portal-line);
+            box-shadow: 0 24px 70px rgba(15, 35, 56, .22);
+        }
+        #scoring-modal > div:last-child > div:first-child,
+        #scoring-modal > div:last-child > div:last-child {
+            border-color: var(--portal-line);
+        }
+        #scoring-modal .bg-gray-800\/80 {
+            background: #f5f8fc;
+            border-color: #e1e8f0;
+        }
+        #scoring-modal .bg-gray-950 {
+            background: #f6f8fb;
+        }
+        #scoring-modal .text-amber-400,
+        #judge-dashboard-container .text-amber-400,
+        #judge-dashboard-container .text-amber-300 { color: var(--portal-gold); }
+        #scoring-modal .text-white,
+        #judge-dashboard-container .text-white,
+        #admin-dashboard-container .text-white { color: var(--portal-ink); }
+        #scoring-modal .text-gray-200,
+        #scoring-modal .text-gray-300,
+        #judge-dashboard-container .text-gray-200,
+        #judge-dashboard-container .text-gray-300 { color: #43556b; }
+        #scoring-modal .text-gray-400,
+        #judge-dashboard-container .text-gray-400,
+        #admin-dashboard-container .text-gray-400 { color: var(--portal-muted); }
+        #scoring-modal .text-gray-500,
+        #judge-dashboard-container .text-gray-500 { color: #748399; }
+        .admin-nav-tab:not(.bg-gradient-to-r) { color: #52657b; }
+        #admin-dashboard-container .admin-tab-pane > div,
+        #admin-dashboard-container .admin-tab-pane [class*="bg-gray-900"] {
+            border-color: #e1e8f0;
+        }
+        #admin-dashboard-container input,
+        #admin-dashboard-container select,
+        #admin-dashboard-container textarea {
+            background-color: #fff;
+            color: var(--portal-ink);
+            border-color: #cbd6e2;
+        }
+        #admin-dashboard-container input::placeholder,
+        #admin-dashboard-container textarea::placeholder { color: #8694a6; }
+        #judge-participants-list > div:not(.judge-participant-card) {
+            background: #f7f9fc;
+            border-color: #e1e8f0;
+        }
+        .swal2-popup { background: #fff !important; color: var(--portal-ink) !important; }
+        .swal2-title { color: var(--portal-ink) !important; }
+        .swal2-html-container { color: #52657b !important; }
+        ::-webkit-scrollbar-track { background: #eef2f7; }
+        ::-webkit-scrollbar-thumb { background: #b9c8d8; }
+        ::-webkit-scrollbar-thumb:hover { background: #8ca3ba; }
+
+        .bg-gray-950, [class*="bg-gray-950/"],
+        .bg-gray-900, [class*="bg-gray-900/"],
+        .bg-gray-800, [class*="bg-gray-800/"],
+        .bg-gray-700, [class*="bg-gray-700/"] {
+            background-color: #f4f7fb !important;
+        }
+        .border-gray-800, [class*="border-gray-800/"],
+        .border-gray-700, [class*="border-gray-700/"],
+        .border-gray-600 {
+            border-color: #dce4ee !important;
+        }
+        .text-white, .text-gray-100 { color: var(--portal-ink) !important; }
+        .text-gray-200 { color: #344960 !important; }
+        .text-gray-300 { color: #52657b !important; }
+        .text-gray-400 { color: #66758a !important; }
+        .text-gray-500 { color: #7b899b !important; }
+        .text-slate-950 { color: #172b45 !important; }
+        .text-amber-400, .text-amber-300 { color: #93600b !important; }
+        .text-indigo-400, .text-indigo-300 { color: #4357a3 !important; }
+        .text-emerald-400, .text-emerald-300 { color: #16734f !important; }
+        .text-sky-400, .text-sky-300, .text-blue-400 { color: #286b9a !important; }
+        .text-purple-400, .text-purple-300 { color: #7145a1 !important; }
+        .text-rose-400, .text-rose-300 { color: #a83d4d !important; }
+        .text-red-400, .text-red-300 { color: #a83d4d !important; }
+        .text-emerald-200, .text-emerald-100 { color: #176b4b !important; }
+        .text-amber-200, .text-amber-100 { color: #80560d !important; }
+        .bg-emerald-950, [class*="bg-emerald-950/"],
+        .bg-emerald-900, [class*="bg-emerald-900/"] { background-color: #e9f6ef !important; }
+        .bg-amber-950, [class*="bg-amber-950/"],
+        .bg-amber-900, [class*="bg-amber-900/"] { background-color: #fff5df !important; }
+        .bg-indigo-950, [class*="bg-indigo-950/"],
+        .bg-indigo-900, [class*="bg-indigo-900/"] { background-color: #eef1fb !important; }
+        .bg-purple-950, [class*="bg-purple-950/"],
+        .bg-purple-900, [class*="bg-purple-900/"] { background-color: #f4eefb !important; }
+        .bg-sky-950, [class*="bg-sky-950/"],
+        .bg-sky-900, [class*="bg-sky-900/"] { background-color: #eaf4fb !important; }
+        .bg-rose-950, [class*="bg-rose-950/"],
+        .bg-rose-900, [class*="bg-rose-900/"] { background-color: #fbeced !important; }
+        .bg-blue-950, [class*="bg-blue-950/"],
+        .bg-blue-900, [class*="bg-blue-900/"] { background-color: #eaf2fa !important; }
+        .border-emerald-800, [class*="border-emerald-800/"],
+        .border-emerald-700, [class*="border-emerald-700/"],
+        .border-emerald-500, [class*="border-emerald-500/"] { border-color: #b9dfca !important; }
+        .border-amber-800, [class*="border-amber-800/"],
+        .border-amber-700, [class*="border-amber-700/"],
+        .border-amber-500, [class*="border-amber-500/"] { border-color: #ead6a8 !important; }
+        .border-indigo-800, [class*="border-indigo-800/"],
+        .border-indigo-700, [class*="border-indigo-700/"],
+        .border-indigo-500, [class*="border-indigo-500/"] { border-color: #cbd3ee !important; }
+        .border-purple-800, [class*="border-purple-800/"],
+        .border-purple-700, [class*="border-purple-700/"] { border-color: #ddccec !important; }
+        .border-sky-800, [class*="border-sky-800/"],
+        .border-sky-700, [class*="border-sky-700/"] { border-color: #c5dcea !important; }
+        .border-rose-800, [class*="border-rose-800/"],
+        .border-rose-700, [class*="border-rose-700/"] { border-color: #edc8cc !important; }
+        .border-blue-800, [class*="border-blue-800/"],
+        .border-blue-700, [class*="border-blue-700/"] { border-color: #c9d9e9 !important; }
+        .final-results-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 760px;
+            background: #fff;
+            color: #172b45;
+            font-size: 12px;
+        }
+        .final-results-table caption {
+            padding: 0 0 .65rem;
+            color: #172b45;
+            font-size: 14px;
+            font-weight: 800;
+            text-align: left;
+        }
+        .final-results-table th,
+        .final-results-table td {
+            border: 1px solid #dce4ee;
+            padding: .65rem .7rem;
+            text-align: left;
+            vertical-align: top;
+        }
+        .final-results-table th {
+            background: #eef3f9;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+        .final-results-table tbody tr:nth-child(even) { background: #f8fafc; }
+        .final-results-note { color: #66758a; font-size: 11px; margin-top: .65rem; }
+        .final-results-print-heading { display: none; }
+        @media print {
+            @page { size: landscape; margin: 12mm; }
+            body * { visibility: hidden !important; }
+            #admin-pane-final-results,
+            #admin-pane-final-results * { visibility: visible !important; }
+            #admin-pane-final-results {
+                display: block !important;
+                position: absolute !important;
+                inset: 0 auto auto 0 !important;
+                width: 100% !important;
+                padding: 0 !important;
+                color: #172b45 !important;
+                background: #fff !important;
+            }
+            #admin-pane-final-results .final-results-print-heading { display: block; }
+            #admin-pane-final-results .final-results-table { min-width: 0; font-size: 8pt; }
+            #admin-pane-final-results .final-results-table th,
+            #admin-pane-final-results .final-results-table td { padding: 4px; }
+            #admin-pane-final-results button,
+            #admin-pane-final-results select { display: none !important; }
+            #admin-pane-final-results .text-white,
+            #admin-pane-final-results .text-gray-400 { color: #172b45 !important; }
+        }
+        button.bg-gray-800:hover, button.bg-gray-700:hover { background-color: #e8eef5 !important; }
+        @media (prefers-reduced-motion: no-preference) {
+            .judge-participant-card, .judge-stat-card, button, a {
+                transition-duration: 180ms;
+            }
+        }
+
+        html[data-theme="dark"] {
+            color-scheme: dark;
+            --portal-ink: #e5edf7;
+            --portal-muted: #9aa9bc;
+            --portal-line: #29384b;
+            --portal-blue: #93b9dc;
+            --portal-blue-soft: #1b2b3e;
+            --portal-gold: #f0bd62;
+        }
+        html[data-theme="dark"] body {
+            background:
+                radial-gradient(ellipse at 12% 0%, rgba(79, 109, 150, .15), transparent 34rem),
+                radial-gradient(ellipse at 88% 8%, rgba(196, 143, 61, .09), transparent 30rem),
+                #0b1220;
+            color: #e5edf7;
+        }
+        html[data-theme="dark"] header.bg-gray-900\/90 {
+            background: rgba(15, 23, 42, .96) !important;
+            border-color: #263449 !important;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, .2);
+        }
+        html[data-theme="dark"] header h1 { color: #eef4fb !important; }
+        html[data-theme="dark"] header .text-amber-400 { color: #e9b65a !important; }
+        html[data-theme="dark"] header a.bg-gray-800 {
+            background: #1b2b3e !important;
+            color: #dbe8f5 !important;
+            border-color: #34475d !important;
+        }
+        html[data-theme="dark"] .glass-panel {
+            background: rgba(17, 27, 44, .96);
+            border-color: #29384b;
+            box-shadow: 0 14px 40px rgba(0, 0, 0, .2);
+        }
+        html[data-theme="dark"] #unified-login-gateway > div:first-child > span {
+            color: #f0c875;
+            background: #302719;
+            border-color: #554326;
+        }
+        html[data-theme="dark"] #unified-login-gateway h2 { color: #edf3fa; }
+        html[data-theme="dark"] #unified-login-gateway > div:first-child > p { color: #a6b3c4; }
+        html[data-theme="dark"] #unified-login-gateway > div:nth-child(2) {
+            background: linear-gradient(145deg, #162238, #111b2d);
+            border-color: #2d3d55;
+            box-shadow: 0 24px 70px rgba(0, 0, 0, .26);
+        }
+        html[data-theme="dark"] #unified-login-gateway > div:nth-child(2) > div:last-child > div {
+            background: rgba(10, 17, 29, .66);
+            border-color: #2a394d;
+        }
+        html[data-theme="dark"] #judge-auth-container,
+        html[data-theme="dark"] #admin-auth-container {
+            background: linear-gradient(155deg, #162238, #101a2b);
+            border-color: #2b3b51;
+            box-shadow: 0 30px 90px rgba(0, 0, 0, .34);
+        }
+        html[data-theme="dark"] #judge-auth-container h3,
+        html[data-theme="dark"] #admin-auth-container h3 { color: #edf3fa; }
+        html[data-theme="dark"] #judge-auth-container > p,
+        html[data-theme="dark"] #admin-auth-container > p { color: #9aa9bc; }
+        html[data-theme="dark"] #judge-dashboard-container,
+        html[data-theme="dark"] #admin-dashboard-container {
+            background: linear-gradient(155deg, #111d30, #0e1727);
+            border-color: #29384b;
+            box-shadow: 0 30px 90px rgba(0, 0, 0, .28);
+        }
+        html[data-theme="dark"] #judge-dashboard-container::before {
+            background: linear-gradient(90deg, #c39142, #758db2 55%, transparent);
+        }
+        html[data-theme="dark"] #judge-dashboard-container > div:first-child,
+        html[data-theme="dark"] #admin-dashboard-container > div:first-child {
+            border-color: #29384b;
+        }
+        html[data-theme="dark"] #judge-dashboard-container > div:first-child > div:first-child > div:first-child {
+            background: linear-gradient(145deg, #33291c, #242335);
+            color: #efc26f;
+            border-color: #59462b;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .15);
+        }
+        html[data-theme="dark"] .judge-stat-card {
+            background: linear-gradient(145deg, #1a2940, #142035);
+            border-color: #2b3b50;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .14);
+        }
+        html[data-theme="dark"] .judge-stat-value { color: #edf3fa; }
+        html[data-theme="dark"] .judge-filter-panel {
+            background: #101a2b;
+            border-color: #29384b;
+        }
+        html[data-theme="dark"] .judge-participant-card {
+            background: linear-gradient(115deg, #17243a, #131e31);
+            border-color: #2b3b50;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .16);
+        }
+        html[data-theme="dark"] .judge-participant-card:hover {
+            border-color: #705b3a;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, .24);
+        }
+        html[data-theme="dark"] #judge-dashboard-container input,
+        html[data-theme="dark"] #judge-dashboard-container select,
+        html[data-theme="dark"] #admin-dashboard-container input,
+        html[data-theme="dark"] #admin-dashboard-container select,
+        html[data-theme="dark"] #admin-dashboard-container textarea,
+        html[data-theme="dark"] #scoring-modal textarea,
+        html[data-theme="dark"] #scoring-modal input[type="number"] {
+            background-color: #0c1524 !important;
+            color: #e5edf7 !important;
+            border-color: #34445a !important;
+        }
+        html[data-theme="dark"] #judge-dashboard-container input::placeholder,
+        html[data-theme="dark"] #scoring-modal textarea::placeholder { color: #8191a7; }
+        html[data-theme="dark"] #judge-dashboard-container input:focus,
+        html[data-theme="dark"] #judge-dashboard-container select:focus,
+        html[data-theme="dark"] #scoring-modal textarea:focus {
+            border-color: #829fbe !important;
+            outline: 3px solid rgba(130, 159, 190, .18);
+        }
+        html[data-theme="dark"] #scoring-modal > div:last-child,
+        html[data-theme="dark"] #judge-crud-modal > div {
+            background: #111d30 !important;
+            color: #e5edf7;
+            border-color: #34445a;
+            box-shadow: 0 24px 70px rgba(0, 0, 0, .42);
+        }
+        html[data-theme="dark"] #scoring-modal > div:last-child > div:first-child,
+        html[data-theme="dark"] #scoring-modal > div:last-child > div:last-child {
+            border-color: #29384b;
+        }
+        html[data-theme="dark"] #scoring-modal .bg-gray-800\/80,
+        html[data-theme="dark"] #score-rubric-container > div {
+            background: #17243a !important;
+            border-color: #34445a;
+        }
+        html[data-theme="dark"] #scoring-modal .bg-gray-950 { background: #0c1524 !important; }
+        html[data-theme="dark"] #judge-participants-list > div:not(.judge-participant-card) {
+            background: #121e30;
+            border-color: #2b3b50;
+        }
+        html[data-theme="dark"] .swal2-popup { background: #17243a !important; color: #e5edf7 !important; }
+        html[data-theme="dark"] .swal2-title { color: #edf3fa !important; }
+        html[data-theme="dark"] .swal2-html-container { color: #a6b3c4 !important; }
+        html[data-theme="dark"] ::-webkit-scrollbar-track { background: #101a2b; }
+        html[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #3b4d64; }
+        html[data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: #526984; }
+
+        html[data-theme="dark"] .bg-gray-950,
+        html[data-theme="dark"] [class*="bg-gray-950/"],
+        html[data-theme="dark"] .bg-gray-900,
+        html[data-theme="dark"] [class*="bg-gray-900/"],
+        html[data-theme="dark"] .bg-gray-800,
+        html[data-theme="dark"] [class*="bg-gray-800/"],
+        html[data-theme="dark"] .bg-gray-700,
+        html[data-theme="dark"] [class*="bg-gray-700/"] {
+            background-color: #19263a !important;
+        }
+        html[data-theme="dark"] .border-gray-800,
+        html[data-theme="dark"] [class*="border-gray-800/"],
+        html[data-theme="dark"] .border-gray-700,
+        html[data-theme="dark"] [class*="border-gray-700/"],
+        html[data-theme="dark"] .border-gray-600 { border-color: #34445a !important; }
+        html[data-theme="dark"] .text-white,
+        html[data-theme="dark"] .text-gray-100,
+        html[data-theme="dark"] .text-slate-950 { color: #e5edf7 !important; }
+        html[data-theme="dark"] .text-gray-200 { color: #d3deeb !important; }
+        html[data-theme="dark"] .text-gray-300 { color: #b2c0d1 !important; }
+        html[data-theme="dark"] .text-gray-400 { color: #9aa9bc !important; }
+        html[data-theme="dark"] .text-gray-500 { color: #8191a7 !important; }
+        html[data-theme="dark"] .text-amber-400,
+        html[data-theme="dark"] .text-amber-300 { color: #efbd63 !important; }
+        html[data-theme="dark"] .text-indigo-400,
+        html[data-theme="dark"] .text-indigo-300 { color: #a8b7f0 !important; }
+        html[data-theme="dark"] .text-emerald-400,
+        html[data-theme="dark"] .text-emerald-300,
+        html[data-theme="dark"] .text-emerald-200,
+        html[data-theme="dark"] .text-emerald-100 { color: #78d5a7 !important; }
+        html[data-theme="dark"] .text-sky-400,
+        html[data-theme="dark"] .text-sky-300,
+        html[data-theme="dark"] .text-blue-400 { color: #83c1ed !important; }
+        html[data-theme="dark"] .text-purple-400,
+        html[data-theme="dark"] .text-purple-300 { color: #c2a0e8 !important; }
+        html[data-theme="dark"] .text-rose-400,
+        html[data-theme="dark"] .text-rose-300,
+        html[data-theme="dark"] .text-red-400,
+        html[data-theme="dark"] .text-red-300 { color: #f09aa4 !important; }
+        html[data-theme="dark"] .text-amber-200,
+        html[data-theme="dark"] .text-amber-100 { color: #f0cf8d !important; }
+        html[data-theme="dark"] .bg-emerald-950,
+        html[data-theme="dark"] [class*="bg-emerald-950/"],
+        html[data-theme="dark"] .bg-emerald-900,
+        html[data-theme="dark"] [class*="bg-emerald-900/"] { background-color: #17372f !important; }
+        html[data-theme="dark"] .bg-amber-950,
+        html[data-theme="dark"] [class*="bg-amber-950/"],
+        html[data-theme="dark"] .bg-amber-900,
+        html[data-theme="dark"] [class*="bg-amber-900/"] { background-color: #3a2e1d !important; }
+        html[data-theme="dark"] .bg-indigo-950,
+        html[data-theme="dark"] [class*="bg-indigo-950/"],
+        html[data-theme="dark"] .bg-indigo-900,
+        html[data-theme="dark"] [class*="bg-indigo-900/"] { background-color: #252a49 !important; }
+        html[data-theme="dark"] .bg-purple-950,
+        html[data-theme="dark"] [class*="bg-purple-950/"],
+        html[data-theme="dark"] .bg-purple-900,
+        html[data-theme="dark"] [class*="bg-purple-900/"] { background-color: #352746 !important; }
+        html[data-theme="dark"] .bg-sky-950,
+        html[data-theme="dark"] [class*="bg-sky-950/"],
+        html[data-theme="dark"] .bg-sky-900,
+        html[data-theme="dark"] [class*="bg-sky-900/"] { background-color: #1c3448 !important; }
+        html[data-theme="dark"] .bg-rose-950,
+        html[data-theme="dark"] [class*="bg-rose-950/"],
+        html[data-theme="dark"] .bg-rose-900,
+        html[data-theme="dark"] [class*="bg-rose-900/"] { background-color: #3a252e !important; }
+        html[data-theme="dark"] .bg-blue-950,
+        html[data-theme="dark"] [class*="bg-blue-950/"],
+        html[data-theme="dark"] .bg-blue-900,
+        html[data-theme="dark"] [class*="bg-blue-900/"] { background-color: #1d3046 !important; }
+        html[data-theme="dark"] .border-emerald-800,
+        html[data-theme="dark"] [class*="border-emerald-800/"],
+        html[data-theme="dark"] .border-emerald-700,
+        html[data-theme="dark"] [class*="border-emerald-700/"],
+        html[data-theme="dark"] .border-emerald-500,
+        html[data-theme="dark"] [class*="border-emerald-500/"] { border-color: #346b55 !important; }
+        html[data-theme="dark"] .border-amber-800,
+        html[data-theme="dark"] [class*="border-amber-800/"],
+        html[data-theme="dark"] .border-amber-700,
+        html[data-theme="dark"] [class*="border-amber-700/"],
+        html[data-theme="dark"] .border-amber-500,
+        html[data-theme="dark"] [class*="border-amber-500/"] { border-color: #715a35 !important; }
+        html[data-theme="dark"] .border-indigo-800,
+        html[data-theme="dark"] [class*="border-indigo-800/"],
+        html[data-theme="dark"] .border-indigo-700,
+        html[data-theme="dark"] [class*="border-indigo-700/"],
+        html[data-theme="dark"] .border-indigo-500,
+        html[data-theme="dark"] [class*="border-indigo-500/"] { border-color: #444e7c !important; }
+        html[data-theme="dark"] .border-purple-800,
+        html[data-theme="dark"] [class*="border-purple-800/"],
+        html[data-theme="dark"] .border-purple-700,
+        html[data-theme="dark"] [class*="border-purple-700/"] { border-color: #5d4778 !important; }
+        html[data-theme="dark"] .border-sky-800,
+        html[data-theme="dark"] [class*="border-sky-800/"],
+        html[data-theme="dark"] .border-sky-700,
+        html[data-theme="dark"] [class*="border-sky-700/"] { border-color: #375873 !important; }
+        html[data-theme="dark"] .border-rose-800,
+        html[data-theme="dark"] [class*="border-rose-800/"],
+        html[data-theme="dark"] .border-rose-700,
+        html[data-theme="dark"] [class*="border-rose-700/"] { border-color: #72434d !important; }
+        html[data-theme="dark"] .border-blue-800,
+        html[data-theme="dark"] [class*="border-blue-800/"],
+        html[data-theme="dark"] .border-blue-700,
+        html[data-theme="dark"] [class*="border-blue-700/"] { border-color: #365473 !important; }
+        html[data-theme="dark"] button.bg-gray-800:hover,
+        html[data-theme="dark"] button.bg-gray-700:hover { background-color: #26364d !important; }
+
+        .portal-header {
+            background: rgba(255, 255, 255, .97);
+            border-bottom: 1px solid #dce4ee;
+            box-shadow: 0 5px 20px rgba(23, 50, 77, .07);
+        }
+        .portal-branding-inner {
+            width: min(100%, 80rem);
+            min-height: 7rem;
+            margin: 0 auto;
+            padding: .8rem 1.25rem;
+            display: grid;
+            grid-template-columns: 5rem minmax(0, 1fr) 5rem auto;
+            align-items: center;
+            gap: 1rem;
+        }
+        .portal-brand-mark {
+            width: 4.5rem;
+            height: 4.5rem;
+            padding: .3rem;
+            display: grid;
+            place-items: center;
+            background: #f1f7fc;
+            border: 1px solid #ddecf8;
+            border-radius: .9rem;
+            box-shadow: 0 5px 14px rgba(37, 90, 131, .09);
+        }
+        .portal-brand-mark img { width: 100%; height: 100%; object-fit: contain; }
+        .portal-brand-mark:first-child img { border-radius: .6rem; }
+        .portal-branding-copy { text-align: center; }
+        .portal-branding-copy > span {
+            display: block;
+            margin-bottom: .2rem;
+            color: #15835b;
+            font-size: .66rem;
+            font-weight: 800;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+        }
+        .portal-branding-copy h1 {
+            margin: 0;
+            color: #17324d;
+            font-size: clamp(1.05rem, 2vw, 1.55rem);
+            font-weight: 800;
+            letter-spacing: -.035em;
+            line-height: 1.15;
+            text-transform: uppercase;
+        }
+        .portal-branding-copy p {
+            margin: .32rem 0 0;
+            color: #64748b;
+            font-size: .75rem;
+            font-weight: 600;
+        }
+        .portal-header-actions {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+        .portal-header-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            min-height: 2.5rem;
+            padding: .55rem .75rem;
+            border: 1px solid #d9e5f0;
+            border-radius: .7rem;
+            background: #f1f7fc;
+            color: #28628f;
+            font-size: .72rem;
+            font-weight: 800;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: background-color .18s, border-color .18s, transform .18s;
+        }
+        .portal-header-action:hover {
+            background: #e4eff8;
+            border-color: #b9cfe2;
+            transform: translateY(-1px);
+        }
+        .portal-role-switch {
+            gap: .35rem;
+            padding: .35rem;
+            border: 1px solid #dce4ee;
+            background: #f2f5f9;
+            box-shadow: 0 8px 22px rgba(23, 50, 77, .08);
+        }
+        .portal-role-switch button {
+            min-height: 2.85rem;
+            justify-content: center;
+            padding: .7rem 1.1rem;
+            border: 1px solid transparent;
+            border-radius: .7rem;
+        }
+        .portal-role-switch button[aria-selected="true"] {
+            background: #fff !important;
+            color: #17324d !important;
+            border-color: #dce4ee;
+            box-shadow: 0 3px 10px rgba(23, 50, 77, .1);
+        }
+        .portal-role-switch button[aria-selected="false"] { color: #64748b !important; }
+        #judge-auth-container, #admin-auth-container {
+            margin-top: 1rem;
+        }
+        #admin-login-tab-view .portal-login-intro { color: #64748b; }
+        html[data-theme="dark"] .portal-header {
+            background: rgba(15, 23, 42, .97);
+            border-color: #29384b;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, .22);
+        }
+        html[data-theme="dark"] .portal-brand-mark {
+            background: #1b2b3e;
+            border-color: #34445a;
+            box-shadow: 0 5px 14px rgba(0, 0, 0, .18);
+        }
+        html[data-theme="dark"] .portal-branding-copy > span { color: #78c6a0; }
+        html[data-theme="dark"] .portal-branding-copy h1 { color: #edf3fa; }
+        html[data-theme="dark"] .portal-branding-copy p { color: #9aa9bc; }
+        html[data-theme="dark"] .portal-header-action {
+            background: #1b2b3e;
+            border-color: #34445a;
+            color: #dbe8f5;
+        }
+        html[data-theme="dark"] .portal-header-action:hover { background: #26364d; }
+        html[data-theme="dark"] .portal-role-switch {
+            background: #111d30;
+            border-color: #29384b;
+        }
+        html[data-theme="dark"] .portal-role-switch button[aria-selected="true"] {
+            background: #25354b !important;
+            color: #edf3fa !important;
+            border-color: #3a4d64;
+        }
+        html[data-theme="dark"] .portal-role-switch button[aria-selected="false"] { color: #a6b3c4 !important; }
+        @media (max-width: 760px) {
+            .portal-branding-inner {
+                min-height: auto;
+                grid-template-columns: 3.4rem minmax(0, 1fr) auto;
+                gap: .65rem;
+                padding: .7rem .85rem;
+            }
+            .portal-brand-mark { width: 3.25rem; height: 3.25rem; padding: .2rem; border-radius: .7rem; }
+            .portal-brand-mark-secondary { display: none; }
+            .portal-branding-copy { text-align: left; }
+            .portal-branding-copy > span { font-size: .52rem; letter-spacing: .1em; }
+            .portal-branding-copy h1 { font-size: clamp(.77rem, 2.7vw, 1.05rem); }
+            .portal-branding-copy p { font-size: .58rem; margin-top: .18rem; }
+            .portal-header-actions { gap: .35rem; }
+            .portal-header-action { min-height: 2.2rem; padding: .45rem .55rem; font-size: .66rem; }
+            .portal-header-action span { display: none; }
+                .portal-public-link span { display: inline; }
+        }
+        @media (max-width: 980px) {
+            .portal-role-switch button { padding-inline: .8rem; }
+        }
+        @media (max-width: 480px) {
+            .portal-branding-inner { grid-template-columns: 2.9rem minmax(0, 1fr) auto; gap: .5rem; padding-inline: .65rem; }
+            .portal-brand-mark { width: 2.8rem; height: 2.8rem; }
+            .portal-branding-copy h1 { font-size: .69rem; letter-spacing: -.02em; }
+            .portal-branding-copy > span { font-size: .46rem; }
+            .portal-branding-copy p { font-size: .52rem; }
+            .portal-header-actions { gap: .25rem; }
+            .portal-header-action { padding: .4rem .48rem; }
+            .portal-role-switch { display: flex; width: 100%; }
+            .portal-role-switch button { flex: 1; gap: .35rem; padding: .65rem .45rem; font-size: .68rem; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <!-- Top Navigation Header -->
+    <header class="portal-header sticky top-0 z-40 backdrop-blur">
+    <div class="portal-branding-inner">
+        <a class="portal-brand-mark" href="index.html" aria-label="CDLU public home">
+            <img src="assets/img/cdlu-emblem.jpeg" alt="Chaudhary Devi Lal University emblem">
+        </a>
+        <div class="portal-branding-copy">
+            <span>Directorate of Youth Welfare</span>
+            <h1>Chaudhary Devi Lal University</h1>
+            <p>13th Triveni Yuva Mahotsav 2026 <span aria-hidden="true">·</span> Sirsa, Haryana</p>
+        </div>
+        <a class="portal-brand-mark portal-brand-mark-secondary" href="index.html" aria-label="CDLU public home">
+            <img src="assets/img/cdlu-logo.png" alt="Chaudhary Devi Lal University logo">
+        </a>
+        <div class="portal-header-actions">
+            <button type="button" class="portal-header-action" data-language-toggle onclick="CDLUI18n.toggle()" aria-label="Change language">
+                <i class="fas fa-language" aria-hidden="true"></i>
+                <span>हिंदी</span>
+            </button>
+            <button id="theme-toggle" type="button" onclick="togglePortalTheme()" aria-label="Switch to dark theme" aria-pressed="false" class="portal-header-action">
+                <i id="theme-toggle-icon" class="fas fa-moon" aria-hidden="true"></i>
+                <span id="theme-toggle-label">Dark mode</span>
+            </button>
+            <a href="index.html" class="portal-header-action portal-public-link">
+                <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                <span>Student Portal</span>
+            </a>
+        </div>
+    </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Unified Login Gateway (Visible when neither Judge nor Admin is logged in) -->
+        <div id="unified-login-gateway" class="mb-10">
+            <div class="text-center max-w-2xl mx-auto mb-8">
+                <span class="px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                    Restricted Official Access
+                </span>
+                <h2 class="text-2xl sm:text-3xl font-black text-white mt-3">
+                    विश्वविद्यालय निर्णायक एवं प्रशासनिक पोर्टल
+                </h2>
+                <p class="text-xs sm:text-sm text-gray-400 mt-1.5">
+                    यह पोर्टल केवल अधिकृत जजों, स्टेज प्रभारियों एवं विश्वविद्यालय एडमिन के लिए है।
+                </p>
+
+                <!-- Role Switcher Tabs -->
+                <div role="tablist" aria-label="Official portal login" class="portal-role-switch inline-flex p-1.5 rounded-2xl mt-6">
+                    <button id="tab-btn-judge" role="tab" aria-controls="judge-login-tab-view" aria-selected="true" onclick="showPortalLoginTab('judge')" class="px-5 py-2 rounded-xl text-xs sm:text-sm font-black transition flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 text-gray-950 shadow-md">
+                        <i class="fas fa-gavel"></i>
+                        <span>Judge Login</span>
+                    </button>
+                    <button id="tab-btn-admin" role="tab" aria-controls="admin-login-tab-view" aria-selected="false" onclick="showPortalLoginTab('admin')" class="px-5 py-2 rounded-xl text-xs sm:text-sm font-bold text-gray-400 hover:text-white transition flex items-center gap-2">
+                        <i class="fas fa-shield-halved"></i>
+                        <span>Admin Login</span>
+                    </button>
+                    <button id="tab-btn-super-admin" role="tab" aria-controls="super-admin-login-tab-view" aria-selected="false" onclick="showPortalLoginTab('super-admin')" class="px-5 py-2 rounded-xl text-xs sm:text-sm font-bold text-gray-400 hover:text-white transition flex items-center gap-2">
+                        <i class="fas fa-crown"></i>
+                        <span>Super Admin</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Role Architecture & Responsibilities Card -->
+            <div class="max-w-4xl mx-auto mb-8 glass-panel rounded-2xl p-4 sm:p-5 border border-indigo-500/20">
+                <div class="flex items-center gap-2 text-indigo-400 text-xs font-black uppercase tracking-wider mb-3">
+                    <i class="fas fa-sitemap"></i>
+                    <span>भूमिका एवं कार्य विभाजन (Role Architecture & Responsibilities):</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                    <div class="bg-gray-900/70 p-3 rounded-xl border border-gray-800">
+                        <div class="flex items-center gap-2 text-emerald-400 font-bold mb-1">
+                            <i class="fas fa-user-graduate"></i>
+                            <span>1. Student (Public)</span>
+                        </div>
+                        <p class="text-gray-400 text-[11px] leading-relaxed">
+                            मुख्य वेबसाइट (index.html) पर फॉर्म भरता है। 25 वर्ष आयु सीमा जांची जाती है तथा रोल नंबर से डिजिटल आई-कार्ड प्राप्त करता है।
+                        </p>
+                    </div>
+
+                    <div class="bg-gray-900/70 p-3 rounded-xl border border-gray-800">
+                        <div class="flex items-center gap-2 text-amber-400 font-bold mb-1">
+                            <i class="fas fa-gavel"></i>
+                            <span>2. Judge</span>
+                        </div>
+                        <p class="text-gray-400 text-[11px] leading-relaxed">
+                            असाइन किए गए इवेंट्स में चेस्ट नंबर अनुसार एकल (Solo) पर 10 में से और समूह (Group) पर 20 में से सीधे अंक व गोपनीय टिप्पणी देता है।
+                        </p>
+                    </div>
+
+                    <div class="bg-gray-900/70 p-3 rounded-xl border border-gray-800">
+                        <div class="flex items-center gap-2 text-sky-400 font-bold mb-1">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>3. Stage In-charge</span>
+                        </div>
+                        <p class="text-gray-400 text-[11px] leading-relaxed">
+                            स्टेज अनुसार समय सारिणी, छात्रों की उपस्थिति, चेस्ट नंबर सत्यापन और मूल्यांकन प्रक्रिया की लाइव प्रगति देखता है।
+                        </p>
+                    </div>
+
+                    <div class="bg-gray-900/70 p-3 rounded-xl border border-gray-800">
+                        <div class="flex items-center gap-2 text-purple-400 font-bold mb-1">
+                            <i class="fas fa-crown"></i>
+                            <span>4. Super Admin</span>
+                        </div>
+                        <p class="text-gray-400 text-[11px] leading-relaxed">
+                            सभी जजों को इवेंट्स असाइन करता है, लाइव स्कोरबोर्ड देखता है, विजेताओं (1st, 2nd, 3rd) को लॉक करता है तथा रिपोर्ट डाउनलोड करता है।
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login Containers Wrapper -->
+            <div id="judge-login-tab-view" role="tabpanel" aria-labelledby="tab-btn-judge">
+                <!-- 7A. Judge Authentication Card -->
+                <div id="judge-auth-container" class="max-w-md mx-auto glass-panel p-6 sm:p-8 rounded-3xl border border-gray-800 shadow-2xl">
+                    <div class="w-14 h-14 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-2xl mx-auto mb-4 border border-amber-500/30">
+                        <i class="fas fa-gavel"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white text-center mb-1">जज सुरक्षित लॉगिन</h3>
+                    <p class="text-xs text-gray-400 text-center mb-6">एडमिन द्वारा दी गई अपनी आधिकारिक ईमेल आईडी दर्ज करें</p>
+
+                    <form onsubmit="event.preventDefault(); JudgesApp.login(document.getElementById('judge-email-input').value, document.getElementById('judge-pin-input').value)">
+                        <div class="mb-4">
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">असाइन की गई ईमेल आईडी (Designated Email) <span class="text-rose-400">*</span></label>
+                            <div class="relative">
+                                <i class="fas fa-envelope absolute left-3.5 top-3.5 text-gray-500 text-sm"></i>
+                                <input type="email" id="judge-email-input" placeholder="उदा. आपकी अधिकृत जज ईमेल" required class="w-full bg-gray-900 border border-gray-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 font-mono" />
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">सिक्योरिटी पिन (Security PIN)</label>
+                            <div class="relative">
+                                <i class="fas fa-lock absolute left-3.5 top-3.5 text-gray-500 text-sm"></i>
+                                <input type="password" id="judge-pin-input" value="1234" placeholder="डिफ़ॉल्ट: 1234" class="w-full bg-gray-900 border border-gray-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 font-mono" />
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-sm transition shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2">
+                            <i class="fas fa-right-to-bracket"></i> जज पोर्टल में लॉगिन करें
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+
+            <div id="admin-login-tab-view" class="hidden" role="tabpanel" aria-labelledby="tab-btn-admin">
+                <!-- 8A. Admin Login Card -->
+                <div id="admin-auth-container" class="max-w-md mx-auto glass-panel p-6 sm:p-8 rounded-3xl border border-gray-800 shadow-2xl">
+                    <div class="w-14 h-14 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-2xl mx-auto mb-4 border border-indigo-500/30">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white text-center mb-1">स्टेज एडमिन लॉगिन</h3>
+                    <p class="text-xs text-gray-400 text-center mb-6">Stage operations and coordination access</p>
+
+                    <form onsubmit="event.preventDefault(); AdminApp.login(document.getElementById('admin-email-input').value, document.getElementById('admin-password-input').value)">
+                        <div class="mb-4">
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">Stage admin email <span class="text-rose-400">*</span></label>
+                            <div class="relative">
+                                <i class="fas fa-envelope absolute left-3.5 top-3.5 text-gray-500 text-sm"></i>
+                                <input type="email" id="admin-email-input" value="stage.admin@cdlu.ac.in" required class="w-full bg-gray-900 border border-gray-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 font-mono" />
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">Secure password <span class="text-rose-400">*</span></label>
+                            <div class="relative">
+                                <i class="fas fa-key absolute left-3.5 top-3.5 text-gray-500 text-sm"></i>
+                                <input type="password" id="admin-password-input" value="stage@2026" required class="w-full bg-gray-900 border border-gray-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 font-mono" />
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-sm transition shadow-lg shadow-indigo-600/25 flex items-center justify-center gap-2">
+                            <i class="fas fa-lock"></i> Enter stage admin console
+                        </button>
+                    </form>
+
+                    <div class="mt-6 pt-4 border-t border-gray-800 text-center">
+                        <span class="text-[11px] text-gray-400 font-semibold uppercase tracking-wider block mb-2.5">Stage coordinator demo access</span>
+                        <div class="flex flex-wrap gap-2 justify-center">
+                            <button onclick="AdminApp.quickDemoAdminLogin('stage.admin@cdlu.ac.in', 'stage@2026')" class="px-3 py-1 rounded-lg text-xs bg-indigo-950 text-indigo-300 border border-indigo-800 hover:bg-indigo-900">
+                                🎪 Fill demo credentials
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="super-admin-login-tab-view" class="hidden" role="tabpanel" aria-labelledby="tab-btn-super-admin">
+                <div id="super-admin-auth-container" class="max-w-md mx-auto glass-panel p-6 sm:p-8 rounded-3xl border border-gray-800 shadow-2xl">
+                    <div class="w-14 h-14 rounded-2xl bg-amber-500/20 text-amber-500 flex items-center justify-center text-2xl mx-auto mb-4 border border-amber-500/30">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white text-center mb-1">Super Admin login</h3>
+                    <p class="text-xs text-gray-400 text-center mb-6">University-wide control and festival management</p>
+                    <form onsubmit="event.preventDefault(); AdminApp.login(document.getElementById('super-admin-email-input').value, document.getElementById('super-admin-password-input').value)">
+                        <div class="mb-4">
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">Super Admin email <span class="text-rose-400">*</span></label>
+                            <div class="relative">
+                                <i class="fas fa-envelope absolute left-3.5 top-3.5 text-gray-500 text-sm"></i>
+                                <input type="email" id="super-admin-email-input" value="admin@cdlu.ac.in" required class="w-full bg-gray-900 border border-gray-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 font-mono" />
+                            </div>
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-xs font-semibold text-gray-300 mb-1.5">Secure password <span class="text-rose-400">*</span></label>
+                            <div class="relative">
+                                <i class="fas fa-key absolute left-3.5 top-3.5 text-gray-500 text-sm"></i>
+                                <input type="password" id="super-admin-password-input" value="cdlu@2026" required class="w-full bg-gray-900 border border-gray-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 font-mono" />
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-sm transition shadow-lg flex items-center justify-center gap-2">
+                            <i class="fas fa-shield-halved"></i> Enter Super Admin console
+                        </button>
+                    </form>
+                    <div class="mt-6 pt-4 border-t border-gray-800 text-center">
+                        <span class="text-[11px] text-gray-400 font-semibold uppercase tracking-wider block mb-2.5">Super Admin demo access</span>
+                        <button onclick="AdminApp.quickDemoAdminLogin('admin@cdlu.ac.in', 'cdlu@2026')" class="px-3 py-1 rounded-lg text-xs bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100">
+                            <i class="fas fa-crown mr-1"></i> Fill demo credentials
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 7: JUDGES LIVE WORKSPACE -->
+        <section id="judges-section" class="hidden">
+            <!-- 7B. Judge Live Workspace (Shown when logged in) -->
+            <div id="judge-dashboard-container" class="glass-panel rounded-3xl p-6 sm:p-8 border border-gray-800 shadow-2xl">
+                <!-- Judge Header -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-gray-800">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-2xl font-black shrink-0 border border-amber-500/30">
+                            <i class="fas fa-gavel"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="px-2 py-0.5 rounded text-xs font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">अधिकृत निर्णायक (Authorized Judge)</span>
+                                <span id="judge-display-categories" class="px-2 py-0.5 rounded text-xs font-bold bg-indigo-950 text-indigo-300 border border-indigo-800"></span>
+                            </div>
+                            <h3 id="judge-display-name" class="text-xl font-bold text-white leading-tight"></h3>
+                            <p class="text-xs text-gray-400">
+                                <span id="judge-display-email" class="font-mono text-amber-400"></span> • <span id="judge-display-org"></span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button onclick="JudgesApp.loadParticipantsForEvaluation()" class="px-3.5 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs font-semibold transition flex items-center gap-1.5">
+                            <i class="fas fa-rotate"></i> रिफ्रेश
+                        </button>
+                        <button onclick="JudgesApp.logout()" class="px-3.5 py-2 rounded-xl bg-rose-950/60 hover:bg-rose-900 text-rose-300 text-xs font-semibold transition flex items-center gap-1.5 border border-rose-800/50">
+                            <i class="fas fa-right-from-bracket"></i> लॉगआउट
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Event Filter Toolbar -->
+                <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 mt-6" aria-label="Evaluation overview">
+                    <div class="judge-stat-card" style="--stat-glow: rgba(129, 140, 248, .16)">
+                        <span class="text-xs font-semibold text-gray-400">असाइन इवेंट्स <span class="text-gray-500">(Assigned events)</span></span>
+                        <span id="judge-stat-events" class="judge-stat-value">--</span>
+                    </div>
+                    <div class="judge-stat-card" style="--stat-glow: rgba(56, 189, 248, .14)">
+                        <span class="text-xs font-semibold text-gray-400">इस सूची में प्रविष्टियां <span class="text-gray-500">(Entries)</span></span>
+                        <span id="judge-stat-entries" class="judge-stat-value">--</span>
+                    </div>
+                    <div class="judge-stat-card" style="--stat-glow: rgba(52, 211, 153, .14)">
+                        <span class="text-xs font-semibold text-gray-400">मूल्यांकित <span class="text-gray-500">(Evaluated)</span></span>
+                        <span id="judge-stat-evaluated" class="judge-stat-value text-emerald-300">--</span>
+                    </div>
+                    <div class="judge-stat-card" style="--stat-glow: rgba(245, 158, 11, .14)">
+                        <span class="text-xs font-semibold text-gray-400">शेष मूल्यांकन <span class="text-gray-500">(Pending)</span></span>
+                        <span id="judge-stat-pending" class="judge-stat-value text-amber-300">--</span>
+                    </div>
+                </div>
+
+                <div class="mt-7 flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+                    <div>
+                        <span class="text-[11px] font-black uppercase tracking-[.18em] text-amber-400">Judge workspace · Live evaluation</span>
+                        <h4 class="text-xl font-black text-white mt-1">मूल्यांकन सूची <span class="text-gray-400 font-semibold text-base">(Evaluation sheet)</span></h4>
+                        <p class="text-xs text-gray-400 mt-1">एकल प्रस्तुति: अधिकतम 10 अंक · समूह प्रस्तुति: अधिकतम 20 अंक</p>
+                    </div>
+                    <div class="w-full lg:w-auto lg:min-w-[340px]">
+                        <label for="judge-event-filter" class="block text-[11px] font-bold text-gray-400 mb-1.5">इवेंट चुनें (Filter by event)</label>
+                        <select id="judge-event-filter" onchange="JudgesApp.loadParticipantsForEvaluation()" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500 font-semibold">
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="judge-filter-panel mt-4 grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_220px] gap-3">
+                    <label class="relative block">
+                        <span class="sr-only">प्रतिभागी खोजें</span>
+                        <i class="fas fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm" aria-hidden="true"></i>
+                        <input id="judge-participant-search" type="search" placeholder="नाम, कॉलेज, चेस्ट नंबर या रोल नंबर से खोजें..." oninput="JudgesApp.filterParticipants()" class="w-full rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-amber-500" />
+                    </label>
+                    <label class="block">
+                        <span class="sr-only">मूल्यांकन स्थिति</span>
+                        <select id="judge-status-filter" onchange="JudgesApp.filterParticipants()" class="w-full rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                            <option value="all">सभी स्थितियां (All statuses)</option>
+                            <option value="pending">शेष (Pending)</option>
+                            <option value="evaluated">मूल्यांकित (Evaluated)</option>
+                        </select>
+                    </label>
+                </div>
+
+                <!-- Participants Cards for Evaluation -->
+                <div id="judge-participants-list" class="mt-6 space-y-3.5">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 8: ADMIN & SUPER ADMIN LIVE WORKSPACE -->
+        <section id="admin-section" class="hidden">
+            <!-- 8B. Admin Dashboard Container (Shown when logged in) -->
+            <div id="admin-dashboard-container" class="glass-panel rounded-3xl p-6 sm:p-8 border border-gray-800 shadow-2xl">
+                <!-- Top Bar -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-gray-800">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-2xl font-black shrink-0 border border-indigo-500/30">
+                            <i class="fas fa-university"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="px-2.5 py-0.5 rounded text-xs font-black bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">विश्वविद्यालय प्रशासन</span>
+                                <span id="admin-role-badge" class="px-2.5 py-0.5 rounded text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">Super Admin</span>
+                            </div>
+                            <h3 id="admin-user-display" class="text-xl font-bold text-white leading-tight"></h3>
+                            <p class="text-xs text-gray-400">13वां त्रिवेणी युवा महोत्सव 2026 • चौधरी देवी लाल विश्वविद्यालय, सिरसा</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button onclick="AdminApp.switchTab('overview')" class="px-3.5 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs font-semibold transition flex items-center gap-1.5">
+                            <i class="fas fa-rotate"></i> रिफ्रेश
+                        </button>
+                        <button onclick="AdminApp.logout()" class="px-3.5 py-2 rounded-xl bg-rose-950/60 hover:bg-rose-900 text-rose-300 text-xs font-semibold transition flex items-center gap-1.5 border border-rose-800/50">
+                            <i class="fas fa-right-from-bracket"></i> लॉगआउट
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Admin Navigation Tabs -->
+                <div class="flex flex-wrap gap-2 mt-6 pb-4 border-b border-gray-800/80">
+                    <button onclick="AdminApp.switchTab('overview')" data-tab="overview" class="admin-nav-tab px-4 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-amber-500 to-amber-600 text-gray-950 shadow-md flex items-center gap-2">
+                        <i class="fas fa-chart-pie"></i> <span>समीक्षा (Overview)</span>
+                    </button>
+                    <button onclick="AdminApp.switchTab('students')" data-tab="students" class="admin-nav-tab px-4 py-2.5 rounded-xl font-medium text-sm text-gray-300 hover:text-white hover:bg-gray-800 transition flex items-center gap-2">
+                        <i class="fas fa-users"></i> <span>पंजीकृत छात्र (Students)</span>
+                    </button>
+                    <button onclick="AdminApp.switchTab('judges')" data-tab="judges" class="admin-nav-tab px-4 py-2.5 rounded-xl font-medium text-sm text-gray-300 hover:text-white hover:bg-gray-800 transition flex items-center gap-2">
+                        <i class="fas fa-gavel"></i> <span>जज प्रबंधन (Judges)</span>
+                    </button>
+                    <button onclick="AdminApp.switchTab('scores')" data-tab="scores" class="admin-nav-tab px-4 py-2.5 rounded-xl font-medium text-sm text-gray-300 hover:text-white hover:bg-gray-800 transition flex items-center gap-2">
+                        <i class="fas fa-trophy"></i> <span>लाइव स्कोरबोर्ड (Results)</span>
+                    </button>
+                    <button onclick="AdminApp.switchTab('final-results')" data-tab="final-results" data-role="super-admin" class="admin-nav-tab super-admin-only hidden px-4 py-2.5 rounded-xl font-medium text-sm text-gray-300 hover:text-white hover:bg-gray-800 transition flex items-center gap-2">
+                        <i class="fas fa-ranking-star"></i> <span>कॉलेज परिणाम (Final Results)</span>
+                    </button>
+                    <button onclick="AdminApp.switchTab('database')" data-tab="database" class="admin-nav-tab px-4 py-2.5 rounded-xl font-medium text-sm text-gray-300 hover:text-white hover:bg-gray-800 transition flex items-center gap-2">
+                        <i class="fas fa-database"></i> <span>डेटाबेस (DB Status)</span>
+                    </button>
+                </div>
+
+                <!-- Tab Panes Container -->
+                <div class="mt-6">
+                    <!-- 1. OVERVIEW PANE -->
+                    <div id="admin-pane-overview" class="admin-tab-pane">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+                            <div class="bg-gray-900/60 p-4 rounded-2xl border border-gray-800">
+                                <span class="text-xs text-gray-400 font-semibold block mb-1">कुल पंजीकृत प्रतिभागी</span>
+                                <span id="admin-stat-students" class="text-2xl font-black text-amber-400">--</span>
+                            </div>
+                            <div class="bg-gray-900/60 p-4 rounded-2xl border border-gray-800">
+                                <span class="text-xs text-gray-400 font-semibold block mb-1">कुल प्रविष्टियां / दल</span>
+                                <span id="admin-stat-registrations" class="text-2xl font-black text-indigo-400">--</span>
+                            </div>
+                            <div class="bg-gray-900/60 p-4 rounded-2xl border border-gray-800">
+                                <span class="text-xs text-gray-400 font-semibold block mb-1">संबद्ध महाविद्यालय</span>
+                                <span id="admin-stat-colleges" class="text-2xl font-black text-emerald-400">--</span>
+                            </div>
+                            <div class="bg-gray-900/60 p-4 rounded-2xl border border-gray-800">
+                                <span class="text-xs text-gray-400 font-semibold block mb-1">अधिकृत जज व स्कोर</span>
+                                <span id="admin-stat-judges-scores" class="text-2xl font-black text-rose-400">--</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="text-base font-bold text-white mb-3">श्रेणी अनुसार पंजीकरण (Category Breakdown)</h4>
+                            <div id="admin-category-distribution" class="grid grid-cols-2 sm:grid-cols-6 gap-3">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. STUDENTS LIST PANE -->
+                    <div id="admin-pane-students" class="admin-tab-pane hidden">
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mb-6">
+                            <div class="relative w-full sm:w-72">
+                                <i class="fas fa-search absolute left-3.5 top-3 text-gray-500 text-xs"></i>
+                                <input type="text" id="admin-student-search" oninput="AdminApp.filterStudentsList()" placeholder="नाम, रोल नंबर या कॉलेज खोजें..." class="w-full bg-gray-900 border border-gray-700 rounded-xl pl-9 pr-4 py-2 text-xs text-white focus:outline-none focus:border-amber-500" />
+                            </div>
+
+                            <div class="flex items-center gap-2 w-full sm:w-auto">
+                                <select id="admin-student-cat-filter" onchange="AdminApp.filterStudentsList()" class="bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                                    <option value="All">सभी श्रेणियां (All)</option>
+                                    <option value="Music">संगीत (Music)</option>
+                                    <option value="Dance">नृत्य (Dance)</option>
+                                    <option value="Theatre">रंगमंच (Theatre)</option>
+                                    <option value="Literary">साहित्यिक (Literary)</option>
+                                    <option value="Fine Arts">ललित कला (Fine Arts)</option>
+                                    <option value="Procession">शोभा यात्रा (Procession)</option>
+                                </select>
+                                <button onclick="AdminApp.exportStudentsCSV()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition flex items-center gap-1.5 shadow">
+                                    <i class="fas fa-file-excel"></i> Excel/CSV
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="admin-students-table-container" class="overflow-x-auto">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- 3. JUDGES MANAGEMENT PANE -->
+                    <div id="admin-pane-judges" class="admin-tab-pane hidden">
+                        <div class="flex items-center justify-between gap-4 mb-6">
+                            <div>
+                                <h4 class="text-base font-bold text-white">अधिकृत निर्णायक मंडल (Designated Evaluators)</h4>
+                                <p class="text-xs text-gray-400">जज केवल अपने असाइन किए गए इवेंट्स में ही अंक दे सकते हैं</p>
+                            </div>
+                            <button onclick="AdminApp.openNewJudgeModal()" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold text-xs transition flex items-center gap-1.5 shadow">
+                                <i class="fas fa-plus"></i> नया जज जोड़ें
+                            </button>
+                        </div>
+
+                        <div class="mb-5 max-w-xl">
+                            <label for="admin-judge-event-filter" class="block text-xs font-semibold text-gray-300 mb-1.5">
+                                इवेंट के अनुसार निर्णायक खोजें (Filter judges by event)
+                            </label>
+                            <select id="admin-judge-event-filter" onchange="AdminApp.renderJudgesManagement()" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
+                                <option value="">-- सभी निर्णायक देखें --</option>
+                            </select>
+                        </div>
+
+                        <div id="admin-judges-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- 4. LIVE SCOREBOARD PANE -->
+                    <div id="admin-pane-scores" class="admin-tab-pane hidden">
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mb-6">
+                            <div>
+                                <h4 class="text-base font-bold text-white">लाइव परिणाम व रैंक स्थिति (Live Results)</h4>
+                                <p class="text-xs text-gray-400">एकल (Solo: Max 10) एवं समूह (Group: Max 20) में से जजों के औसत अंक</p>
+                            </div>
+
+                            <div class="w-full sm:w-auto min-w-[260px]">
+                                <select id="admin-score-event-filter" onchange="AdminApp.renderScoresBoard()" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500 font-semibold">
+                                    <option value="">-- सभी इवेंट्स देखें --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="admin-scoreboard-list" class="space-y-3.5">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <div id="admin-pane-final-results" class="admin-tab-pane hidden">
+                        <div class="final-results-print-heading mb-5">
+                            <h2 class="text-xl font-black text-gray-900">13th Triveni Yuva Mahotsav 2026 — Final Results</h2>
+                            <p class="text-sm text-gray-600">College standings are based on the sum of locked judge scores.</p>
+                        </div>
+                        <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-5">
+                            <div>
+                                <h4 class="text-base font-bold text-white">महाविद्यालय-वार एवं श्रेणी-वार परिणाम</h4>
+                                <p class="text-xs text-gray-400 mt-1">केवल अंतिम (locked) जज स्कोर जोड़े जाते हैं। बराबर कुल स्कोर पर समान रैंक दी जाएगी।</p>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2 w-full lg:w-auto">
+                                <select id="admin-final-category-filter" onchange="AdminApp.renderFinalResultsBoard()" class="bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white">
+                                    <option value="All">सभी श्रेणियां</option>
+                                    <option value="Music">Music</option>
+                                    <option value="Dance">Dance</option>
+                                    <option value="Theatre">Theatre</option>
+                                    <option value="Literary">Literary</option>
+                                    <option value="Fine Arts">Fine Arts</option>
+                                    <option value="Procession">Procession</option>
+                                </select>
+                                <select id="admin-final-college-filter" onchange="AdminApp.renderFinalResultsBoard()" class="bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white">
+                                    <option value="All">सभी महाविद्यालय</option>
+                                </select>
+                                <select id="admin-final-event-filter" onchange="AdminApp.renderFinalResultsBoard()" class="bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white">
+                                    <option value="All">सभी कार्यक्रम</option>
+                                </select>
+                                <select id="admin-final-status-filter" onchange="AdminApp.renderFinalResultsBoard()" class="bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white">
+                                    <option value="All">सभी स्कोर स्थिति</option>
+                                    <option value="Finalized">केवल अंतिम स्कोर</option>
+                                    <option value="Pending">केवल लंबित</option>
+                                </select>
+                                <input id="admin-final-search" type="search" oninput="AdminApp.renderFinalResultsBoard()" placeholder="कॉलेज, प्रतिभागी या चेस्ट नंबर खोजें" class="sm:col-span-2 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white" />
+                                <button onclick="AdminApp.exportFinalResultsExcel()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition">
+                                    <i class="fas fa-file-excel mr-1"></i> Excel
+                                </button>
+                                <button onclick="AdminApp.declareFinalResults()" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold text-xs transition">
+                                    <i class="fas fa-bullhorn mr-1"></i> Declare results
+                                </button>
+                                <button onclick="AdminApp.printFinalResults()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition">
+                                    <i class="fas fa-file-pdf mr-1"></i> PDF / Print
+                                </button>
+                            </div>
+                        </div>
+                        <div id="admin-final-results-progress" class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6"></div>
+                        <div id="admin-final-results-summary" class="overflow-x-auto mb-7"></div>
+                        <div id="admin-final-results-details" class="overflow-x-auto"></div>
+                    </div>
+
+                    <!-- 5. DATABASE & CLOUD PANE -->
+                    <div id="admin-pane-database" class="admin-tab-pane hidden">
+                        <div class="max-w-2xl bg-gray-900/60 p-6 rounded-2xl border border-gray-800 space-y-4">
+                            <div class="flex items-center justify-between pb-3 border-b border-gray-800">
+                                <div>
+                                    <h4 class="text-sm font-bold text-white">क्लाउड डेटाबेस कनेक्शन (Supabase PostgreSQL)</h4>
+                                    <p class="text-xs text-gray-400">रिमोट सिंक एवं बैकअप स्थिति</p>
+                                </div>
+                                <span id="admin-db-status-badge" class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                                    सक्रिय (Connected)
+                                </span>
+                            </div>
+
+                            <div class="text-xs text-gray-300 space-y-2">
+                                <p>• <strong>Supabase URL:</strong> <span class="font-mono text-gray-400">https://mloifpvurnppsykpjtgc.supabase.co</span></p>
+                                <p>• <strong>ऑफ़लाइन फ़ॉलबैक:</strong> लोकलस्टोरेज सिंक सक्षम है (डेटा सुरक्षित रहेगा)।</p>
+                            </div>
+
+                            <div class="pt-4 flex flex-wrap gap-3">
+                                <button onclick="AdminApp.testCloudConnection()" class="px-4 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs font-semibold">
+                                    <i class="fas fa-plug mr-1"></i> कनेक्शन जांचें
+                                </button>
+                                <button onclick="AdminApp.copySupabaseSchema()" class="px-4 py-2 rounded-xl bg-indigo-950/60 hover:bg-indigo-900 text-indigo-300 border border-indigo-800/60 text-xs font-semibold">
+                                    <i class="fas fa-copy mr-1"></i> SQL Schema कॉपी करें
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    
+    <!-- Judge Scoring Rubric Modal (Marks upon 10 if Solo, upon 20 if Group) -->
+    <div id="scoring-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 hidden">
+        <div class="bg-gray-900 border border-gray-700 rounded-3xl max-w-xl w-full overflow-hidden shadow-2xl flex flex-col max-h-[92vh]">
+            <div class="p-5 border-b border-gray-800 flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-bold text-amber-400 uppercase tracking-wider block">Official Judge Scorecard</span>
+                    <h4 class="text-base font-bold text-white">प्रतिभागी / दल मूल्यांकन शीट (Performance Scorecard)</h4>
+                </div>
+                <button onclick="JudgesApp.closeScoringModal()" class="text-gray-400 hover:text-white"><i class="fas fa-times text-lg"></i></button>
+            </div>
+
+            <div class="p-6 overflow-y-auto space-y-4">
+                <input type="hidden" id="score-modal-reg-id">
+                <input type="hidden" id="score-modal-event-id">
+                <input type="hidden" id="score-modal-max-score" value="10">
+
+                <!-- Participant info summary banner -->
+                <div class="bg-gray-800/80 p-4 rounded-2xl border border-gray-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1.5">
+                            <span class="text-xs font-bold px-2 py-0.5 rounded bg-indigo-900/50 text-indigo-300" id="score-modal-chest">CHEST</span>
+                            <span class="text-sm font-black text-white" id="score-modal-participant-name"></span>
+                        </div>
+                        <p class="text-xs text-gray-300 font-medium" id="score-modal-college"></p>
+                        <div class="flex items-center gap-2 mt-1.5">
+                            <span class="text-xs text-amber-400 font-semibold" id="score-modal-event"></span>
+                            <span id="score-modal-perf-type" class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">एकल (Solo - Max 10)</span>
+                        </div>
+                    </div>
+                    <div class="text-left sm:text-right shrink-0">
+                        <span class="text-xs text-gray-400 block font-semibold">प्राप्तांक (Awarded Score)</span>
+                        <span class="text-3xl font-black text-amber-400">
+                            <span id="score-total-display">0</span><span class="text-xs text-gray-400 font-normal"> / <span id="score-max-display">10</span></span>
+                        </span>
+                        <div class="mt-1" id="score-grade-badge"></div>
+                    </div>
+                </div>
+
+                <!-- Clean Direct Score Input Container -->
+                <div>
+                    <div id="score-rubric-container">
+                        <!-- Injected dynamically by JudgesApp.openScoringModal -->
+                    </div>
+                </div>
+
+                <!-- Judge Remarks -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1.5">जज की गोपनीय टिप्पणी / अवलोकन (Judge Remarks - Optional):</label>
+                    <textarea id="score-modal-remarks" rows="2" placeholder="प्रस्तुति, लय, समन्वय अथवा विशिष्ट टिप्पणी दर्ज करें..." class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500 font-sans"></textarea>
+                </div>
+            </div>
+
+            <div class="p-5 border-t border-gray-800 flex items-center justify-between gap-3 bg-gray-950">
+                <button onclick="JudgesApp.closeScoringModal()" class="px-4 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 font-semibold text-xs">रद्द करें</button>
+                <div class="flex items-center gap-2">
+                    <button onclick="JudgesApp.submitScore(false)" class="px-4 py-2.5 rounded-xl bg-gray-700 hover:bg-gray-600 text-white font-bold text-xs">
+                        ड्राफ्ट सहेजें (Save Draft)
+                    </button>
+                    <button onclick="JudgesApp.submitScore(true)" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs transition shadow-lg shadow-amber-500/20 flex items-center gap-1.5">
+                        <i class="fas fa-lock"></i> सबमिट एवं लॉक करें (Final Lock)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <div id="judge-crud-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 hidden">
+        <div class="bg-gray-900 border border-gray-700 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl">
+            <div class="p-5 border-b border-gray-800 flex items-center justify-between">
+                <h4 id="judge-modal-title" class="text-base font-bold text-white">नया जज जोड़ें</h4>
+                <button onclick="AdminApp.closeJudgeModal()" class="text-gray-400 hover:text-white"><i class="fas fa-times text-lg"></i></button>
+            </div>
+
+            <form onsubmit="AdminApp.saveJudgeForm(event)" class="p-6 space-y-4 text-xs">
+                <input type="hidden" id="judge-form-id">
+
+                <div>
+                    <label class="block font-semibold text-gray-300 mb-1">आधिकारिक सूची से जज चुनें (Official Judge List)</label>
+                    <select id="judge-form-roster" onchange="AdminApp.selectJudgeFromRoster(this.value)" class="w-full bg-gray-950 border border-gray-700 rounded-xl px-3.5 py-2.5 text-white">
+                        <option value="">-- सूची से जज चुनें या नीचे नया नाम लिखें --</option>
+                    </select>
+                    <span class="text-[10px] text-gray-400 mt-0.5 block">सूची में दिया गया नाम चुनने के बाद ईमेल, मोबाइल और इवेंट असाइनमेंट संपादित किए जा सकते हैं।</span>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-gray-300 mb-1">जज का पूरा नाम <span class="text-rose-400">*</span></label>
+                    <input type="text" id="judge-form-name" placeholder="उदा. Prof. Rakesh Sharma" required class="w-full bg-gray-950 border border-gray-700 rounded-xl px-3.5 py-2.5 text-white" />
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-gray-300 mb-1">असाइन की गई अद्वितीय ईमेल (Unique Login Email) <span class="text-rose-400">*</span></label>
+                    <input type="email" id="judge-form-email" placeholder="उदा. judge@official-domain.in" required class="w-full bg-gray-950 border border-gray-700 rounded-xl px-3.5 py-2.5 text-white font-mono" />
+                    <span class="text-[10px] text-gray-400 mt-0.5 block">जज केवल इसी ईमेल पते से पोर्टल में लॉगिन कर पाएंगे।</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-gray-300 mb-1">संस्थान / विभाग</label>
+                        <input type="text" id="judge-form-org" placeholder="उदा. KUK, Chandigarh" class="w-full bg-gray-950 border border-gray-700 rounded-xl px-3.5 py-2.5 text-white" />
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-gray-300 mb-1">सिक्योरिटी पिन (PIN)</label>
+                        <input type="text" id="judge-form-pin" value="1234" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3.5 py-2.5 text-white font-mono" />
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-gray-300 mb-1">मोबाइल नंबर</label>
+                    <input type="tel" id="judge-form-phone" placeholder="10 अंक" class="w-full bg-gray-950 border border-gray-700 rounded-xl px-3.5 py-2.5 text-white" />
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-gray-300 mb-2">असाइन की जाने वाली श्रेणियां (Judge Roles / Categories) <span class="text-rose-400">*</span></label>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        <label class="flex items-center gap-2 bg-gray-800 p-2 rounded-lg cursor-pointer">
+                            <input type="checkbox" value="Music" class="judge-cat-checkbox accent-amber-500" />
+                            <span>🎵 Music</span>
+                        </label>
+                        <label class="flex items-center gap-2 bg-gray-800 p-2 rounded-lg cursor-pointer">
+                            <input type="checkbox" value="Dance" class="judge-cat-checkbox accent-amber-500" />
+                            <span>💃 Dance</span>
+                        </label>
+                        <label class="flex items-center gap-2 bg-gray-800 p-2 rounded-lg cursor-pointer">
+                            <input type="checkbox" value="Theatre" class="judge-cat-checkbox accent-amber-500" />
+                            <span>🎭 Theatre</span>
+                        </label>
+                        <label class="flex items-center gap-2 bg-gray-800 p-2 rounded-lg cursor-pointer">
+                            <input type="checkbox" value="Literary" class="judge-cat-checkbox accent-amber-500" />
+                            <span>📖 Literary</span>
+                        </label>
+                        <label class="flex items-center gap-2 bg-gray-800 p-2 rounded-lg cursor-pointer">
+                            <input type="checkbox" value="Fine Arts" class="judge-cat-checkbox accent-amber-500" />
+                            <span>🎨 Fine Arts</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-gray-300 mb-2">विशिष्ट इवेंट (Specific Events)</label>
+                    <p class="text-[10px] text-gray-400 mb-2">इवेंट चुनने पर जज केवल चुने हुए इवेंट में दिखाई देगा। खाली छोड़ने पर चुनी गई श्रेणी के सभी इवेंट लागू होंगे।</p>
+                    <div id="judge-event-checkboxes" class="max-h-48 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-2 p-2 rounded-xl bg-gray-950 border border-gray-800">
+                        <span class="text-xs text-gray-500">इवेंट सूची लोड हो रही है...</span>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-gray-800 flex justify-end gap-2">
+                    <button type="button" onclick="AdminApp.closeJudgeModal()" class="px-4 py-2 rounded-xl bg-gray-800 text-gray-300">रद्द करें</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold">जज सुरक्षित करें</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <!-- Admin / Student Details Modal -->
+    <div id="student-detail-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 hidden">
+        <div class="bg-gray-900 border border-gray-700 rounded-3xl max-w-xl w-full overflow-hidden shadow-2xl">
+            <div class="p-5 border-b border-gray-800 flex items-center justify-between">
+                <h4 class="text-base font-bold text-white">पंजीकरण संपूर्ण विवरण</h4>
+                <button onclick="document.getElementById('student-detail-modal').classList.add('hidden')" class="text-gray-400 hover:text-white"><i class="fas fa-times text-lg"></i></button>
+            </div>
+            <div id="student-detail-modal-body" class="p-6 overflow-y-auto max-h-[80vh] text-xs text-gray-300 space-y-3">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/supabase-config.js"></script>
+    <script src="assets/js/db-service.js"></script>
+    <script src="assets/js/judges.js"></script>
+    <script src="assets/js/admin.js"></script>
+
+    <script>
+        function showPortalLoginTab(tab) {
+            const btnJudge = document.getElementById('tab-btn-judge');
+            const btnAdmin = document.getElementById('tab-btn-admin');
+            const btnSuperAdmin = document.getElementById('tab-btn-super-admin');
+            const viewJudge = document.getElementById('judge-login-tab-view');
+            const viewAdmin = document.getElementById('admin-login-tab-view');
+            const viewSuperAdmin = document.getElementById('super-admin-login-tab-view');
+
+            const views = {
+                judge: [btnJudge, viewJudge],
+                admin: [btnAdmin, viewAdmin],
+                'super-admin': [btnSuperAdmin, viewSuperAdmin]
+            };
+            const selectedTab = views[tab] ? tab : 'judge';
+
+            Object.entries(views).forEach(([name, [button, view]]) => {
+                const isSelected = name === selectedTab;
+                button.setAttribute('aria-selected', String(isSelected));
+                view.classList.toggle('hidden', !isSelected);
+                button.className = isSelected
+                    ? 'px-5 py-2 rounded-xl text-xs sm:text-sm font-black transition flex items-center gap-2'
+                    : 'px-5 py-2 rounded-xl text-xs sm:text-sm font-bold text-gray-400 hover:text-white transition flex items-center gap-2';
+            });
+        }
+
+        // Check sessions and show workspaces
+        function checkActiveSessions() {
+            const activeJudge = sessionStorage.getItem('cdlu_active_judge');
+            const activeAdmin = sessionStorage.getItem('cdlu_active_admin');
+
+            const gateway = document.getElementById('unified-login-gateway');
+            const judgesSection = document.getElementById('judges-section');
+            const adminSection = document.getElementById('admin-section');
+
+            if (activeJudge) {
+                if (gateway) gateway.classList.add('hidden');
+                if (judgesSection) judgesSection.classList.remove('hidden');
+                if (adminSection) adminSection.classList.add('hidden');
+            } else if (activeAdmin) {
+                if (gateway) gateway.classList.add('hidden');
+                if (adminSection) adminSection.classList.remove('hidden');
+                if (judgesSection) judgesSection.classList.add('hidden');
+            } else {
+                if (gateway) gateway.classList.remove('hidden');
+                if (judgesSection) judgesSection.classList.add('hidden');
+                if (adminSection) adminSection.classList.add('hidden');
+            }
+        }
+
+        // Override logout to update view
+        const originalJudgeLogout = JudgesApp.logout;
+        JudgesApp.logout = function() {
+            originalJudgeLogout();
+            checkActiveSessions();
+        };
+
+        const originalAdminLogout = AdminApp.logout;
+        AdminApp.logout = function() {
+            originalAdminLogout();
+            checkActiveSessions();
+        };
+
+        // Override login success hooks to display workspace
+        const originalJudgeLogin = JudgesApp.login;
+        JudgesApp.login = async function(...args) {
+            const res = await originalJudgeLogin(...args);
+            if (res) checkActiveSessions();
+            return res;
+        };
+
+        const originalAdminLogin = AdminApp.login;
+        AdminApp.login = async function(...args) {
+            const res = await originalAdminLogin(...args);
+            if (res) checkActiveSessions();
+            return res;
+        };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const loginTab = window.location.hash === '#super-admin-login'
+                ? 'super-admin'
+                : (window.location.hash === '#admin-login' || window.location.hash === '#officer-login') ? 'admin' : 'judge';
+            showPortalLoginTab(loginTab);
+            await DBService.init();
+            JudgesApp.init();
+            AdminApp.init();
+            checkActiveSessions();
+        });
+    </script>
+</body>
+</html>

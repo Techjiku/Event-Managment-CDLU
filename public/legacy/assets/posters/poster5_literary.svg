@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 750" width="100%" height="100%">
+  <defs>
+    <linearGradient id="litBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0c4a6e" />
+      <stop offset="40%" stop-color="#075985" />
+      <stop offset="75%" stop-color="#1e1b4b" />
+      <stop offset="100%" stop-color="#082f49" />
+    </linearGradient>
+    <linearGradient id="skyGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="50%" stop-color="#a78bfa" />
+      <stop offset="100%" stop-color="#f472b6" />
+    </linearGradient>
+    <linearGradient id="yellowLit" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fde047" />
+      <stop offset="100%" stop-color="#fbbf24" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1600" height="750" fill="url(#litBg)" />
+
+  <!-- Ambient light -->
+  <circle cx="280" cy="220" r="280" fill="#38bdf8" opacity="0.22" />
+  <circle cx="1320" cy="500" r="300" fill="#a78bfa" opacity="0.2" />
+
+  <!-- Geometric Abstract Polygons & Stars -->
+  <g opacity="0.15" stroke="#38bdf8" stroke-width="2" fill="none">
+    <polygon points="120,600 180,480 300,520 240,650" />
+    <polygon points="1400,200 1480,120 1540,240 1460,300" />
+    <circle cx="800" cy="375" r="340" stroke-dasharray="10 10" />
+  </g>
+
+  <!-- Top Badge -->
+  <g transform="translate(800, 100)" text-anchor="middle">
+    <rect x="-260" y="-25" width="520" height="50" rx="25" fill="#ffffff" fill-opacity="0.1" stroke="#38bdf8" stroke-width="1.5" />
+    <text y="7" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="16" fill="#bae6fd" letter-spacing="3">
+      13th TRIVENI YUVA MAHOTSAV 2026 • CDLU
+    </text>
+  </g>
+
+  <!-- Category Title -->
+  <g transform="translate(800, 230)" text-anchor="middle">
+    <text font-family="'Segoe UI', sans-serif" font-weight="900" font-size="78" fill="#ffffff" letter-spacing="2">
+      KALAM AUR RANG
+    </text>
+    <text y="68" font-family="'Segoe UI', sans-serif" font-weight="800" font-size="52" fill="url(#skyGlow)" letter-spacing="4">
+      LITERARY &amp; FINE ARTS
+    </text>
+  </g>
+
+  <!-- Subtitle -->
+  <g transform="translate(800, 360)" text-anchor="middle">
+    <text font-family="'Segoe UI', sans-serif" font-weight="500" font-size="20" fill="#bae6fd" letter-spacing="2">
+      General Quiz • Hindi &amp; English Debate • Elocution • On The Spot Painting • Rangoli • Clay Modeling
+    </text>
+  </g>
+
+  <!-- Event Grid Highlights -->
+  <g transform="translate(800, 480)">
+    <g transform="translate(-480, 0)">
+      <rect x="-105" y="-45" width="210" height="90" rx="14" fill="#0369a1" fill-opacity="0.6" stroke="#38bdf8" stroke-width="1.2" />
+      <text y="-10" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="16" fill="#ffffff" text-anchor="middle">Debate &amp; Elocution</text>
+      <text y="16" font-family="'Segoe UI', sans-serif" font-size="13" fill="#bae6fd" text-anchor="middle">Hindi &amp; English Oratory</text>
+    </g>
+    <g transform="translate(-160, 0)">
+      <rect x="-105" y="-45" width="210" height="90" rx="14" fill="#0369a1" fill-opacity="0.6" stroke="#38bdf8" stroke-width="1.2" />
+      <text y="-10" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="16" fill="#ffffff" text-anchor="middle">General Quiz</text>
+      <text y="16" font-family="'Segoe UI', sans-serif" font-size="13" fill="#bae6fd" text-anchor="middle">6 Thrilling Stage Rounds</text>
+    </g>
+    <g transform="translate(160, 0)">
+      <rect x="-105" y="-45" width="210" height="90" rx="14" fill="#0369a1" fill-opacity="0.6" stroke="#38bdf8" stroke-width="1.2" />
+      <text y="-10" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="16" fill="#ffffff" text-anchor="middle">Live Painting</text>
+      <text y="16" font-family="'Segoe UI', sans-serif" font-size="13" fill="#bae6fd" text-anchor="middle">On The Spot Theme</text>
+    </g>
+    <g transform="translate(480, 0)">
+      <rect x="-105" y="-45" width="210" height="90" rx="14" fill="#0369a1" fill-opacity="0.6" stroke="#38bdf8" stroke-width="1.2" />
+      <text y="-10" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="16" fill="#ffffff" text-anchor="middle">Rangoli &amp; Clay</text>
+      <text y="16" font-family="'Segoe UI', sans-serif" font-size="13" fill="#bae6fd" text-anchor="middle">Traditional Floor &amp; Sculpt</text>
+    </g>
+  </g>
+
+  <!-- Venue Details -->
+  <g transform="translate(800, 630)" text-anchor="middle">
+    <rect x="-300" y="-24" width="600" height="48" rx="24" fill="url(#yellowLit)" />
+    <text y="8" font-family="'Segoe UI', sans-serif" font-weight="800" font-size="18" fill="#0c4a6e" letter-spacing="2">
+      VENUE: SEMINAR HALL (STAGE III) &amp; FINE ARTS STUDIO (STAGE IV)
+    </text>
+  </g>
+</svg>
