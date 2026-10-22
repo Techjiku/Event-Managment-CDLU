@@ -32,4 +32,6 @@ The current file is a full, rerunnable schema. Keep schema changes idempotent:
 - use a deliberate `ON CONFLICT` clause for seed data.
 
 For production, prefer adding a new numbered migration instead of editing old
-history. Test destructive changes in a staging Supabase project first.
+history. Test destructive changes in a staging Supabase project first. The
+workflow uses `supabase db query --linked --file` because current Supabase CLI
+versions do not provide a `db execute` command.
