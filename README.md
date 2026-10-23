@@ -248,6 +248,92 @@ One-time setup is required: apply the current `supabase_schema.sql` once so
 the `replace_affiliated_colleges(jsonb)` RPC exists. The upload tool will show
 a clear Supabase error if that setup has not been applied.
 
+If an older version of the RPC reports `rows.name must appear in the GROUP BY
+clause`, apply the following one-time patch in Supabase SQL Editor. It fixes
+the duplicate-name validation for this final Excel format:
+
+```sql
+CREATE OR REPLACE FUNCTION public.replace_affiliated_colleges(college_rows JSONB)
+RETURNS INTEGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    imported_count INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO imported_count
+    FROM jsonb_to_recordset(college_rows) AS rows(id INTEGER, name TEXT);
+
+    IF imported_count = 0 THEN
+        RAISE EXCEPTION 'College import is empty.';
+    END IF;
+
+    IF EXISTS (
+        SELECT id
+        FROM jsonb_to_recordset(college_rows) AS rows(id INTEGER, name TEXT)
+        GROUP BY id
+        HAVING COUNT(*) > 1
+    ) THEN
+        RAISE EXCEPTION 'College import contains duplicate team codes.';
+    END IF;
+
+    IF EXISTS (
+        SELECT lower(trim(name))
+        FROM jsonb_to_recordset(college_rows) AS rows(id INTEGER, name TEXT)
+        GROUP BY lower(trim(name))
+        HAVING COUNT(*) > 1
+    ) THEN
+        RAISE EXCEPTION 'College import contains duplicate college names.';
+    END IF;
+
+    IF EXISTS (
+        SELECT 1
+        FROM jsonb_to_recordset(college_rows) AS rows(id INTEGER, name TEXT)
+        WHERE id IS NULL OR id <= 0 OR name IS NULL OR trim(name) = ''
+    ) THEN
+        RAISE EXCEPTION 'Every college must have a positive team code and a name.';
+    END IF;
+
+    UPDATE public.affiliated_colleges AS old_college
+    SET name = old_college.name || ' [legacy team code ' || old_college.id || ']',
+        is_active = FALSE
+    FROM jsonb_to_recordset(college_rows) AS incoming(id INTEGER, name TEXT)
+    WHERE lower(trim(old_college.name)) = lower(trim(incoming.name))
+      AND old_college.id <> incoming.id
+      AND NOT EXISTS (
+          SELECT 1
+          FROM jsonb_to_recordset(college_rows) AS same_id(id INTEGER, name TEXT)
+          WHERE same_id.id = old_college.id
+      );
+
+    UPDATE public.affiliated_colleges
+    SET is_active = FALSE
+    WHERE id NOT IN (
+        SELECT id
+        FROM jsonb_to_recordset(college_rows) AS rows(id INTEGER, name TEXT)
+    );
+
+    INSERT INTO public.affiliated_colleges (id, name, is_active)
+    SELECT id, trim(name), TRUE
+    FROM jsonb_to_recordset(college_rows) AS rows(id INTEGER, name TEXT)
+    ON CONFLICT (id) DO UPDATE
+    SET name = EXCLUDED.name, is_active = TRUE;
+
+    UPDATE public.registrations AS registrations
+    SET college_name = colleges.name
+    FROM public.affiliated_colleges AS colleges
+    WHERE registrations.college_id = colleges.id
+      AND colleges.is_active = TRUE;
+
+    RETURN imported_count;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.replace_affiliated_colleges(JSONB)
+TO anon, authenticated;
+```
+
 ## If the schema workflow says `affiliated_colleges` does not exist
 
 That message means GitHub Actions is running an older or different

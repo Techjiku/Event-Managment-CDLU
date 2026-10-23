@@ -162,7 +162,7 @@ BEGIN
     END IF;
 
     IF EXISTS (
-        SELECT name
+        SELECT lower(trim(name))
         FROM jsonb_to_recordset(college_rows) AS rows(id INTEGER, name TEXT)
         GROUP BY lower(trim(name))
         HAVING COUNT(*) > 1
