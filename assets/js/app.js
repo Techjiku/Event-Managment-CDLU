@@ -606,7 +606,11 @@ const App = (function() {
             dobDisplay.textContent = reg.dob ? `${reg.dob} (पात्र)` : 'N/A';
         }
 
-        document.getElementById('card-event-display').textContent = reg.event_name;
+        const categoryDisplay = document.getElementById('card-category-display');
+        if (categoryDisplay) {
+            categoryDisplay.textContent = reg.category || 'Not provided';
+        }
+        document.getElementById('card-event-display').textContent = reg.event_name || 'Not provided';
 
         // Team members list inside slip
         const membersDiv = document.getElementById('card-members-container');
