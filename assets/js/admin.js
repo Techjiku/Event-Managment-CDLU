@@ -71,7 +71,7 @@ const AdminApp = (function() {
 
     function switchTab(tabName) {
         const isSuperAdmin = currentAdmin && currentAdmin.role === 'Super Admin';
-        if (tabName === 'final-results' && !isSuperAdmin) {
+        if ((tabName === 'final-results' || tabName === 'database') && !isSuperAdmin) {
             tabName = 'overview';
         }
         activeTab = tabName;

@@ -1288,7 +1288,7 @@
                     <button onclick="AdminApp.switchTab('final-results')" data-tab="final-results" data-role="super-admin" class="admin-nav-tab super-admin-only hidden px-4 py-2.5 rounded-xl font-medium text-sm text-gray-300 hover:text-white hover:bg-gray-800 transition flex items-center gap-2">
                         <i class="fas fa-ranking-star"></i> <span>कॉलेज परिणाम (Final Results)</span>
                     </button>
-                    <button onclick="AdminApp.switchTab('database')" data-tab="database" class="admin-nav-tab px-4 py-2.5 rounded-xl font-medium text-sm text-gray-300 hover:text-white hover:bg-gray-800 transition flex items-center gap-2">
+                    <button onclick="AdminApp.switchTab('database')" data-tab="database" data-role="super-admin" class="admin-nav-tab super-admin-only hidden px-4 py-2.5 rounded-xl font-medium text-sm text-gray-300 hover:text-white hover:bg-gray-800 transition flex items-center gap-2">
                         <i class="fas fa-database"></i> <span>डेटाबेस (DB Status)</span>
                     </button>
                 </div>
@@ -1478,7 +1478,7 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="max-w-2xl mt-6 bg-gray-900/60 p-6 rounded-2xl border border-gray-800 space-y-4">
+                        <div class="super-admin-only hidden max-w-2xl mt-6 bg-gray-900/60 p-6 rounded-2xl border border-gray-800 space-y-4">
                             <div>
                                 <h4 class="text-sm font-bold text-white">Update affiliated colleges</h4>
                                 <p class="text-xs text-gray-400 mt-1">Upload an Excel file with columns <strong>College Name</strong> and <strong>Team Code</strong>. New colleges are added, changed IDs/names are updated, and missing old colleges become inactive without deleting history.</p>
