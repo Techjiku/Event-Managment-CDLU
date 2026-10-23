@@ -53,6 +53,51 @@ CREATE TABLE IF NOT EXISTS public.affiliated_colleges (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Reconcile a team-code correction before the unique college-name seed runs.
+-- Older deployments stored Nehru College under its spreadsheet serial ID.
+-- Move existing references to the final team code first, then remove only the
+-- obsolete directory row. The dynamic checks keep fresh installs valid.
+DO $$
+DECLARE
+    legacy_id INTEGER;
+BEGIN
+    SELECT old_college.id
+    INTO legacy_id
+    FROM public.affiliated_colleges AS old_college
+    WHERE lower(trim(old_college.name)) =
+        lower(trim('Nehru College of Education, Vill. Alikan, Teh. Dabwali, Distt. Sirsa (SFS)'))
+      AND old_college.id <> 2652
+    LIMIT 1;
+
+    IF legacy_id IS NOT NULL THEN
+        IF to_regclass('public.registrations') IS NOT NULL THEN
+            ALTER TABLE public.registrations
+                DROP CONSTRAINT IF EXISTS registrations_college_id_fkey;
+        END IF;
+        IF to_regclass('public.scores') IS NOT NULL THEN
+            ALTER TABLE public.scores
+                DROP CONSTRAINT IF EXISTS scores_college_id_fkey;
+            DROP TRIGGER IF EXISTS prevent_finalized_score_update ON public.scores;
+            DROP TRIGGER IF EXISTS prevent_finalized_score_change ON public.scores;
+        END IF;
+
+        IF to_regclass('public.registrations') IS NOT NULL THEN
+            UPDATE public.registrations
+            SET college_id = 2652
+            WHERE college_id = legacy_id;
+        END IF;
+        IF to_regclass('public.scores') IS NOT NULL THEN
+            UPDATE public.scores
+            SET college_id = 2652
+            WHERE college_id = legacy_id;
+        END IF;
+
+        DELETE FROM public.affiliated_colleges
+        WHERE id = legacy_id;
+    END IF;
+END;
+$$;
+
 UPDATE public.affiliated_colleges SET is_active = FALSE WHERE id NOT IN (2606,2621,2661,2622,2633,2620,2643,2655,2647,2641,2654,2607,2601,2639,2619,2618,2617,2614,2628,2637,2657,2635,2640,2652,2644,2660,2609,2632,2645,2636,2638);
 
 INSERT INTO public.affiliated_colleges (id, name) VALUES
@@ -132,6 +177,20 @@ BEGIN
     ) THEN
         RAISE EXCEPTION 'Every college must have a positive team code and a name.';
     END IF;
+
+    -- Free unique names when an existing college receives a corrected team
+    -- code in a later upload. The old row remains for history but is inactive.
+    UPDATE public.affiliated_colleges AS old_college
+    SET name = old_college.name || ' [legacy team code ' || old_college.id || ']',
+        is_active = FALSE
+    FROM jsonb_to_recordset(college_rows) AS incoming(id INTEGER, name TEXT)
+    WHERE lower(trim(old_college.name)) = lower(trim(incoming.name))
+      AND old_college.id <> incoming.id
+      AND NOT EXISTS (
+          SELECT 1
+          FROM jsonb_to_recordset(college_rows) AS same_id(id INTEGER, name TEXT)
+          WHERE same_id.id = old_college.id
+      );
 
     UPDATE public.affiliated_colleges
     SET is_active = FALSE

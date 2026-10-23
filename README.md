@@ -164,6 +164,68 @@ The active count must be `31`. Run the updated
 `supabase_schema.sql` through GitHub Actions after this manual update so new
 deployments remain synchronized.
 
+If schema apply reports `affiliated_colleges_name_key` for Nehru College, run
+this repair once in Supabase SQL Editor. It moves the old serial-ID references
+to the final team code `2652` before removing the obsolete directory row:
+
+```sql
+BEGIN;
+
+ALTER TABLE public.registrations
+  DROP CONSTRAINT IF EXISTS registrations_college_id_fkey;
+
+ALTER TABLE public.scores
+  DROP CONSTRAINT IF EXISTS scores_college_id_fkey;
+
+DROP TRIGGER IF EXISTS prevent_finalized_score_update ON public.scores;
+DROP TRIGGER IF EXISTS prevent_finalized_score_change ON public.scores;
+
+DO $$
+DECLARE
+  old_id INTEGER;
+BEGIN
+  SELECT id
+  INTO old_id
+  FROM public.affiliated_colleges
+  WHERE lower(trim(name)) =
+    lower(trim('Nehru College of Education, Vill. Alikan, Teh. Dabwali, Distt. Sirsa (SFS)'))
+    AND id <> 2652
+  LIMIT 1;
+
+  IF old_id IS NOT NULL THEN
+    UPDATE public.registrations
+    SET college_id = 2652
+    WHERE college_id = old_id;
+
+    UPDATE public.scores
+    SET college_id = 2652
+    WHERE college_id = old_id;
+
+    DELETE FROM public.affiliated_colleges
+    WHERE id = old_id;
+  END IF;
+END;
+$$;
+
+ALTER TABLE public.registrations
+  ADD CONSTRAINT registrations_college_id_fkey
+  FOREIGN KEY (college_id) REFERENCES public.affiliated_colleges(id);
+
+ALTER TABLE public.scores
+  ADD CONSTRAINT scores_college_id_fkey
+  FOREIGN KEY (college_id) REFERENCES public.affiliated_colleges(id);
+
+CREATE TRIGGER prevent_finalized_score_change
+BEFORE UPDATE OR DELETE ON public.scores
+FOR EACH ROW
+EXECUTE FUNCTION public.prevent_finalized_score_change();
+
+COMMIT;
+```
+
+After this repair, rerun the workflow. The schema seed will find no old
+duplicate Nehru row and will complete normally.
+
 ## Uploading future college Excel files
 
 The Super Admin portal now has **Database -> Update affiliated colleges**.
