@@ -656,7 +656,10 @@ const App = (function() {
     function printRegistrationCard() {
         const card = document.getElementById('icard-printable-area');
         const stylesheet = document.querySelector('link[href="assets/css/style.css"]')?.href;
-        if (!card || !stylesheet) return;
+        if (!card || !stylesheet) {
+            Swal.fire('I-card unavailable', 'The I-card is not ready yet. Please find the registration again and try once more.', 'error');
+            return;
+        }
 
         const printWindow = window.open('', 'cdlu-icard-print', 'width=680,height=860');
         if (!printWindow) {
@@ -674,10 +677,12 @@ const App = (function() {
                 #icard-printable-area { position: relative !important; inset: auto !important; width: 410px !important; max-width: 410px !important; margin: 0 !important; break-inside: avoid !important; page-break-inside: avoid !important; }
             </style></head><body>${card.outerHTML}</body></html>`);
         printWindow.document.close();
-        printWindow.onload = () => {
+        const startPrint = () => {
             printWindow.focus();
             printWindow.print();
         };
+        printWindow.onload = startPrint;
+        window.setTimeout(startPrint, 500);
     }
 
     // 5. SEARCH & STATUS LOOKUP
@@ -688,7 +693,21 @@ const App = (function() {
         }
 
         const cleanQ = query.trim().toLowerCase();
-        const found = await DBService.getRegistrationById(cleanQ);
+        let found;
+        try {
+            found = await DBService.getRegistrationById(query.trim());
+            if (!found) {
+                const registrations = await DBService.getRegistrations('All');
+                found = registrations.find(registration =>
+                    [registration.id, registration.roll_no, registration.chest_number]
+                        .some(value => String(value || '').trim().toLowerCase() === cleanQ)
+                );
+            }
+        } catch (error) {
+            console.error('Registration lookup failed:', error);
+            Swal.fire('Lookup failed', error.message || 'Could not search registrations. Please try again.', 'error');
+            return;
+        }
 
         if (!found) {
             Swal.fire({

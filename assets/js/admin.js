@@ -122,7 +122,6 @@ const AdminApp = (function() {
     async function renderOverview() {
         const regs = await DBService.getRegistrations('All');
         const judges = await DBService.getJudges();
-        const scores = await DBService.getScores();
         const events = await DBService.getEvents('All');
 
         // Total Students (including individual + group team members)
@@ -139,7 +138,6 @@ const AdminApp = (function() {
         document.getElementById('admin-stat-registrations').textContent = regs.length;
         document.getElementById('admin-stat-colleges').textContent = activeColleges.length;
         document.getElementById('admin-stat-judges').textContent = judges.length;
-        document.getElementById('admin-stat-judges-scores').textContent = `${judges.length} / ${scores.length}`;
 
         const catCounts = { Music: 0, Dance: 0, Theatre: 0, Literary: 0, 'Fine Arts': 0, Procession: 0 };
         regs.forEach(r => {
@@ -988,28 +986,7 @@ const AdminApp = (function() {
                 <p class="final-results-note">Every active college is listed. Trophy score remains blank until a finalized score produces trophy points.</p>
             ` : '<p class="p-6 text-center text-gray-400">No active colleges found.</p>';
 
-            detailsContainer.innerHTML = orderedRows.length ? `
-                <table class="final-results-table">
-                    <caption>Event-wise results · combined score, position and trophy points</caption>
-                    <thead><tr><th>Category</th><th>College</th><th>Event</th><th>Team / registration</th><th>Participants</th><th>Judge score breakdown</th><th>Combined score</th><th>Position</th><th>Trophy points</th><th>Status</th></tr></thead>
-                    <tbody>${orderedRows.map(row => `
-                        <tr>
-                            <td>${escapeHtml(row.category)}</td>
-                            <td>${escapeHtml(row.college)}${row.registration.college_id ? `<br><small>ID: ${escapeHtml(row.registration.college_id)}</small>` : ''}</td>
-                            <td>${escapeHtml(row.registration.event_name || row.registration.event_id)}</td>
-                            <td>${escapeHtml(row.registration.id)}${row.registration.chest_number ? `<br>Chest: ${escapeHtml(row.registration.chest_number)}` : ''}</td>
-                            <td>${row.participants.map(escapeHtml).join('<br>') || '—'}</td>
-                            <td>${row.scores.length ? row.scores.map(score =>
-                                `${escapeHtml(score.judge_name || score.judge_email)}: ${Number(score.total_score).toFixed(2)}`
-                            ).join('<br>') : 'No locked score'}</td>
-                                <td class="font-bold">${row.isComplete ? row.total.toFixed(2) : `Pending (${row.scores.length}/${row.expectedJudgeCount} judges)`}</td>
-                                <td>${row.position == null ? 'Pending' : row.position}</td>
-                                <td class="font-bold text-amber-400">${row.isComplete ? row.trophyPoints : '—'}</td>
-                                <td>${row.isComplete ? 'Finalized' : 'Pending'}</td>
-                        </tr>
-                    `).join('')}</tbody>
-                </table>
-            ` : '<p class="p-6 text-center text-gray-400">No registered event entries match these filters.</p>';
+            detailsContainer.innerHTML = '';
         } catch (error) {
             console.error('Unable to load final results:', error);
             summaryContainer.innerHTML = '<p class="p-6 text-center text-rose-300">Could not load final results. Check the database connection and try again.</p>';

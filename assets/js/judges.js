@@ -367,7 +367,7 @@ const JudgesApp = (function() {
                     <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-2">त्वरित अंक चुनें (Quick Select):</span>
                     <div class="flex flex-wrap gap-1.5">
                         ${quickPills.map(val => `
-                            <button type="button" onclick="JudgesApp.setDirectScore(${val}, ${maxScore})" class="px-3 py-1.5 rounded-xl text-xs font-bold font-mono ${Number(currentVal) === Number(val) ? 'bg-amber-500 text-gray-950 shadow-md ring-2 ring-amber-300' : 'bg-gray-700 hover:bg-gray-600 text-gray-200'} transition active:scale-95">
+                            <button type="button" data-direct-score="${val}" onclick="JudgesApp.setDirectScore(${val}, ${maxScore})" class="px-3 py-1.5 rounded-xl text-xs font-bold font-mono ${Number(currentVal) === Number(val) ? 'bg-amber-500 text-gray-950 shadow-md ring-2 ring-amber-300' : 'bg-gray-700 hover:bg-gray-600 text-gray-200'} transition active:scale-95">
                                 ${val}
                             </button>
                         `).join('')}
@@ -399,6 +399,13 @@ const JudgesApp = (function() {
         if (slider) slider.value = num;
         if (numInput) numInput.value = num;
         if (scoreValDirect) scoreValDirect.textContent = num;
+
+        document.querySelectorAll('#score-rubric-container [data-direct-score]').forEach(button => {
+            const selected = Number(button.dataset.directScore) === num;
+            button.className = `px-3 py-1.5 rounded-xl text-xs font-bold font-mono ${selected
+                ? 'bg-amber-500 text-gray-950 shadow-md ring-2 ring-amber-300'
+                : 'bg-gray-700 hover:bg-gray-600 text-gray-200'} transition active:scale-95`;
+        });
 
         updateScoreSummary(num, maxScore);
     }

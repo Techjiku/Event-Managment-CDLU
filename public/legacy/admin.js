@@ -7,6 +7,7 @@
 const AdminApp = (function() {
     let currentAdmin = null;
     let activeTab = 'overview';
+    let pendingCollegeImport = null;
 
     function loadSavedSession() {
         try {
@@ -70,7 +71,7 @@ const AdminApp = (function() {
 
     function switchTab(tabName) {
         const isSuperAdmin = currentAdmin && currentAdmin.role === 'Super Admin';
-        if (tabName === 'final-results' && !isSuperAdmin) {
+        if ((tabName === 'final-results' || tabName === 'database') && !isSuperAdmin) {
             tabName = 'overview';
         }
         activeTab = tabName;
@@ -121,25 +122,22 @@ const AdminApp = (function() {
     async function renderOverview() {
         const regs = await DBService.getRegistrations('All');
         const judges = await DBService.getJudges();
-        const scores = await DBService.getScores();
         const events = await DBService.getEvents('All');
 
         // Total Students (including individual + group team members)
         let totalParticipantCount = 0;
-        const uniqueColleges = new Set();
-
         regs.forEach(r => {
             totalParticipantCount += 1; // Primary participant
             if (r.team_members && Array.isArray(r.team_members)) {
                 totalParticipantCount += r.team_members.length;
             }
-            if (r.college_name) uniqueColleges.add(r.college_name.trim());
         });
 
+        const activeColleges = DBService.getAffiliatedColleges();
         document.getElementById('admin-stat-students').textContent = totalParticipantCount;
         document.getElementById('admin-stat-registrations').textContent = regs.length;
-        document.getElementById('admin-stat-colleges').textContent = uniqueColleges.size;
-        document.getElementById('admin-stat-judges-scores').textContent = `${judges.length} / ${scores.length}`;
+        document.getElementById('admin-stat-colleges').textContent = activeColleges.length;
+        document.getElementById('admin-stat-judges').textContent = judges.length;
 
         const catCounts = { Music: 0, Dance: 0, Theatre: 0, Literary: 0, 'Fine Arts': 0, Procession: 0 };
         regs.forEach(r => {
@@ -155,6 +153,12 @@ const AdminApp = (function() {
     }
 
     // 2. STUDENTS & TEAMS MASTER LIST
+    function totalParticipantCountForRegistrations(registrations) {
+        return registrations.reduce((total, registration) =>
+            total + 1 + (Array.isArray(registration.team_members) ? registration.team_members.length : 0), 0
+        );
+    }
+
     async function renderStudentsList() {
         const categoryFilter = document.getElementById('admin-student-cat-filter');
         const searchInput = document.getElementById('admin-student-search');
@@ -174,7 +178,7 @@ const AdminApp = (function() {
         }
 
         container.innerHTML = `
-            <div class="mb-3 text-xs font-semibold text-gray-400">${filtered.length} registrations</div>
+            <div class="mb-3 text-xs font-semibold text-gray-400">Students: ${totalParticipantCountForRegistrations(filtered)} · Registrations: ${filtered.length}</div>
             <table class="min-w-[1000px] w-full text-left text-xs">
                 <thead><tr class="border-b border-gray-700 text-gray-400">
                     <th class="p-3">Registration</th><th class="p-3">Participant / team</th>
@@ -366,6 +370,8 @@ const AdminApp = (function() {
         const judges = await DBService.getJudges();
         const container = document.getElementById('admin-judges-grid');
         if (!container) return;
+        const countElement = document.getElementById('admin-judges-count');
+        if (countElement) countElement.textContent = `${judges.length} judges`;
         const allEvents = await DBService.getEvents('All');
         const eventFilter = document.getElementById('admin-judge-event-filter');
         const selectedEventId = eventFilter ? eventFilter.value : '';
@@ -954,48 +960,33 @@ const AdminApp = (function() {
                 </div>
             `;
 
-            summaryContainer.innerHTML = filteredSummaries.length ? `
-                <table class="final-results-table">
-                    <caption>College trophy standings · 10 / 8 / 5 event points</caption>
-                    <thead><tr><th>Rank</th><th>College ID</th><th>College</th><th>Eligible events</th><th>Participants</th><th>Total trophy points</th><th>Average trophy points</th><th>Judge submissions</th></tr></thead>
-                    <tbody>${filteredSummaries.map(summary => `
-                        <tr>
-                            <td>${summary.rank == null ? 'Pending evaluation' : `${summary.rank}${summary.rank <= 3 ? ' 🏆' : ''}`}</td>
-                            <td>${summary.entries[0] && summary.entries[0].registration.college_id ? escapeHtml(summary.entries[0].registration.college_id) : '—'}</td>
-                            <td>${escapeHtml(summary.college)}</td>
-                            <td>${summary.eligibleEvents}</td>
-                            <td>${summary.participants.size}</td>
-                            <td class="font-bold text-amber-400">${summary.rank != null ? summary.trophyScore : '—'}</td>
-                            <td class="font-bold">${summary.rank != null ? summary.averageTrophyPoints.toFixed(2) : '—'}</td>
-                            <td>${summary.judgeSubmissions}</td>
-                        </tr>
-                    `).join('')}</tbody>
-                </table>
-                <p class="final-results-note">A college is ranked only when every event result in the selected view has all three locked judge scores. Trophy points: 1st = 10, 2nd = 8, 3rd = 5. Ties must be resolved before publication.</p>
-            ` : '<p class="p-6 text-center text-gray-400">No registered college entries match these filters.</p>';
+            const activeColleges = DBService.getAffiliatedColleges();
+            const summaryById = new Map(filteredSummaries.map(summary => [
+                Number(summary.entries[0] && summary.entries[0].registration.college_id),
+                summary
+            ]));
+            const collegeScoreRows = activeColleges.map(college => ({
+                college,
+                summary: summaryById.get(Number(college.id))
+            }));
 
-            detailsContainer.innerHTML = orderedRows.length ? `
+            summaryContainer.innerHTML = collegeScoreRows.length ? `
                 <table class="final-results-table">
-                    <caption>Event-wise results · combined score, position and trophy points</caption>
-                    <thead><tr><th>Category</th><th>College</th><th>Event</th><th>Team / registration</th><th>Participants</th><th>Judge score breakdown</th><th>Combined score</th><th>Position</th><th>Trophy points</th><th>Status</th></tr></thead>
-                    <tbody>${orderedRows.map(row => `
+                    <caption>College trophy scoreboard · all active colleges</caption>
+                    <thead><tr><th>Sr. No.</th><th>College name</th><th>Team code</th><th>Trophy score</th></tr></thead>
+                    <tbody>${collegeScoreRows.map((row, index) => `
                         <tr>
-                            <td>${escapeHtml(row.category)}</td>
-                            <td>${escapeHtml(row.college)}${row.registration.college_id ? `<br><small>ID: ${escapeHtml(row.registration.college_id)}</small>` : ''}</td>
-                            <td>${escapeHtml(row.registration.event_name || row.registration.event_id)}</td>
-                            <td>${escapeHtml(row.registration.id)}${row.registration.chest_number ? `<br>Chest: ${escapeHtml(row.registration.chest_number)}` : ''}</td>
-                            <td>${row.participants.map(escapeHtml).join('<br>') || '—'}</td>
-                            <td>${row.scores.length ? row.scores.map(score =>
-                                `${escapeHtml(score.judge_name || score.judge_email)}: ${Number(score.total_score).toFixed(2)}`
-                            ).join('<br>') : 'No locked score'}</td>
-                                <td class="font-bold">${row.isComplete ? row.total.toFixed(2) : `Pending (${row.scores.length}/${row.expectedJudgeCount} judges)`}</td>
-                                <td>${row.position == null ? 'Pending' : row.position}</td>
-                                <td class="font-bold text-amber-400">${row.isComplete ? row.trophyPoints : '—'}</td>
-                                <td>${row.isComplete ? 'Finalized' : 'Pending'}</td>
+                            <td>${index + 1}</td>
+                            <td>${escapeHtml(row.college.name)}</td>
+                            <td>${escapeHtml(row.college.id)}</td>
+                            <td class="font-bold text-amber-400">${row.summary && row.summary.trophyScore != null ? row.summary.trophyScore : ''}</td>
                         </tr>
                     `).join('')}</tbody>
                 </table>
-            ` : '<p class="p-6 text-center text-gray-400">No registered event entries match these filters.</p>';
+                <p class="final-results-note">Every active college is listed. Trophy score remains blank until a finalized score produces trophy points.</p>
+            ` : '<p class="p-6 text-center text-gray-400">No active colleges found.</p>';
+
+            detailsContainer.innerHTML = '';
         } catch (error) {
             console.error('Unable to load final results:', error);
             summaryContainer.innerHTML = '<p class="p-6 text-center text-rose-300">Could not load final results. Check the database connection and try again.</p>';
@@ -1196,6 +1187,70 @@ const AdminApp = (function() {
         }
     }
 
+    function parseCollegeWorkbook(workbook) {
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+            const colleges = rows.map(row => {
+                const values = Object.entries(row);
+                const nameEntry = values.find(([key]) => /college|institution|institute|name/i.test(key));
+                const idEntry = values.find(([key]) => /team\s*code|college\s*id|code|id/i.test(key));
+                return {
+                    id: Number(String(idEntry ? idEntry[1] : '').replace(/[^\d]/g, '')),
+                    name: String(nameEntry ? nameEntry[1] : '').trim()
+                };
+            }).filter(college => college.id && college.name);
+
+            const duplicateIds = colleges.filter((college, index) =>
+                colleges.findIndex(item => item.id === college.id) !== index
+            );
+            const duplicateNames = colleges.filter((college, index) =>
+                colleges.findIndex(item => item.name.toLowerCase() === college.name.toLowerCase()) !== index
+            );
+            if (duplicateIds.length) throw new Error(`Duplicate team code found: ${duplicateIds[0].id}`);
+            if (duplicateNames.length) throw new Error(`Duplicate college name found: ${duplicateNames[0].name}`);
+            if (colleges.length === 0) throw new Error('No college rows found. Required columns: College Name and Team Code.');
+            return colleges;
+        }
+
+    async function previewCollegeImport() {
+            try {
+                if (typeof XLSX === 'undefined') throw new Error('Excel reader is unavailable. Check your internet connection and reload the portal.');
+                const input = document.getElementById('college-list-file');
+                if (!input || !input.files || !input.files[0]) throw new Error('Choose an Excel file first.');
+                const workbook = XLSX.read(await input.files[0].arrayBuffer(), { type: 'array' });
+                pendingCollegeImport = parseCollegeWorkbook(workbook);
+                const preview = document.getElementById('college-import-preview');
+                preview.classList.remove('hidden');
+                preview.innerHTML = `<strong>${pendingCollegeImport.length} colleges validated.</strong> Team codes are unique. Review the file, then click Publish to database.`;
+            } catch (error) {
+                pendingCollegeImport = null;
+                Swal.fire('Excel validation failed', error.message, 'error');
+            }
+        }
+
+    async function importCollegeList() {
+            try {
+                if (!currentAdmin || currentAdmin.role !== 'Super Admin') throw new Error('Only Super Admin can publish the college directory.');
+                if (!pendingCollegeImport) await previewCollegeImport();
+                if (!pendingCollegeImport) return;
+                const confirmation = await Swal.fire({
+                    icon: 'warning',
+                    title: 'Replace active college list?',
+                    text: `${pendingCollegeImport.length} validated colleges will become the active directory. Historical registrations are preserved.`,
+                    showCancelButton: true,
+                    confirmButtonText: 'Publish list',
+                    cancelButtonText: 'Cancel'
+                });
+                if (!confirmation.isConfirmed) return;
+                const count = await DBService.replaceAffiliatedColleges(pendingCollegeImport);
+                await Swal.fire('College list updated', `${count} colleges are now active in Supabase. Reloading portals...`, 'success');
+                window.location.reload();
+            } catch (error) {
+                console.error('College import failed:', error);
+                Swal.fire('College import failed', error.message || 'The college list was not updated.', 'error');
+        }
+    }
+
     async function copySupabaseSchema() {
         try {
             const resp = await fetch('supabase_schema.sql');
@@ -1264,6 +1319,8 @@ const AdminApp = (function() {
         viewJudgeRemarks,
         printOfficialAwardSheet,
         copySupabaseSchema,
+        previewCollegeImport,
+        importCollegeList,
         quickDemoAdminLogin
     };
 })();
