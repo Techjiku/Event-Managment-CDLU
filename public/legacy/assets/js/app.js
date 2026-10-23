@@ -532,13 +532,7 @@ const App = (function() {
             const saved = await DBService.addRegistration(registrationPayload);
 
             // Celebration confetti
-            if (window.confetti) {
-                confetti({
-                    particleCount: 100,
-                    spread: 80,
-                    origin: { y: 0.5 }
-                });
-            }
+            if (window.NativeUI) NativeUI.celebrate();
 
             // Reset form
             document.getElementById('registration-form').reset();

@@ -486,14 +486,7 @@ const JudgesApp = (function() {
             return;
         }
 
-        // Confetti celebration if locked
-        if (isLocked && window.confetti) {
-            confetti({
-                particleCount: 60,
-                spread: 70,
-                origin: { y: 0.6 }
-            });
-        }
+        if (isLocked && window.NativeUI) NativeUI.celebrate();
 
         closeScoringModal();
 
