@@ -84,3 +84,31 @@ WHERE college_id IS NULL;
 
 Do not assign an old demo number such as `2608` unless that exact ID exists in
 `public.affiliated_colleges`.
+
+## If the schema workflow says `affiliated_colleges` does not exist
+
+That message means GitHub Actions is running an older or different
+`supabase_schema.sql`; the current file creates `public.affiliated_colleges`
+before the cleanup statements (line 49 before line 197). Do not run the
+cleanup `UPDATE` by itself.
+
+1. Commit and push the root `supabase_schema.sql` and
+   `.github/workflows/supabase-schema-sync.yml` from this folder:
+   `Event-Managment-CDLU`.
+2. Open the failed workflow run. It must show `Schema preflight passed` and
+   print the first 25 lines containing the schema header, not a cleanup query.
+3. If it does not, the wrong folder was pushed. The GitHub repository root must
+   contain these paths:
+   `supabase_schema.sql`, `.github/workflows/supabase-schema-sync.yml`,
+   `index.html`, and `assets/`.
+4. Re-run the workflow only after the preflight passes.
+5. In Supabase SQL Editor, verify:
+
+```sql
+SELECT to_regclass('public.affiliated_colleges') AS affiliated_colleges;
+SELECT COUNT(*) AS college_count FROM public.affiliated_colleges;
+```
+
+The expected result is a non-null table name and 63 colleges. Do not manually
+insert `2608`; it is an old/demo ID and is intentionally cleared when it
+cannot be matched to the official list.

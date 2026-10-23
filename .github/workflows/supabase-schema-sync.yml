@@ -47,4 +47,10 @@ jobs:
       - name: Apply schema
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-        run: supabase db query --linked --file supabase_schema.sql
+        run: |
+          test -f supabase_schema.sql
+          grep -q 'CREATE TABLE IF NOT EXISTS public.affiliated_colleges' supabase_schema.sql
+          grep -q 'CREATE TABLE IF NOT EXISTS public.registrations' supabase_schema.sql
+          echo "Schema preflight passed. First 25 lines:"
+          sed -n '1,25p' supabase_schema.sql
+          supabase db query --linked --file supabase_schema.sql
