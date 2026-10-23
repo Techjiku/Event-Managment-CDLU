@@ -6,37 +6,40 @@
 
 const DBService = (function() {
     const AFFILIATED_COLLEGES = [
-        { id: 2601, name: 'JCD M College of Education, Sirsa' },
-        { id: 2644, name: 'Shah Satnam Ji Boys College, Sirsa' },
-        { id: 2628, name: 'M.M. College of Education, Fatehabad' },
-        { id: 2661, name: 'CKRM Degree College, Jamal, Sirsa' },
-        { id: 2639, name: 'JCDM College of Engineering, Sirsa (Haryana)' },
-        { id: 2633, name: 'Dr. B.R. Ambedkar College, Mandi Dabwali' },
-        { id: 2647, name: 'Government College, Bhuna' },
-        { id: 2606, name: 'CMK National PG College, Sirsa' },
-        { id: 2638, name: 'Shri Guru Hari Singh College, Jiwan Nagar' },
-        { id: 2660, name: 'Shah Satnam Ji College of Education, Sirsa' },
-        { id: 2654, name: 'Government College for Girls, Rania' },
-        { id: 2632, name: 'Shaheed Baba Deep Singh College of Education, Aherwan, Ratia' },
-        { id: 2617, name: 'K.T. Government College, Ratia' },
-        { id: 2669, name: 'Shah Satnam Ji Girls College, Sirsa' },
-        { id: 2614, name: 'Lala Hansraj Phutela College of Law' },
-        { id: 2635, name: 'Mata Harki Devi College' },
-        { id: 2618, name: 'Janta Girls P.G. College' },
-        { id: 2636, name: 'SDS/GCW, Ratia' },
-        { id: 2655, name: 'Government National College, Sirsa' },
-        { id: 2607, name: 'JCD Institute of Business Management, Sirsa' },
-        { id: 2622, name: 'CMG/GCW Bhodia, Fatehabad' },
-        { id: 2619, name: 'JCD Memorial College, Sirsa' },
-        { id: 2640, name: 'Mata Harki Devi College of Education, Odhan' },
-        { id: 2641, name: 'Government College, Kalawali' },
-        { id: 2620, name: 'Government College for Women, Sirsa' },
-        { id: 2657, name: 'MP College Mandi Dabwali' },
-        { id: 2643, name: 'GOVT. College Bhattu Kallan, Fatehabad' },
-        { id: 2645, name: 'Shaheed Bhagat Singh College of Education, Kalawali, Sirsa' },
-        { id: 2637, name: 'M.M.P.G College Fatehabad' },
+        { id: 2606, name: 'C.M.K. National PG College, Sirsa (Govt. Aided)' },
+        { id: 2621, name: 'C.R. D.A.V. Girls Degree College, Ellenabad, Distt. Sirsa (SFS)' },
+        { id: 2661, name: 'Ch. K.R. Memorial Degree College (for Girls), Vill. Jamal, Distt. Sirsa (SFS)' },
+        { id: 2622, name: 'Ch. Mani Ram Godara Government College for Women, Bhodia Khera, Fatehabad (Govt.)' },
+        { id: 2633, name: 'Dr. Bhim Rao Ambedkar Government College, Dabwali (Govt.)' },
+        { id: 2620, name: 'Government College for Women, Sirsa (Govt.)' },
+        { id: 2643, name: 'Government College, Bhattu Kalan, Distt. Fatehabad (Govt.)' },
+        { id: 2655, name: 'Government National College, Sirsa (Govt.)' },
+        { id: 2647, name: 'Govt. College Bhuna, Fatehabad (Govt.)' },
+        { id: 2641, name: 'Govt. College, Kalanwali, Sirsa (Govt.)' },
+        { id: 2654, name: 'Govt. College for Girls, Rania, Sirsa (Govt.)' },
+        { id: 2607, name: 'Jan Nayak Ch. Devi Lal Institute of Business Management, Sirsa (SFS)' },
+        { id: 2601, name: 'Jan Nayak Ch. Devi Lal College of Education, Barnala Road, Sirsa (SFS)' },
+        { id: 2639, name: 'Jan Nayak Ch. Devi Lal Memorial College of Engineering, Barnala Road, Sirsa (SFS)' },
+        { id: 2619, name: 'Jan Nayak Ch. Devi Lal Memorial College, Barnala Road, Sirsa (SFS)' },
+        { id: 2618, name: 'Janta Girls College, Ellenabad, Distt. Sirsa (SFS)' },
+        { id: 2617, name: 'K.T. Government College, Ratia, Distt. Fatehabad (Govt.)' },
+        { id: 2614, name: 'Lala Hans Raj Phutela College of Law, Sirsa (SFS)' },
+        { id: 2628, name: 'M.M. College of Education, Sirsa Road, Fatehabad (SFS)' },
+        { id: 2637, name: 'M.M. College, Fatehabad (SFS)' },
+        { id: 2657, name: 'M.P. College for Women, Dabwali, Distt. Sirsa (Govt. Aided)' },
+        { id: 2635, name: 'Mata Harki Devi College for Women, Odhan, Distt. Sirsa (SFS)' },
+        { id: 2640, name: 'Mata Harki Devi College of Education for Women, Odhan, Distt. Sirsa (SFS)' },
+        { id: 2652, name: 'Nehru College of Education, Vill. Alikan, Teh. Dabwali, Distt. Sirsa (SFS)' },
+        { id: 2644, name: "Shah Satnam Ji Boy's College, Begu, Sirsa (SFS)" },
+        { id: 2660, name: 'Shah Satnam Ji College of Education, Dera Sacha Sauda, Sirsa (SFS)' },
+        { id: 2609, name: "Shah Satnam Ji Girl's College, Sirsa (SFS)" },
+        { id: 2632, name: 'Shaheed Baba Deep Singh College of Education, Vill. Aharwan, Ratia, Fatehabad (A Minority Status) (SFS)' },
+        { id: 2645, name: 'Shaheed Bhagat Singh College of Education, Kalanwali, Distt. Sirsa (SFS)' },
+        { id: 2636, name: 'Shaheed Davinder Singh Govt. College for Women, Ratia, Distt. Fatehabad (Govt.)' },
+        { id: 2638, name: 'Sri Guru Hari Singh College, Sri Jiwan Nagar, Distt. Sirsa (Govt. Aided)' },
     ];
     const COLLEGE_ID_BY_NAME = Object.fromEntries(AFFILIATED_COLLEGES.map(college => [college.name, college.id]));
+    let activeAffiliatedColleges = AFFILIATED_COLLEGES;
 
     // Initial Seed Data for immediate preview and fallback
     const INITIAL_EVENTS = [
@@ -550,6 +553,17 @@ const DBService = (function() {
 
             isCloudConnected = true;
             isSchemaPending = false;
+            const { data: colleges, error: collegeError } = await sb
+                .from('affiliated_colleges')
+                .select('id, name')
+                .eq('is_active', true)
+                .order('name');
+            if (!collegeError && Array.isArray(colleges) && colleges.length > 0) {
+                activeAffiliatedColleges = colleges.map(college => ({
+                    id: Number(college.id),
+                    name: String(college.name)
+                }));
+            }
             console.log('✓ Connected to Supabase Cloud Database successfully!');
             return { connected: true, message: 'Connected to Supabase Live Cloud' };
         } catch (err) {
@@ -569,7 +583,26 @@ const DBService = (function() {
         },
 
         getAffiliatedColleges: function() {
-            return AFFILIATED_COLLEGES.map(college => ({ ...college }));
+            return activeAffiliatedColleges.map(college => ({ ...college }));
+        },
+
+        replaceAffiliatedColleges: async function(colleges) {
+            if (!Array.isArray(colleges) || colleges.length === 0) {
+                throw new Error('The college list is empty.');
+            }
+            const sb = window.getSupabase();
+            if (!isCloudConnected || !sb) {
+                throw new Error('Supabase is not connected. Connect to the cloud before importing colleges.');
+            }
+            const { data, error } = await sb.rpc('replace_affiliated_colleges', {
+                college_rows: colleges.map(college => ({
+                    id: Number(college.id),
+                    name: String(college.name).trim()
+                }))
+            });
+            if (error) throw new Error(error.message || 'Supabase rejected the college import.');
+            localStorage.setItem('cdlu_affiliated_colleges', JSON.stringify(colleges));
+            return data;
         },
 
         init: async function() {

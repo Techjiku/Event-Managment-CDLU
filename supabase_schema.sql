@@ -53,39 +53,110 @@ CREATE TABLE IF NOT EXISTS public.affiliated_colleges (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-UPDATE public.affiliated_colleges SET is_active = FALSE WHERE id NOT IN (2601,2644,2628,2661,2639,2633,2647,2606,2638,2660,2654,2632,2617,2669,2614,2635,2618,2636,2655,2607,2622,2619,2640,2641,2620,2657,2643,2645,2637);
+UPDATE public.affiliated_colleges SET is_active = FALSE WHERE id NOT IN (2606,2621,2661,2622,2633,2620,2643,2655,2647,2641,2654,2607,2601,2639,2619,2618,2617,2614,2628,2637,2657,2635,2640,2652,2644,2660,2609,2632,2645,2636,2638);
 
 INSERT INTO public.affiliated_colleges (id, name) VALUES
-    (2601, 'JCD M College of Education, Sirsa'),
-    (2644, 'Shah Satnam Ji Boys College, Sirsa'),
-    (2628, 'M.M. College of Education, Fatehabad'),
-    (2661, 'CKRM Degree College, Jamal, Sirsa'),
-    (2639, 'JCDM College of Engineering, Sirsa (Haryana)'),
-    (2633, 'Dr. B.R. Ambedkar College, Mandi Dabwali'),
-    (2647, 'Government College, Bhuna'),
-    (2606, 'CMK National PG College, Sirsa'),
-    (2638, 'Shri Guru Hari Singh College, Jiwan Nagar'),
-    (2660, 'Shah Satnam Ji College of Education, Sirsa'),
-    (2654, 'Government College for Girls, Rania'),
-    (2632, 'Shaheed Baba Deep Singh College of Education, Aherwan, Ratia'),
-    (2617, 'K.T. Government College, Ratia'),
-    (2669, 'Shah Satnam Ji Girls College, Sirsa'),
-    (2614, 'Lala Hansraj Phutela College of Law'),
-    (2635, 'Mata Harki Devi College'),
-    (2618, 'Janta Girls P.G. College'),
-    (2636, 'SDS/GCW, Ratia'),
-    (2655, 'Government National College, Sirsa'),
-    (2607, 'JCD Institute of Business Management, Sirsa'),
-    (2622, 'CMG/GCW Bhodia, Fatehabad'),
-    (2619, 'JCD Memorial College, Sirsa'),
-    (2640, 'Mata Harki Devi College of Education, Odhan'),
-    (2641, 'Government College, Kalawali'),
-    (2620, 'Government College for Women, Sirsa'),
-    (2657, 'MP College Mandi Dabwali'),
-    (2643, 'GOVT. College Bhattu Kallan, Fatehabad'),
-    (2645, 'Shaheed Bhagat Singh College of Education, Kalawali, Sirsa'),
-    (2637, 'M.M.P.G College Fatehabad')
+    (2606, 'C.M.K. National PG College, Sirsa (Govt. Aided)'),
+    (2621, 'C.R. D.A.V. Girls Degree College, Ellenabad, Distt. Sirsa (SFS)'),
+    (2661, 'Ch. K.R. Memorial Degree College (for Girls), Vill. Jamal, Distt. Sirsa (SFS)'),
+    (2622, 'Ch. Mani Ram Godara Government College for Women, Bhodia Khera, Fatehabad (Govt.)'),
+    (2633, 'Dr. Bhim Rao Ambedkar Government College, Dabwali (Govt.)'),
+    (2620, 'Government College for Women, Sirsa (Govt.)'),
+    (2643, 'Government College, Bhattu Kalan, Distt. Fatehabad (Govt.)'),
+    (2655, 'Government National College, Sirsa (Govt.)'),
+    (2647, 'Govt. College Bhuna, Fatehabad (Govt.)'),
+    (2641, 'Govt. College, Kalanwali, Sirsa (Govt.)'),
+    (2654, 'Govt. College for Girls, Rania, Sirsa (Govt.)'),
+    (2607, 'Jan Nayak Ch. Devi Lal Institute of Business Management, Sirsa (SFS)'),
+    (2601, 'Jan Nayak Ch. Devi Lal College of Education, Barnala Road, Sirsa (SFS)'),
+    (2639, 'Jan Nayak Ch. Devi Lal Memorial College of Engineering, Barnala Road, Sirsa (SFS)'),
+    (2619, 'Jan Nayak Ch. Devi Lal Memorial College, Barnala Road, Sirsa (SFS)'),
+    (2618, 'Janta Girls College, Ellenabad, Distt. Sirsa (SFS)'),
+    (2617, 'K.T. Government College, Ratia, Distt. Fatehabad (Govt.)'),
+    (2614, 'Lala Hans Raj Phutela College of Law, Sirsa (SFS)'),
+    (2628, 'M.M. College of Education, Sirsa Road, Fatehabad (SFS)'),
+    (2637, 'M.M. College, Fatehabad (SFS)'),
+    (2657, 'M.P. College for Women, Dabwali, Distt. Sirsa (Govt. Aided)'),
+    (2635, 'Mata Harki Devi College for Women, Odhan, Distt. Sirsa (SFS)'),
+    (2640, 'Mata Harki Devi College of Education for Women, Odhan, Distt. Sirsa (SFS)'),
+    (2652, 'Nehru College of Education, Vill. Alikan, Teh. Dabwali, Distt. Sirsa (SFS)'),
+    (2644, 'Shah Satnam Ji Boys College, Begu, Sirsa (SFS)'),
+    (2660, 'Shah Satnam Ji College of Education, Dera Sacha Sauda, Sirsa (SFS)'),
+    (2609, 'Shah Satnam Ji Girls College, Sirsa (SFS)'),
+    (2632, 'Shaheed Baba Deep Singh College of Education, Vill. Aharwan, Ratia, Fatehabad (A Minority Status) (SFS)'),
+    (2645, 'Shaheed Bhagat Singh College of Education, Kalanwali, Sirsa (SFS)'),
+    (2636, 'Shaheed Davinder Singh Govt. College for Women, Ratia, Distt. Fatehabad (Govt.)'),
+    (2638, 'Sri Guru Hari Singh College, Sri Jiwan Nagar, Distt. Sirsa (Govt. Aided)')
 ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, is_active = TRUE;
+
+-- Allows the super-admin portal to replace the active college directory from
+-- a validated Excel import without requiring a manual SQL command.
+CREATE OR REPLACE FUNCTION public.replace_affiliated_colleges(college_rows JSONB)
+RETURNS INTEGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    imported_count INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO imported_count
+    FROM jsonb_to_recordset(college_rows) AS rows(id INTEGER, name TEXT);
+
+    IF imported_count = 0 THEN
+        RAISE EXCEPTION 'College import is empty.';
+    END IF;
+
+    IF EXISTS (
+        SELECT id
+        FROM jsonb_to_recordset(college_rows) AS rows(id INTEGER, name TEXT)
+        GROUP BY id
+        HAVING COUNT(*) > 1
+    ) THEN
+        RAISE EXCEPTION 'College import contains duplicate team codes.';
+    END IF;
+
+    IF EXISTS (
+        SELECT name
+        FROM jsonb_to_recordset(college_rows) AS rows(id INTEGER, name TEXT)
+        GROUP BY lower(trim(name))
+        HAVING COUNT(*) > 1
+    ) THEN
+        RAISE EXCEPTION 'College import contains duplicate college names.';
+    END IF;
+
+    IF EXISTS (
+        SELECT 1
+        FROM jsonb_to_recordset(college_rows) AS rows(id INTEGER, name TEXT)
+        WHERE id IS NULL OR id <= 0 OR name IS NULL OR trim(name) = ''
+    ) THEN
+        RAISE EXCEPTION 'Every college must have a positive team code and a name.';
+    END IF;
+
+    UPDATE public.affiliated_colleges
+    SET is_active = FALSE
+    WHERE id NOT IN (
+        SELECT id
+        FROM jsonb_to_recordset(college_rows) AS rows(id INTEGER, name TEXT)
+    );
+
+    INSERT INTO public.affiliated_colleges (id, name, is_active)
+    SELECT id, trim(name), TRUE
+    FROM jsonb_to_recordset(college_rows) AS rows(id INTEGER, name TEXT)
+    ON CONFLICT (id) DO UPDATE
+    SET name = EXCLUDED.name, is_active = TRUE;
+
+    UPDATE public.registrations AS registrations
+    SET college_name = colleges.name
+    FROM public.affiliated_colleges AS colleges
+    WHERE registrations.college_id = colleges.id
+      AND colleges.is_active = TRUE;
+
+    RETURN imported_count;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.replace_affiliated_colleges(JSONB) TO anon, authenticated;
 
 -- Table: registrations (Students & Teams)
 CREATE EXTENSION IF NOT EXISTS pgcrypto;

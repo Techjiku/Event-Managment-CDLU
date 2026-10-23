@@ -71,6 +71,7 @@
     
     <!-- Supabase JS Client v2 CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <style>
         body {
@@ -1474,6 +1475,22 @@
                                 </button>
                                 <button onclick="AdminApp.copySupabaseSchema()" class="px-4 py-2 rounded-xl bg-indigo-950/60 hover:bg-indigo-900 text-indigo-300 border border-indigo-800/60 text-xs font-semibold">
                                     <i class="fas fa-copy mr-1"></i> SQL Schema कॉपी करें
+                                </button>
+                            </div>
+                        </div>
+                        <div class="max-w-2xl mt-6 bg-gray-900/60 p-6 rounded-2xl border border-gray-800 space-y-4">
+                            <div>
+                                <h4 class="text-sm font-bold text-white">Update affiliated colleges</h4>
+                                <p class="text-xs text-gray-400 mt-1">Upload an Excel file with columns <strong>College Name</strong> and <strong>Team Code</strong>. The validated list will replace the active directory.</p>
+                            </div>
+                            <input id="college-list-file" type="file" accept=".xlsx,.xls" class="block w-full text-xs text-gray-300 file:mr-3 file:rounded-lg file:border-0 file:bg-indigo-600 file:px-3 file:py-2 file:text-xs file:font-bold file:text-white hover:file:bg-indigo-500" />
+                            <div id="college-import-preview" class="hidden text-xs text-gray-300"></div>
+                            <div class="flex flex-wrap gap-3">
+                                <button type="button" onclick="AdminApp.previewCollegeImport()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold">
+                                    <i class="fas fa-file-arrow-up mr-1"></i> Preview Excel
+                                </button>
+                                <button type="button" onclick="AdminApp.importCollegeList()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold">
+                                    <i class="fas fa-cloud-arrow-up mr-1"></i> Publish to database
                                 </button>
                             </div>
                         </div>

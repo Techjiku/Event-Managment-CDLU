@@ -87,8 +87,8 @@ Do not assign an old demo number such as `2608` unless that exact ID exists in
 
 ## Updated affiliated-college list
 
-The current XLSX contains 29 unique colleges. The duplicate `SDS/SGCW, Ratia`
-row was removed, and the corrected IDs are used consistently by registration,
+The current XLSX contains 31 unique colleges. Its unique Team Codes are used
+consistently by registration,
 judge score entry, scoreboards, final results, and the Supabase seed.
 
 To update an existing Supabase database manually, run this after taking a
@@ -160,9 +160,28 @@ WHERE is_active = TRUE
 ORDER BY id;
 ```
 
-The active count must be `29`. Run the updated
+The active count must be `31`. Run the updated
 `supabase_schema.sql` through GitHub Actions after this manual update so new
 deployments remain synchronized.
+
+## Uploading future college Excel files
+
+The Super Admin portal now has **Database -> Update affiliated colleges**.
+Upload an `.xlsx` or `.xls` file whose first sheet contains columns named
+`College Name` and `Team Code` (the importer also accepts `Name`, `Institute`,
+`College ID`, or `Code`). Click **Preview Excel**, resolve any duplicate or
+empty values, then click **Publish to database**.
+
+The publish operation validates the whole file, deactivates colleges no longer
+in the file, upserts the new IDs/names, updates `registrations.college_name`
+for existing college IDs, and reloads the portal. Historical registrations
+and scores are preserved; old college rows are deactivated instead of deleted.
+All public portals load the active list from Supabase at startup, so no code
+change or manual SQL command is needed for future uploads.
+
+One-time setup is required: apply the current `supabase_schema.sql` once so
+the `replace_affiliated_colleges(jsonb)` RPC exists. The upload tool will show
+a clear Supabase error if that setup has not been applied.
 
 ## If the schema workflow says `affiliated_colleges` does not exist
 

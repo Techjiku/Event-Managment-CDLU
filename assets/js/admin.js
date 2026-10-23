@@ -7,6 +7,7 @@
 const AdminApp = (function() {
     let currentAdmin = null;
     let activeTab = 'overview';
+    let pendingCollegeImport = null;
 
     function loadSavedSession() {
         try {
@@ -1195,6 +1196,70 @@ const AdminApp = (function() {
             console.error('Cloud connection check failed:', error);
             Swal.fire('Connection check failed', error.message || 'Could not verify the database connection.', 'error');
         }
+
+        function parseCollegeWorkbook(workbook) {
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+            const colleges = rows.map(row => {
+                const values = Object.entries(row);
+                const nameEntry = values.find(([key]) => /college|institution|institute|name/i.test(key));
+                const idEntry = values.find(([key]) => /team\s*code|college\s*id|code|id/i.test(key));
+                return {
+                    id: Number(String(idEntry ? idEntry[1] : '').replace(/[^\d]/g, '')),
+                    name: String(nameEntry ? nameEntry[1] : '').trim()
+                };
+            }).filter(college => college.id && college.name);
+
+            const duplicateIds = colleges.filter((college, index) =>
+                colleges.findIndex(item => item.id === college.id) !== index
+            );
+            const duplicateNames = colleges.filter((college, index) =>
+                colleges.findIndex(item => item.name.toLowerCase() === college.name.toLowerCase()) !== index
+            );
+            if (duplicateIds.length) throw new Error(`Duplicate team code found: ${duplicateIds[0].id}`);
+            if (duplicateNames.length) throw new Error(`Duplicate college name found: ${duplicateNames[0].name}`);
+            if (colleges.length === 0) throw new Error('No college rows found. Required columns: College Name and Team Code.');
+            return colleges;
+        }
+
+        async function previewCollegeImport() {
+            try {
+                if (typeof XLSX === 'undefined') throw new Error('Excel reader is unavailable. Check your internet connection and reload the portal.');
+                const input = document.getElementById('college-list-file');
+                if (!input || !input.files || !input.files[0]) throw new Error('Choose an Excel file first.');
+                const workbook = XLSX.read(await input.files[0].arrayBuffer(), { type: 'array' });
+                pendingCollegeImport = parseCollegeWorkbook(workbook);
+                const preview = document.getElementById('college-import-preview');
+                preview.classList.remove('hidden');
+                preview.innerHTML = `<strong>${pendingCollegeImport.length} colleges validated.</strong> Team codes are unique. Review the file, then click Publish to database.`;
+            } catch (error) {
+                pendingCollegeImport = null;
+                Swal.fire('Excel validation failed', error.message, 'error');
+            }
+        }
+
+        async function importCollegeList() {
+            try {
+                if (!currentAdmin || currentAdmin.role !== 'Super Admin') throw new Error('Only Super Admin can publish the college directory.');
+                if (!pendingCollegeImport) await previewCollegeImport();
+                if (!pendingCollegeImport) return;
+                const confirmation = await Swal.fire({
+                    icon: 'warning',
+                    title: 'Replace active college list?',
+                    text: `${pendingCollegeImport.length} validated colleges will become the active directory. Historical registrations are preserved.`,
+                    showCancelButton: true,
+                    confirmButtonText: 'Publish list',
+                    cancelButtonText: 'Cancel'
+                });
+                if (!confirmation.isConfirmed) return;
+                const count = await DBService.replaceAffiliatedColleges(pendingCollegeImport);
+                await Swal.fire('College list updated', `${count} colleges are now active in Supabase. Reloading portals...`, 'success');
+                window.location.reload();
+            } catch (error) {
+                console.error('College import failed:', error);
+                Swal.fire('College import failed', error.message || 'The college list was not updated.', 'error');
+            }
+        }
     }
 
     async function copySupabaseSchema() {
@@ -1265,6 +1330,8 @@ const AdminApp = (function() {
         viewJudgeRemarks,
         printOfficialAwardSheet,
         copySupabaseSchema,
+        previewCollegeImport,
+        importCollegeList,
         quickDemoAdminLogin
     };
 })();
