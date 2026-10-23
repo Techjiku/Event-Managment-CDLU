@@ -61,6 +61,20 @@
         ['13th Triveni Yuva Mahotsav 2026 — Final Results', '13वां त्रिवेणी युवा महोत्सव 2026 — अंतिम परिणाम'],
         ['Final score', 'अंतिम स्कोर'],
         ['Judge submissions', 'जजों द्वारा सबमिट स्कोर'],
+        ['Number of judges', 'जजों की संख्या'],
+        ['Authorized judges', 'अधिकृत जज'],
+        ['कुल पंजीकृत प्रतिभागी', 'Registered participants'],
+        ['कुल प्रविष्टियां / दल', 'Total entries / teams'],
+        ['संबद्ध महाविद्यालय', 'Affiliated colleges'],
+        ['अधिकृत जज व स्कोर', 'Authorized judges and scores'],
+        ['श्रेणी अनुसार पंजीकरण (Category Breakdown)', 'Registrations by category'],
+        ['समीक्षा (Overview)', 'Overview'],
+        ['पंजीकृत छात्र (Students)', 'Registered students'],
+        ['जज प्रबंधन (Judges)', 'Judge management'],
+        ['लाइव स्कोरबोर्ड (Results)', 'Live scoreboard'],
+        ['डेटाबेस (DB Status)', 'Database status'],
+        ['रिफ्रेश', 'Refresh'],
+        ['लॉगआउट', 'Logout'],
         ['No locked score', 'कोई अंतिम स्कोर नहीं'],
         ['Finalized', 'अंतिम रूप से सबमिट'],
         ['Submitted · score hidden', 'सबमिट हो गया · स्कोर छिपा है'],
@@ -487,17 +501,22 @@
     let observer;
     let scheduled = false;
     const pendingRecords = [];
+    const originalText = new WeakMap();
+    const originalAttributes = new WeakMap();
 
     function translateNode(node) {
-        const original = node.nodeValue;
+        if (!originalText.has(node)) originalText.set(node, node.nodeValue);
+        const original = originalText.get(node);
         const trimmed = original.trim();
         if (!trimmed) return;
 
-        const translation = dictionaries[language].get(trimmed);
-        if (translation && translation !== trimmed) {
+        const translation = dictionaries[language].get(trimmed) || trimmed;
+        if (translation !== trimmed) {
             const leadingWhitespace = original.match(/^\s*/)[0];
             const trailingWhitespace = original.match(/\s*$/)[0];
             node.nodeValue = `${leadingWhitespace}${translation}${trailingWhitespace}`;
+        } else if (node.nodeValue !== original) {
+            node.nodeValue = original;
         }
     }
 
@@ -511,8 +530,16 @@
             elements.forEach(item => {
                 attributeNames.forEach(attribute => {
                     const value = item.getAttribute(attribute);
-                    const translation = value && dictionaries[language].get(value.trim());
-                    if (translation) item.setAttribute(attribute, translation);
+                    if (value === null) return;
+                    let saved = originalAttributes.get(item);
+                    if (!saved) {
+                        saved = {};
+                        originalAttributes.set(item, saved);
+                    }
+                    if (!(attribute in saved)) saved[attribute] = value;
+                    const source = saved[attribute];
+                    const translation = dictionaries[language].get(source.trim()) || source;
+                    item.setAttribute(attribute, translation);
                 });
             });
         }
@@ -558,8 +585,16 @@
                 }
                 if (record.type === 'attributes') {
                     const value = record.target.getAttribute(record.attributeName);
-                    const translation = value && dictionaries[language].get(value.trim());
-                    if (translation) record.target.setAttribute(record.attributeName, translation);
+                    if (value === null) return;
+                    let saved = originalAttributes.get(record.target);
+                    if (!saved) {
+                        saved = {};
+                        originalAttributes.set(record.target, saved);
+                    }
+                    if (!(record.attributeName in saved)) saved[record.attributeName] = value;
+                    const source = saved[record.attributeName];
+                    const translation = dictionaries[language].get(source.trim()) || source;
+                    record.target.setAttribute(record.attributeName, translation);
                     return;
                 }
                 record.addedNodes.forEach(node => {

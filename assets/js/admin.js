@@ -139,6 +139,7 @@ const AdminApp = (function() {
         document.getElementById('admin-stat-students').textContent = totalParticipantCount;
         document.getElementById('admin-stat-registrations').textContent = regs.length;
         document.getElementById('admin-stat-colleges').textContent = uniqueColleges.size;
+        document.getElementById('admin-stat-judges').textContent = judges.length;
         document.getElementById('admin-stat-judges-scores').textContent = `${judges.length} / ${scores.length}`;
 
         const catCounts = { Music: 0, Dance: 0, Theatre: 0, Literary: 0, 'Fine Arts': 0, Procession: 0 };
