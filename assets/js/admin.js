@@ -663,7 +663,7 @@ const AdminApp = (function() {
                     hasCompleteScores: values.length >= 3
                 };
             })
-            .filter(row => row.category && row.judgeScores.length > 0);
+            .filter(row => row.category);
 
         trophyCategories.forEach(category => {
             rows.filter(row => row.category === category && row.hasCompleteScores)
@@ -723,7 +723,7 @@ const AdminApp = (function() {
                                 <td class="font-bold text-amber-400">${totalScore.toFixed(2)}</td>
                                 <td class="font-bold">${row.eventPosition || ''}</td>
                             </tr>`;
-                        }).join('') : '<tr><td colspan="9" class="text-center">No locked scores entered.</td></tr>'}</tbody>
+                        }).join('') : '<tr><td colspan="9" class="text-center">No registered entries.</td></tr>'}</tbody>
                     </table>
                 </div>`;
         };
