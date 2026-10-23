@@ -5,6 +5,73 @@
 // ==============================================================================
 
 const DBService = (function() {
+    const AFFILIATED_COLLEGES = [
+        { id: 1, name: 'Aakash College of Education, Vill. Chanderkalan, Tohana, Distt. Fatehabad (SFS)' },
+        { id: 2, name: 'APEX College of Education, Ellenabad, Distt. Sirsa (SFS)' },
+        { id: 3, name: 'Apex College of Education, VPO-Bidhai Khera, Tohana, Distt. Fatehabad (SFS)' },
+        { id: 4, name: 'B.S.K. College of Education for Women, Mandi Dabwali, Distt. Sirsa (Govt. Aided)' },
+        { id: 2606, name: 'C.M.K. National PG College, Sirsa (Govt. Aided)' },
+        { id: 6, name: 'C.R. D.A.V. Girls College of Education, Ellenabad, Distt. Sirsa (SFS)' },
+        { id: 2621, name: 'C.R. D.A.V. Girls Degree College, Ellenabad, Distt. Sirsa (SFS)' },
+        { id: 8, name: 'Ch Mani Ram Johrar, Govt. College, Ellenabad, Distt. Sirsa (Govt.)' },
+        { id: 9, name: 'Ch. Devi Lal Memorial Lal State Institute of Engineering & Technology, Paniwala Mota, Distt. Sirsa (Govt.)' },
+        { id: 2661, name: 'Ch. K.R. Memorial Degree College (for Girls), Vill. Jamal, Distt. Sirsa (SFS)' },
+        { id: 2622, name: 'Ch. Mani Ram Godara Government College for Women, Bhodia Khera Fatehabad (Govt.)' },
+        { id: 12, name: 'Ch. R.R. Memorial College of Education, Ellenabad, Distt. Sirsa (SFS)' },
+        { id: 13, name: 'Crescent College of Education, Vill. Bhodia Khera, Distt. Fatehabad (SFS)' },
+        { id: 14, name: 'Daffodils Colleges of Education, Matana Road, Fatehabad (SFS)' },
+        { id: 15, name: 'Defence College of Education, Tohana, Distt. Fatehabad (SFS)' },
+        { id: 16, name: 'Defence Degree College Tohana Fatehabad (SFS)' },
+        { id: 2633, name: 'Dr. Bhim Rao Ambedkar Government College, Dabwali (Govt.)' },
+        { id: 2620, name: 'Government College for Women, Sirsa (Govt.)' },
+        { id: 2643, name: 'Government College, Bhattu Kalan, Distt. Fatehabad (Govt.)' },
+        { id: 2655, name: 'Government National College, Sirsa (Govt.)' },
+        { id: 2647, name: 'Govt. College Bhuna, Fatehabad (Govt.)' },
+        { id: 2641, name: 'Govt. College for Girls, Kalanwali, Sirsa (Govt.)' },
+        { id: 2654, name: 'Govt. College for Girls, Rania, Sirsa (Govt.)' },
+        { id: 24, name: 'Govt. College, Ding Mandi, Sirsa (Govt.)' },
+        { id: 25, name: 'Govt. College, Fatehabad (Govt.)' },
+        { id: 26, name: 'Govt. College, Goriwala, Mandi Dabwali, Distt. Sirsa (Govt.)' },
+        { id: 27, name: 'Gramin College of Education, Tohana, Distt. Fatehabad (SFS)' },
+        { id: 28, name: 'Guru Dronacharya College of Education, Bhuna, Distt. Fatehabad (SFS)' },
+        { id: 29, name: 'Hakeem Harbans Singh College of Education, Sant Nagar, Distt. Sirsa (SFS)' },
+        { id: 30, name: 'Haryana College of Education, Ellenabad, Distt. Sirsa (SFS)' },
+        { id: 31, name: 'I.G. Government College, Tohana, Distt. Fatehabad (Govt.)' },
+        { id: 32, name: 'J.G. College of Education, Hisar Road, Sirsa (SFS)' },
+        { id: 2607, name: 'Jan Nayak Ch. Devi Lal Institute of Business Management, Sirsa (SFS)' },
+        { id: 2601, name: 'Jan Nayak Ch. Devi Lal College of Education, Barnala Road, Sirsa (SFS)' },
+        { id: 2639, name: 'Jan Nayak Ch. Devi Lal Memorial College of Engineering, Barnala Road, Sirsa (SFS)' },
+        { id: 2619, name: 'Jan Nayak Ch. Devi Lal Memorial College, Barnala Road, Sirsa (SFS)' },
+        { id: 2618, name: 'Janta Girls College, Ellenabad, Distt. Sirsa (SFS)' },
+        { id: 2617, name: 'K.T. Government College, Ratia, Distt. Fatehabad (Govt.)' },
+        { id: 2614, name: 'Lala Hans Raj Phutela College of Law, Sirsa (SFS)' },
+        { id: 2628, name: 'M.M. College of Education, Sirsa Road, Fatehabad (SFS)' },
+        { id: 2637, name: 'M.M. College, Fatehabad (Govt. Aided)' },
+        { id: 2657, name: 'M.P. College for Women, Dabwali, Distt. Sirsa (Govt. Aided)' },
+        { id: 43, name: 'Maharshi Arvindo College of Education, Bhattu Mandi, Fatehabad (SFS)' },
+        { id: 2635, name: 'Mata Harki Devi College for Women, Odhan, Distt. Sirsa (SFS)' },
+        { id: 2640, name: 'Mata Harki Devi College of Education for Women, Odhan, Distt. Sirsa (SFS)' },
+        { id: 46, name: 'MUH Jain College of Education, Vill. Chander Kalan, Tohana, Fatehabad (SFS)' },
+        { id: 47, name: 'Mukhtiar Singh Memorial Degree College, Behbalpur, Fatehabad (A Minority Status) (SFS)' },
+        { id: 48, name: 'National College of Education, SES Parisar, Distt. Sirsa (SFS)' },
+        { id: 49, name: 'Nehru College of Education, Vill. Alikan, Teh. Dabwali, Distt. Sirsa (SFS)' },
+        { id: 50, name: 'Rashoba College of Education, Post Box No. 27, Moriwala, Distt. Sirsa (SFS)' },
+        { id: 2644, name: 'Shah Satnam Ji Boy’s College, Begu, Sirsa (SFS)' },
+        { id: 2660, name: 'Shah Satnam Ji College of Education, Dera Sacha Sauda, Sirsa (SFS)' },
+        { id: 2609, name: 'Shah Satnam Ji Girl’s College, Sirsa (SFS)' },
+        { id: 2632, name: 'Shaheed Baba Deep Singh College of Education, Vill. Aharwan, Ratia, Fatehabad (A Minority Status)' },
+        { id: 2645, name: 'Shaheed Bhagat Singh College of Education, Kalanwali, Distt. Sirsa (SFS)' },
+        { id: 2636, name: 'Shaheed Davinder Singh Govt. College for Women, Ratia, Distt. Fatehabad (Govt.)' },
+        { id: 57, name: 'Shri Durga Mahila Mahavidyal, Tohana, Distt. Fatehabad (SFS)' },
+        { id: 58, name: 'Shri Sanatan Dharam Sanskrit Maha Vidyalaya, Sirsa (SFS)' },
+        { id: 59, name: 'Sir Chhotu Ram Jat College of Education, Ellenabad, Distt. Sirsa (SFS)' },
+        { id: 2638, name: 'Sri Guru Hari Singh College, Sri Jiwan Nagar, Distt. Sirsa (Govt. Aided)' },
+        { id: 61, name: 'Surya College of Education, Vill. Baliala, Tohana, Distt. Fatehabad (SFS)' },
+        { id: 62, name: 'Tirupati College of Education, Sardulgarh Road, Ratia, Distt. Fatehabad (SFS)' },
+        { id: 63, name: 'UTD' }
+    ];
+    const COLLEGE_ID_BY_NAME = Object.fromEntries(AFFILIATED_COLLEGES.map(college => [college.name, college.id]));
+
     // Initial Seed Data for immediate preview and fallback
     const INITIAL_EVENTS = [
         // ----------------- A. MUSIC EVENTS -----------------
@@ -89,21 +156,7 @@ const DBService = (function() {
         { id: 'cultural_procession', name: 'Cultural Procession (सांस्कृतिक शोभा यात्रा)', category: 'Procession', participants_min: 10, participants_max: 50, accompanists_max: 0, time_limit: '3-5 min', age_limit: null, age_limit_text: 'No limit (Ignored)', stage: 'Inaugural Procession Route', description: 'Cultural procession / march past presenting state, regional or national heritage.', rules: 'Compulsory two college flags. Marks not counted towards Overall Championship Trophy. Age limit ignored.', scoring_criteria: { cultural_authenticity: 40, discipline_march: 30, presentation_costumes: 30 } }
     ];
 
-    const OFFICIAL_COLLEGE_IDS = Array.from({ length: 21 }, (_, index) => 2601 + index);
-    const COLLEGE_ID_BY_NAME = {
-        'University Teaching Departments (UTD), CDLU Sirsa': 2601,
-        'Govt. National College, Sirsa': 2602,
-        'CMK National PG Girls College, Sirsa': 2603,
-        'Shah Satnam Ji College, Sirsa': 2604,
-        'Janta Girls College, Ellenabad': 2605,
-        'Govt. College, Bhattu Kalan': 2606,
-        'Govt. College, Rania': 2607,
-        'Govt. College, Mandi Dabwali': 2608,
-        'JCD Memorial College, Sirsa': 2609,
-        'Govt. College for Women, Sirsa': 2610,
-        'M.M. PG College, Fatehabad': 2611,
-        'Govt. College, Bhuna': 2612
-    };
+    const OFFICIAL_COLLEGE_IDS = AFFILIATED_COLLEGES.map(college => college.id);
     const OFFICIAL_EVENT_REGISTRY = [
         ['Classical Vocal Solo', 'Music'], ['Classical Instrumental Solo (Percussion)', 'Music'],
         ['Classical Instrumental Solo (Non-Percussion)', 'Music'], ['Light Vocal Indian', 'Music'],
@@ -549,6 +602,10 @@ const DBService = (function() {
             };
         },
 
+        getAffiliatedColleges: function() {
+            return AFFILIATED_COLLEGES.map(college => ({ ...college }));
+        },
+
         init: async function() {
             ensureLocalSeeds();
             const status = await checkCloudStatus();
@@ -623,20 +680,15 @@ const DBService = (function() {
         getRegistrations: async function(filterCategory = 'All') {
             const sb = window.getSupabase();
             if (isCloudConnected && sb) {
-                try {
-                    let query = sb.from('registrations').select('*').order('created_at', { ascending: false });
-                    if (filterCategory && filterCategory !== 'All') {
-                        query = query.eq('category', filterCategory);
-                    }
-                    const { data, error } = await query;
-                    if (!error && data && data.length > 0) {
-                        const normalized = data.map(normalizeEventReference);
-                        setLocal('registrations', normalized);
-                        return normalized;
-                    }
-                } catch (e) {
-                    console.warn('Error fetching cloud registrations, using local:', e);
+                let query = sb.from('registrations').select('*').order('created_at', { ascending: false });
+                if (filterCategory && filterCategory !== 'All') {
+                    query = query.eq('category', filterCategory);
                 }
+                const { data, error } = await query;
+                if (error) throw new Error(`Could not load registrations from Supabase: ${error.message}`);
+                const normalized = (data || []).map(normalizeEventReference);
+                setLocal('registrations', normalized);
+                return normalized;
             }
 
             const regs = getLocal('registrations', INITIAL_REGISTRATIONS).map(normalizeEventReference);
@@ -645,16 +697,27 @@ const DBService = (function() {
         },
 
         getRegistrationById: async function(id) {
-            const regs = await this.getRegistrations('All');
             const search = String(id || '').trim().toLowerCase();
             const matches = registration => (
                 String(registration.id || '').trim().toLowerCase() === search ||
                 String(registration.roll_no || '').trim().toLowerCase() === search ||
                 String(registration.chest_number || '').trim().toLowerCase() === search
             );
-            return regs.find(matches) ||
-                getLocal('registrations', INITIAL_REGISTRATIONS).map(normalizeEventReference).find(matches) ||
-                null;
+            const sb = window.getSupabase();
+            if (isCloudConnected && sb && search) {
+                for (const column of ['id', 'roll_no', 'chest_number']) {
+                    const { data, error } = await sb.from('registrations').select('*').eq(column, id).limit(1);
+                    if (error) {
+                        console.error(`Registration lookup failed for ${column}:`, error);
+                        throw new Error(`Registration lookup failed: ${error.message}`);
+                    }
+                    if (data && data[0]) return normalizeEventReference(data[0]);
+                }
+                return null;
+            }
+            return getLocal('registrations', INITIAL_REGISTRATIONS)
+                .map(normalizeEventReference)
+                .find(matches) || null;
         },
 
         addRegistration: async function(regData) {
@@ -674,10 +737,25 @@ const DBService = (function() {
             if (!regData.status) {
                 regData.status = 'Eligible';
             }
+            if (!regData.college_id) {
+                throw new Error('Please select an affiliated college with a valid college ID.');
+            }
 
             const sb = window.getSupabase();
             if (!isCloudConnected || !sb) {
                 throw new Error('Cloud database is not connected. Do not submit this registration yet; refresh the page and verify the Supabase tables.');
+            }
+
+            const { data: duplicate, error: duplicateError } = await sb.from('registrations')
+                .select('id, participant_name')
+                .eq('college_id', regData.college_id)
+                .eq('event_id', regData.event_id)
+                .limit(1);
+            if (duplicateError) {
+                throw new Error(`Could not verify college/event availability: ${duplicateError.message}`);
+            }
+            if (duplicate && duplicate[0]) {
+                throw new Error(`This college has already registered for this event. Existing registration: ${duplicate[0].id}`);
             }
 
             const { data, error } = await sb.from('registrations').insert([regData]).select().single();
@@ -691,6 +769,7 @@ const DBService = (function() {
             regData = { ...regData, ...data };
             console.log('✓ Synced new registration to Supabase cloud:', regData.id);
 
+            // Cache only after the cloud row has been confirmed.
             const localRegs = getLocal('registrations', INITIAL_REGISTRATIONS);
             localRegs.unshift(regData);
             setLocal('registrations', localRegs);

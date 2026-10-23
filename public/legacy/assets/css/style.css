@@ -262,7 +262,7 @@ input[type="range"] { accent-color: var(--green); }
 .icard-college strong { min-width: 0; padding-bottom: 2px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; border-bottom: 2px dotted #1e3020; font-size: 14px; }
 .icard-details { display: grid; grid-template-columns: 112px 1fr; gap: 15px; align-items: start; }
 .icard-photo-placeholder { height: 165px; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 0; border: 2px solid #1c2920; color: #405044; text-align: center; font-size: 10px; line-height: 1.15; }
-.icard-photo { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.icard-photo-line { width: 82%; padding-top: 6px; border-top: 1px solid #1c2920; color: #1c2920; font-size: 10px; text-align: center; }
 .icard-photo-placeholder i { font-size: 33px; color: #9aa89d; }
 .icard-fields { padding-top: 1px; }
 .icard-fields p { display: grid; grid-template-columns: 92px 1fr; gap: 5px; align-items: end; min-height: 35px; margin: 0; font-size: 13px; }

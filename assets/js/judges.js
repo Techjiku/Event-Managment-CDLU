@@ -459,7 +459,7 @@ const JudgesApp = (function() {
         const scorePayload = {
             registration_id: reg.id,
             participant_name: reg.participant_name,
-            college_name: reg.college_name,
+            college_id: reg.college_id,
             event_id: eventId,
             event_name: reg.event_name,
             judge_id: currentJudge.id,

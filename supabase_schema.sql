@@ -44,6 +44,81 @@ ALTER TABLE public.events ADD COLUMN IF NOT EXISTS official_number INT;
 ALTER TABLE public.events ADD COLUMN IF NOT EXISTS trophy_event BOOLEAN DEFAULT TRUE;
 ALTER TABLE public.events ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW();
 
+-- Table: affiliated colleges. IDs come from the supplied CDLU college list;
+-- spreadsheet serial numbers are used where no team code was supplied.
+CREATE TABLE IF NOT EXISTS public.affiliated_colleges (
+    id INT PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+INSERT INTO public.affiliated_colleges (id, name) VALUES
+    (1, 'Aakash College of Education, Vill. Chanderkalan, Tohana, Distt. Fatehabad (SFS)'),
+    (2, 'APEX College of Education, Ellenabad, Distt. Sirsa (SFS)'),
+    (3, 'Apex College of Education, VPO-Bidhai Khera, Tohana, Distt. Fatehabad (SFS)'),
+    (4, 'B.S.K. College of Education for Women, Mandi Dabwali, Distt. Sirsa (Govt. Aided)'),
+    (2606, 'C.M.K. National PG College, Sirsa (Govt. Aided)'),
+    (6, 'C.R. D.A.V. Girls College of Education, Ellenabad, Distt. Sirsa (SFS)'),
+    (2621, 'C.R. D.A.V. Girls Degree College, Ellenabad, Distt. Sirsa (SFS)'),
+    (8, 'Ch Mani Ram Johrar, Govt. College, Ellenabad, Distt. Sirsa (Govt.)'),
+    (9, 'Ch. Devi Lal Memorial Lal State Institute of Engineering & Technology, Paniwala Mota, Distt. Sirsa (Govt.)'),
+    (2661, 'Ch. K.R. Memorial Degree College (for Girls), Vill. Jamal, Distt. Sirsa (SFS)'),
+    (2622, 'Ch. Mani Ram Godara Government College for Women, Bhodia Khera Fatehabad (Govt.)'),
+    (12, 'Ch. R.R. Memorial College of Education, Ellenabad, Distt. Sirsa (SFS)'),
+    (13, 'Crescent College of Education, Vill. Bhodia Khera, Distt. Fatehabad (SFS)'),
+    (14, 'Daffodils Colleges of Education, Matana Road, Fatehabad (SFS)'),
+    (15, 'Defence College of Education, Tohana, Distt. Fatehabad (SFS)'),
+    (16, 'Defence Degree College Tohana Fatehabad (SFS)'),
+    (2633, 'Dr. Bhim Rao Ambedkar Government College, Dabwali (Govt.)'),
+    (2620, 'Government College for Women, Sirsa (Govt.)'),
+    (2643, 'Government College, Bhattu Kalan, Distt. Fatehabad (Govt.)'),
+    (2655, 'Government National College, Sirsa (Govt.)'),
+    (2647, 'Govt. College Bhuna, Fatehabad (Govt.)'),
+    (2641, 'Govt. College for Girls, Kalanwali, Sirsa (Govt.)'),
+    (2654, 'Govt. College for Girls, Rania, Sirsa (Govt.)'),
+    (24, 'Govt. College, Ding Mandi, Sirsa (Govt.)'),
+    (25, 'Govt. College, Fatehabad (Govt.)'),
+    (26, 'Govt. College, Goriwala, Mandi Dabwali, Distt. Sirsa (Govt.)'),
+    (27, 'Gramin College of Education, Tohana, Distt. Fatehabad (SFS)'),
+    (28, 'Guru Dronacharya College of Education, Bhuna, Distt. Fatehabad (SFS)'),
+    (29, 'Hakeem Harbans Singh College of Education, Sant Nagar, Distt. Sirsa (SFS)'),
+    (30, 'Haryana College of Education, Ellenabad, Distt. Sirsa (SFS)'),
+    (31, 'I.G. Government College, Tohana, Distt. Fatehabad (Govt.)'),
+    (32, 'J.G. College of Education, Hisar Road, Sirsa (SFS)'),
+    (2607, 'Jan Nayak Ch. Devi Lal Institute of Business Management, Sirsa (SFS)'),
+    (2601, 'Jan Nayak Ch. Devi Lal College of Education, Barnala Road, Sirsa (SFS)'),
+    (2639, 'Jan Nayak Ch. Devi Lal Memorial College of Engineering, Barnala Road, Sirsa (SFS)'),
+    (2619, 'Jan Nayak Ch. Devi Lal Memorial College, Barnala Road, Sirsa (SFS)'),
+    (2618, 'Janta Girls College, Ellenabad, Distt. Sirsa (SFS)'),
+    (2617, 'K.T. Government College, Ratia, Distt. Fatehabad (Govt.)'),
+    (2614, 'Lala Hans Raj Phutela College of Law, Sirsa (SFS)'),
+    (2628, 'M.M. College of Education, Sirsa Road, Fatehabad (SFS)'),
+    (2637, 'M.M. College, Fatehabad (Govt. Aided)'),
+    (2657, 'M.P. College for Women, Dabwali, Distt. Sirsa (Govt. Aided)'),
+    (43, 'Maharshi Arvindo College of Education, Bhattu Mandi, Fatehabad (SFS)'),
+    (2635, 'Mata Harki Devi College for Women, Odhan, Distt. Sirsa (SFS)'),
+    (2640, 'Mata Harki Devi College of Education for Women, Odhan, Distt. Sirsa (SFS)'),
+    (46, 'MUH Jain College of Education, Vill. Chander Kalan, Tohana, Fatehabad (SFS)'),
+    (47, 'Mukhtiar Singh Memorial Degree College, Behbalpur, Fatehabad (A Minority Status) (SFS)'),
+    (48, 'National College of Education, SES Parisar, Distt. Sirsa (SFS)'),
+    (49, 'Nehru College of Education, Vill. Alikan, Teh. Dabwali, Distt. Sirsa (SFS)'),
+    (50, 'Rashoba College of Education, Post Box No. 27, Moriwala, Distt. Sirsa (SFS)'),
+    (2644, 'Shah Satnam Ji Boys College, Begu, Sirsa (SFS)'),
+    (2660, 'Shah Satnam Ji College of Education, Dera Sacha Sauda, Sirsa (SFS)'),
+    (2609, 'Shah Satnam Ji Girls College, Sirsa (SFS)'),
+    (2632, 'Shaheed Baba Deep Singh College of Education, Vill. Aharwan, Ratia, Fatehabad (A Minority Status)'),
+    (2645, 'Shaheed Bhagat Singh College of Education, Kalanwali, Distt. Sirsa (SFS)'),
+    (2636, 'Shaheed Davinder Singh Govt. College for Women, Ratia, Distt. Fatehabad (Govt.)'),
+    (57, 'Shri Durga Mahila Mahavidyal, Tohana, Distt. Fatehabad (SFS)'),
+    (58, 'Shri Sanatan Dharam Sanskrit Maha Vidyalaya, Sirsa (SFS)'),
+    (59, 'Sir Chhotu Ram Jat College of Education, Ellenabad, Distt. Sirsa (SFS)'),
+    (2638, 'Sri Guru Hari Singh College, Sri Jiwan Nagar, Distt. Sirsa (Govt. Aided)'),
+    (61, 'Surya College of Education, Vill. Baliala, Tohana, Distt. Fatehabad (SFS)'),
+    (62, 'Tirupati College of Education, Sardulgarh Road, Ratia, Distt. Fatehabad (SFS)'),
+    (63, 'UTD')
+ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, is_active = TRUE;
+
 -- Table: registrations (Students & Teams)
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
@@ -53,7 +128,7 @@ CREATE TABLE IF NOT EXISTS public.registrations (
     event_name TEXT NOT NULL,
     category TEXT NOT NULL,
     college_name TEXT NOT NULL,
-    college_id INT,
+    college_id INT REFERENCES public.affiliated_colleges(id),
     participant_name TEXT NOT NULL,
     father_name TEXT NOT NULL,
     gender TEXT NOT NULL,
@@ -93,7 +168,7 @@ CREATE TABLE IF NOT EXISTS public.scores (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     registration_id TEXT REFERENCES public.registrations(id) ON DELETE CASCADE,
     participant_name TEXT NOT NULL,
-    college_name TEXT NOT NULL,
+    college_id INT REFERENCES public.affiliated_colleges(id),
     event_id TEXT REFERENCES public.events(id) ON DELETE CASCADE,
     event_name TEXT NOT NULL,
     judge_id UUID REFERENCES public.judges(id) ON DELETE CASCADE,
@@ -115,9 +190,28 @@ ALTER TABLE public.scores ADD COLUMN IF NOT EXISTS max_score NUMERIC(5,2);
 ALTER TABLE public.events ADD COLUMN IF NOT EXISTS official_number INT;
 ALTER TABLE public.events ADD COLUMN IF NOT EXISTS trophy_event BOOLEAN DEFAULT TRUE;
 ALTER TABLE public.registrations ADD COLUMN IF NOT EXISTS college_id INT;
+ALTER TABLE public.registrations DROP CONSTRAINT IF EXISTS registrations_college_id_fkey;
+ALTER TABLE public.registrations ADD CONSTRAINT registrations_college_id_fkey
+    FOREIGN KEY (college_id) REFERENCES public.affiliated_colleges(id);
 ALTER TABLE public.scores ADD COLUMN IF NOT EXISTS source_max_score NUMERIC(5,2);
 ALTER TABLE public.scores ADD COLUMN IF NOT EXISTS normalized_score NUMERIC(5,2);
 ALTER TABLE public.judges ADD COLUMN IF NOT EXISTS assigned_events TEXT[] DEFAULT '{}';
+ALTER TABLE public.scores ADD COLUMN IF NOT EXISTS college_id INT;
+UPDATE public.scores s
+SET college_id = r.college_id
+FROM public.registrations r
+WHERE s.registration_id = r.id
+  AND s.college_id IS NULL;
+ALTER TABLE public.scores DROP COLUMN IF EXISTS college_name;
+ALTER TABLE public.scores DROP CONSTRAINT IF EXISTS scores_college_id_fkey;
+ALTER TABLE public.scores ADD CONSTRAINT scores_college_id_fkey
+    FOREIGN KEY (college_id) REFERENCES public.affiliated_colleges(id);
+
+-- Run the duplicate query in the deployment instructions before creating this
+-- index if old data contains duplicate college/event registrations.
+CREATE UNIQUE INDEX IF NOT EXISTS registrations_one_college_per_event
+    ON public.registrations (college_id, event_id)
+    WHERE college_id IS NOT NULL AND event_id IS NOT NULL;
 
 CREATE OR REPLACE FUNCTION public.prevent_finalized_score_change()
 RETURNS TRIGGER
@@ -186,6 +280,7 @@ CREATE TABLE IF NOT EXISTS public.announcements (
 -- ==============================================================================
 
 ALTER TABLE public.events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.affiliated_colleges ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.registrations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.judges ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.scores ENABLE ROW LEVEL SECURITY;
@@ -195,6 +290,8 @@ ALTER TABLE public.announcements ENABLE ROW LEVEL SECURITY;
 -- Allow public read access to events
 DROP POLICY IF EXISTS "Public read events" ON public.events;
 CREATE POLICY "Public read events" ON public.events FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public read affiliated colleges" ON public.affiliated_colleges;
+CREATE POLICY "Public read affiliated colleges" ON public.affiliated_colleges FOR SELECT USING (is_active = TRUE);
 DROP POLICY IF EXISTS "Public manage events" ON public.events;
 CREATE POLICY "Public manage events" ON public.events FOR ALL USING (true);
 
@@ -414,7 +511,7 @@ ON CONFLICT DO NOTHING;
 
 -- Insert sample registrations for testing and instant preview
 INSERT INTO public.registrations (
-    id, event_id, event_name, category, college_name, participant_name, father_name, 
+    id, event_id, event_name, category, college_name, college_id, participant_name, father_name, 
     gender, class_name, roll_no, dob, phone, email, team_manager_name, team_manager_phone, 
     team_manager_email, team_members, accompanists, status, chest_number
 ) VALUES 
@@ -424,6 +521,7 @@ INSERT INTO public.registrations (
     'Classical Vocal Solo (Hindustani / Carnatic)',
     'Music',
     'University Teaching Departments (UTD), CDLU Sirsa',
+    63,
     'Aman Sharma',
     'Sh. Rajesh Sharma',
     'Male',
@@ -446,6 +544,7 @@ INSERT INTO public.registrations (
     'Haryanvi Group Dance',
     'Dance',
     'Govt. National College, Sirsa',
+    2655,
     'Sunita Devi',
     'Sh. Kuldeep Singh',
     'Female',
@@ -473,6 +572,7 @@ INSERT INTO public.registrations (
     'One Act Play (Hindi / English / Haryanvi)',
     'Theatre',
     'Janta Girls College, Ellenabad',
+    2618,
     'Ritika Mittal',
     'Sh. Pawan Mittal',
     'Female',
@@ -497,13 +597,13 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Insert sample scores so Admin Leaderboard and Judge portal has live interactive data immediately
 INSERT INTO public.scores (
-    registration_id, participant_name, college_name, event_id, event_name, 
+    registration_id, participant_name, college_id, event_id, event_name, 
     judge_id, judge_name, judge_email, criteria_breakdown, total_score, remarks, is_locked
 )
 SELECT 
     'CDLU-TYM-2026-001',
     'Aman Sharma',
-    'University Teaching Departments (UTD), CDLU Sirsa',
+    63,
     'music_classical_vocal',
     'Classical Vocal Solo (Hindustani / Carnatic)',
     j.id,

@@ -71,6 +71,7 @@ const App = (function() {
     // 2. LOAD EVENTS INTO EXPLORER & REGISTRATION FORM
     async function loadEventsData() {
         const events = await DBService.getEvents('All');
+        populateCollegeOptions();
 
         // Populate registration form event category & event dropdown
         const regCategorySelect = document.getElementById('reg-category');
@@ -78,6 +79,19 @@ const App = (function() {
 
         // Render Explorer Cards
         renderEventExplorer('All');
+    }
+
+    function populateCollegeOptions() {
+        const select = document.getElementById('reg-college');
+        if (!select || !DBService.getAffiliatedColleges) return;
+        select.innerHTML = '<option value="">-- महाविद्यालय चुनें (Select Affiliated College) --</option>';
+        DBService.getAffiliatedColleges().forEach(college => {
+            const option = document.createElement('option');
+            option.value = String(college.id);
+            option.dataset.collegeName = college.name;
+            option.textContent = `${college.name} [${college.id}]`;
+            select.appendChild(option);
+        });
     }
 
     async function onCategoryChange(selectedCategory) {
@@ -421,7 +435,9 @@ const App = (function() {
 
         const category = document.getElementById('reg-category').value;
         const eventId = document.getElementById('reg-event').value;
-        const collegeName = document.getElementById('reg-college').value.trim();
+        const collegeSelect = document.getElementById('reg-college');
+        const collegeId = Number(collegeSelect.value);
+        const collegeName = collegeSelect.selectedOptions[0]?.dataset.collegeName || '';
         const participantName = document.getElementById('reg-participant-name').value.trim();
         const fatherName = document.getElementById('reg-father-name').value.trim();
         const gender = document.getElementById('reg-gender').value;
@@ -513,6 +529,7 @@ const App = (function() {
             event_name: currentSelectedEvent.name,
             category: category,
             college_name: collegeName,
+            college_id: collegeId,
             participant_name: participantName,
             father_name: fatherName,
             gender: gender,
