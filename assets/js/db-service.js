@@ -511,7 +511,9 @@ const DBService = (function() {
         }
 
         try {
-            const { data, error } = await sb.from('events').select('id').limit(1);
+            const { error: eventsError } = await sb.from('events').select('id').limit(1);
+            const { error: registrationsError } = await sb.from('registrations').select('id').limit(1);
+            const error = eventsError || registrationsError;
             if (error) {
                 // If 404 or relation does not exist
                 if (error.code === 'PGRST205' || error.message.includes('not find the table') || error.message.includes('relation "public.events" does not exist')) {
@@ -520,7 +522,7 @@ const DBService = (function() {
                     return {
                         connected: false,
                         schemaPending: true,
-                        message: 'Supabase URL valid, but tables need to be created using schema.sql'
+                        message: 'Supabase is reachable, but the events or registrations table is missing. Run supabase_schema.sql.'
                     };
                 }
                 isCloudConnected = false;
@@ -674,33 +676,27 @@ const DBService = (function() {
             }
 
             const sb = window.getSupabase();
-            let cloudSyncError = null;
-            if (isCloudConnected && sb) {
-                try {
-                    const { data, error } = await sb.from('registrations').insert([regData]).select();
-                    if (error) {
-                        cloudSyncError = error;
-                        console.error('Cloud insert error:', error);
-                    } else if (data && data[0]) {
-                        regData = { ...regData, ...data[0] };
-                        console.log('✓ Synced new registration to Supabase cloud');
-                    }
-                } catch (e) {
-                    cloudSyncError = e;
-                    console.error('Cloud insert exception:', e);
-                }
+            if (!isCloudConnected || !sb) {
+                throw new Error('Cloud database is not connected. Do not submit this registration yet; refresh the page and verify the Supabase tables.');
             }
 
-            // Keep a local copy for offline use and immediate lookup. The
-            // random ID prevents concurrent browser submissions from mixing.
+            const { data, error } = await sb.from('registrations').insert([regData]).select().single();
+            if (error) {
+                console.error('Cloud insert error:', error);
+                throw new Error(`Registration was not saved to Supabase: ${error.message}`);
+            }
+            if (!data || data.id !== regData.id) {
+                throw new Error('Supabase accepted the request but did not return the saved registration. Please verify the database before retrying.');
+            }
+            regData = { ...regData, ...data };
+            console.log('✓ Synced new registration to Supabase cloud:', regData.id);
+
+            // Cache only after the cloud row has been confirmed.
             const localRegs = getLocal('registrations', INITIAL_REGISTRATIONS);
             localRegs.unshift(regData);
             setLocal('registrations', localRegs);
 
-            return {
-                ...regData,
-                cloud_sync_error: cloudSyncError ? (cloudSyncError.message || String(cloudSyncError)) : null
-            };
+            return { ...regData, cloud_sync_error: null };
         },
 
         updateRegistrationStatus: async function(id, newStatus) {
