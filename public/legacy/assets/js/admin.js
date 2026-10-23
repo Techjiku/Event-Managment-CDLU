@@ -1196,8 +1196,9 @@ const AdminApp = (function() {
             console.error('Cloud connection check failed:', error);
             Swal.fire('Connection check failed', error.message || 'Could not verify the database connection.', 'error');
         }
+    }
 
-        function parseCollegeWorkbook(workbook) {
+    function parseCollegeWorkbook(workbook) {
             const sheet = workbook.Sheets[workbook.SheetNames[0]];
             const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
             const colleges = rows.map(row => {
@@ -1222,7 +1223,7 @@ const AdminApp = (function() {
             return colleges;
         }
 
-        async function previewCollegeImport() {
+    async function previewCollegeImport() {
             try {
                 if (typeof XLSX === 'undefined') throw new Error('Excel reader is unavailable. Check your internet connection and reload the portal.');
                 const input = document.getElementById('college-list-file');
@@ -1238,7 +1239,7 @@ const AdminApp = (function() {
             }
         }
 
-        async function importCollegeList() {
+    async function importCollegeList() {
             try {
                 if (!currentAdmin || currentAdmin.role !== 'Super Admin') throw new Error('Only Super Admin can publish the college directory.');
                 if (!pendingCollegeImport) await previewCollegeImport();
@@ -1258,7 +1259,6 @@ const AdminApp = (function() {
             } catch (error) {
                 console.error('College import failed:', error);
                 Swal.fire('College import failed', error.message || 'The college list was not updated.', 'error');
-            }
         }
     }
 
