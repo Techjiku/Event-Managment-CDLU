@@ -625,9 +625,10 @@ const AdminApp = (function() {
         }
 
         const container = document.getElementById('admin-scoreboard-list');
-        const [registrations, scores] = await Promise.all([
+        const [registrations, scores, allEvents] = await Promise.all([
             DBService.getRegistrations('All'),
-            DBService.getScores(selectedEvent || null)
+            DBService.getScores(selectedEvent || null),
+            DBService.getEvents('All')
         ]);
         const lockedScores = scores.filter(score => score.is_locked);
         const scoreByRegistration = new Map();
@@ -692,19 +693,50 @@ const AdminApp = (function() {
             });
         });
 
+        const activeColleges = DBService.getAffiliatedColleges();
+        const scoringEvents = allEvents.filter(event => {
+            const category = categoryFor({ category: event.category, event_name: event.name });
+            const eventMatches = !selectedEvent || event.id === selectedEvent || event.legacy_id === selectedEvent;
+            return eventMatches && trophyCategories.includes(category);
+        });
+        const scoredRowByEventCollege = new Map();
+        rows.forEach(row => {
+            const collegeId = row.registration.college_id == null
+                ? String(row.registration.college_name || '').trim().toLowerCase()
+                : String(row.registration.college_id);
+            scoredRowByEventCollege.set(`${row.registration.event_id}\u0000${collegeId}`, row);
+        });
+        const tableRows = [];
+        scoringEvents.forEach(event => {
+            const category = categoryFor({ category: event.category, event_name: event.name });
+            activeColleges.forEach(college => {
+                const scoredRow = scoredRowByEventCollege.get(`${event.id}\u0000${String(college.id)}`) ||
+                    scoredRowByEventCollege.get(`${event.id}\u0000${String(college.name).trim().toLowerCase()}`);
+                tableRows.push({
+                    event,
+                    category,
+                    college,
+                    scoredRow: scoredRow || null,
+                    registration: scoredRow ? scoredRow.registration : null
+                });
+            });
+        });
+
         const tableFor = category => {
-            const categoryRows = rows.filter(row => row.category === category)
+            const categoryRows = tableRows.filter(row => row.category === category)
                 .sort((a, b) =>
-                    String(a.registration.event_name || '').localeCompare(String(b.registration.event_name || '')) ||
-                    String(a.registration.college_name || '').localeCompare(String(b.registration.college_name || ''))
+                    String(a.event.name || '').localeCompare(String(b.event.name || '')) ||
+                    String(a.college.name || '').localeCompare(String(b.college.name || ''))
                 );
             return `
                 <div class="overflow-x-auto mb-6">
                     <table class="final-results-table">
                         <caption>${category} scoring table</caption>
-                        <thead><tr><th>Event name </th><th>College name</th><th>college code</th><th>Name of student</th><th>Judge 1</th><th>Judge 2</th><th>Judge 3</th><th>Sume of score</th><th>poistion </th></tr></thead>
-                        <tbody>${categoryRows.length ? categoryRows.map(row => {
-                            const scoresByJudge = row.judgeScores;
+                        <thead><tr><th>Event name </th><th>College name</th><th>college code</th><th>Team Code</th><th>Name of student</th><th>Judge 1</th><th>Judge 2</th><th>Judge 3</th><th>Sume of score</th><th>poistion </th></tr></thead>
+                        <tbody>${categoryRows.length ? categoryRows.map(tableRow => {
+                            const row = tableRow.scoredRow;
+                            const registration = tableRow.registration;
+                            const scoresByJudge = row ? row.judgeScores : [];
                             const scoreCell = index => {
                                 if (!scoresByJudge[index]) return '';
                                 const score = Number(scoresByJudge[index].total_score);
@@ -714,21 +746,29 @@ const AdminApp = (function() {
                                 const value = Number(score.total_score);
                                 return sum + (Number.isFinite(value) ? value : 0);
                             }, 0);
+                            const participantNames = registration
+                                ? [
+                                    registration.team_name || registration.participant_name,
+                                    ...(Array.isArray(registration.team_members)
+                                        ? registration.team_members.map(member => member && member.name)
+                                        : [])
+                                ].filter(Boolean).join(', ')
+                                : '';
                             return `<tr>
-                                <td>${escapeHtml(row.registration.event_name || '')}</td>
-                                <td>${escapeHtml(row.registration.college_name || '')}</td>
-                                <td>${escapeHtml(row.registration.college_id || '')}</td>
-                                <td>${escapeHtml(row.registration.participant_name || row.registration.id)}</td>
+                                <td>${escapeHtml(tableRow.event.name || '')}</td>
+                                <td>${escapeHtml(tableRow.college.name || '')}</td>
+                                <td>${escapeHtml(registration ? registration.college_id || tableRow.college.id : tableRow.college.id)}</td>
+                                <td>${escapeHtml(tableRow.college.team_code || tableRow.college.id)}</td>
+                                <td>${escapeHtml(participantNames)}</td>
                                 <td>${scoreCell(0)}</td><td>${scoreCell(1)}</td><td>${scoreCell(2)}</td>
-                                <td class="font-bold text-amber-400">${totalScore.toFixed(2)}</td>
-                                <td class="font-bold">${row.eventPosition || ''}</td>
+                                <td class="font-bold text-amber-400">${registration ? totalScore.toFixed(2) : ''}</td>
+                                <td class="font-bold">${row && row.eventPosition ? row.eventPosition : ''}</td>
                             </tr>`;
-                        }).join('') : '<tr><td colspan="9" class="text-center">No registered entries.</td></tr>'}</tbody>
+                        }).join('') : '<tr><td colspan="10" class="text-center">No events available.</td></tr>'}</tbody>
                     </table>
                 </div>`;
         };
 
-        const activeColleges = DBService.getAffiliatedColleges();
         const collegeTotals = new Map();
         rows.forEach(row => {
             const activeCollege = activeColleges.find(college =>
