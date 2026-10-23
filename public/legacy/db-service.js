@@ -369,13 +369,13 @@ const DBService = (function() {
         } catch (e) {
             console.error('LocalStorage write error:', e);
         }
+    }
 
-        function createRegistrationId() {
-            const randomPart = window.crypto && typeof window.crypto.randomUUID === 'function'
-                ? window.crypto.randomUUID().replace(/-/g, '').slice(0, 12).toUpperCase()
-                : `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`.toUpperCase();
-            return `CDLU-TYM-2026-${randomPart}`;
-        }
+    function createRegistrationId() {
+        const randomPart = window.crypto && typeof window.crypto.randomUUID === 'function'
+            ? window.crypto.randomUUID().replace(/-/g, '').slice(0, 12).toUpperCase()
+            : `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`.toUpperCase();
+        return `CDLU-TYM-2026-${randomPart}`;
     }
 
     // ==========================================================================
