@@ -641,109 +641,11 @@ VALUES
     ('Judges Orientation Briefing', 'Judges meeting scheduled at 9:00 AM in Committee Room, Vice-Chancellor Secretariat.', 'Judges', TRUE)
 ON CONFLICT DO NOTHING;
 
--- Insert sample registrations for testing and instant preview
-INSERT INTO public.registrations (
-    id, event_id, event_name, category, college_name, college_id, participant_name, father_name, 
-    gender, class_name, roll_no, dob, phone, email, team_manager_name, team_manager_phone, 
-    team_manager_email, team_members, accompanists, status, chest_number
-) VALUES 
-(
+-- Remove only the three known sample registrations from earlier demo schema
+-- versions. Their linked scores are removed by ON DELETE CASCADE.
+DELETE FROM public.registrations
+WHERE id IN (
     'CDLU-TYM-2026-001',
-    'music_classical_vocal',
-    'Classical Vocal Solo (Hindustani / Carnatic)',
-    'Music',
-    'University Teaching Departments (UTD), CDLU Sirsa',
-    63,
-    'Aman Sharma',
-    'Sh. Rajesh Sharma',
-    'Male',
-    'MA Music (1st Sem)',
-    '230101001',
-    '2002-05-15',
-    '9812345678',
-    'aman.sharma@cdlu.ac.in',
-    'Dr. K. S. Bishnoi',
-    '9416000001',
-    'cultural.utd@cdlu.ac.in',
-    '[]'::jsonb,
-    '[{"name": "Master Ramesh", "father_name": "Sh. Omprakash", "type": "Professional", "instrument": "Harmonium"}, {"name": "Suresh Kumar", "father_name": "Sh. Ram Niwas", "type": "Student", "instrument": "Tabla"}]'::jsonb,
-    'Eligible',
-    101
-),
-(
     'CDLU-TYM-2026-002',
-    'dance_haryanvi_group',
-    'Haryanvi Group Dance',
-    'Dance',
-    'Govt. National College, Sirsa',
-    2655,
-    'Sunita Devi',
-    'Sh. Kuldeep Singh',
-    'Female',
-    'BA Final Year',
-    '221004501',
-    '2003-08-12',
-    '9896000002',
-    'sunita.gnc@gmail.com',
-    'Prof. Neelam Rani',
-    '9416000002',
-    'contingent.gnc@gmail.com',
-    '[
-        {"name": "Pooja Rani", "father_name": "Sh. Rattan Lal", "class": "BA II", "roll_no": "221004502"},
-        {"name": "Kavita Sihag", "father_name": "Sh. Balwan Singh", "class": "B.Sc II", "roll_no": "221004503"},
-        {"name": "Monika", "father_name": "Sh. Dharamvir", "class": "BA I", "roll_no": "221004504"},
-        {"name": "Anjali Verma", "father_name": "Sh. Mahabir Verma", "class": "B.Com III", "roll_no": "221004505"}
-    ]'::jsonb,
-    '[{"name": "Pandit Jagdish", "father_name": "Sh. Mani Ram", "type": "Professional", "instrument": "Dholak / Nagada"}]'::jsonb,
-    'Eligible',
-    102
-),
-(
-    'CDLU-TYM-2026-003',
-    'theatre_one_act_play',
-    'One Act Play (Hindi / English / Haryanvi)',
-    'Theatre',
-    'Janta Girls College, Ellenabad',
-    2618,
-    'Ritika Mittal',
-    'Sh. Pawan Mittal',
-    'Female',
-    'MA English',
-    '230205010',
-    '2001-11-20',
-    '9416111222',
-    'ritika.jgc@gmail.com',
-    'Dr. Meenakshi',
-    '9416000003',
-    'theatre.jgc@gmail.com',
-    '[
-        {"name": "Simran Kaur", "father_name": "Sh. Harbhajan Singh", "class": "BA III", "roll_no": "220205011"},
-        {"name": "Diksha", "father_name": "Sh. Subhash Chander", "class": "BA II", "roll_no": "220205012"},
-        {"name": "Muskan", "father_name": "Sh. Rakesh", "class": "B.Com I", "roll_no": "230205013"}
-    ]'::jsonb,
-    '[]'::jsonb,
-    'Eligible',
-    103
-)
-ON CONFLICT (id) DO NOTHING;
-
--- Insert sample scores so Admin Leaderboard and Judge portal has live interactive data immediately
-INSERT INTO public.scores (
-    registration_id, participant_name, college_id, event_id, event_name, 
-    judge_id, judge_name, judge_email, criteria_breakdown, total_score, remarks, is_locked
-)
-SELECT 
-    'CDLU-TYM-2026-001',
-    'Aman Sharma',
-    63,
-    'music_classical_vocal',
-    'Classical Vocal Solo (Hindustani / Carnatic)',
-    j.id,
-    j.name,
-    j.email,
-    '{"sur": 27, "taal": 26, "selection_of_raga": 18, "overall_impact": 18}'::jsonb,
-    89.00,
-    'Remarkable command over Raga Bhairav and vilambit khayal.',
-    TRUE
-FROM public.judges j WHERE j.email = 'judge.music@cdlu.ac.in'
-ON CONFLICT (registration_id, judge_id, event_id) DO NOTHING;
+    'CDLU-TYM-2026-003'
+);

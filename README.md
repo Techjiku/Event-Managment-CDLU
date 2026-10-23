@@ -31,6 +31,32 @@ stores a local cache only after Supabase confirms the insert, so a database
 failure is shown as an error instead of being reported as a successful
 local-only registration.
 
+## Removing old demonstration registrations before launch
+
+The app no longer creates demo registrations or scores. When the updated app
+starts, it also removes the three known demo registration IDs and their linked
+demo score from the browser's local cache, leaving all other cached records
+untouched.
+
+To remove the same three demo rows from an existing Supabase database, apply
+the updated `supabase_schema.sql` through the configured schema workflow or SQL
+editor. Its cleanup targets only `CDLU-TYM-2026-001` through
+`CDLU-TYM-2026-003`; linked scores are removed by the registration foreign-key
+cascade. Verify the cleanup with:
+
+```sql
+SELECT id
+FROM public.registrations
+WHERE id IN (
+  'CDLU-TYM-2026-001',
+  'CDLU-TYM-2026-002',
+  'CDLU-TYM-2026-003'
+);
+```
+
+The query should return no rows. Back up the production database before applying
+schema changes. No live database was modified as part of preparing this code.
+
 If GitHub Pages is used, publish the `Event-Managment-CDLU` folder itself (not
 only its parent directory), then use a hard refresh (`Ctrl+Shift+R`) after each
 deployment. In the browser console, `DBService.getCloudStatus()` must report

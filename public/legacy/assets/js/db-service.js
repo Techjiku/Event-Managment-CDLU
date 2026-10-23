@@ -267,110 +267,13 @@ const DBService = (function() {
         'judge.finearts@cdlu.ac.in'
     ]);
 
-    const INITIAL_REGISTRATIONS = [
-        {
-            id: 'CDLU-TYM-2026-001',
-            event_id: 'music_classical_vocal',
-            event_name: 'Classical Vocal Solo (Hindustani / Carnatic)',
-            category: 'Music',
-            college_name: 'University Teaching Departments (UTD), CDLU Sirsa',
-            participant_name: 'Aman Sharma',
-            father_name: 'Sh. Rajesh Sharma',
-            gender: 'Male',
-            class_name: 'MA Music (1st Sem)',
-            roll_no: '230101001',
-            dob: '2002-05-15',
-            phone: '9812345678',
-            email: 'aman.sharma@cdlu.ac.in',
-            team_manager_name: 'Dr. K. S. Bishnoi',
-            team_manager_phone: '9416000001',
-            team_manager_email: 'cultural.utd@cdlu.ac.in',
-            team_members: [],
-            accompanists: [
-                { name: 'Master Ramesh', father_name: 'Sh. Omprakash', type: 'Professional', instrument: 'Harmonium' },
-                { name: 'Suresh Kumar', father_name: 'Sh. Ram Niwas', type: 'Student', instrument: 'Tabla' }
-            ],
-            status: 'Eligible',
-            chest_number: 101,
-            created_at: new Date(Date.now() - 86400000 * 2).toISOString()
-        },
-        {
-            id: 'CDLU-TYM-2026-002',
-            event_id: 'dance_haryanvi_group',
-            event_name: 'Haryanvi Group Dance',
-            category: 'Dance',
-            college_name: 'Govt. National College, Sirsa',
-            participant_name: 'Sunita Devi',
-            father_name: 'Sh. Kuldeep Singh',
-            gender: 'Female',
-            class_name: 'BA Final Year',
-            roll_no: '221004501',
-            dob: '2003-08-12',
-            phone: '9896000002',
-            email: 'sunita.gnc@gmail.com',
-            team_manager_name: 'Prof. Neelam Rani',
-            team_manager_phone: '9416000002',
-            team_manager_email: 'contingent.gnc@gmail.com',
-            team_members: [
-                { name: 'Pooja Rani', father_name: 'Sh. Rattan Lal', class: 'BA II', roll_no: '221004502' },
-                { name: 'Kavita Sihag', father_name: 'Sh. Balwan Singh', class: 'B.Sc II', roll_no: '221004503' },
-                { name: 'Monika', father_name: 'Sh. Dharamvir', class: 'BA I', roll_no: '221004504' },
-                { name: 'Anjali Verma', father_name: 'Sh. Mahabir Verma', class: 'B.Com III', roll_no: '221004505' }
-            ],
-            accompanists: [
-                { name: 'Pandit Jagdish', father_name: 'Sh. Mani Ram', type: 'Professional', instrument: 'Dholak / Nagada' }
-            ],
-            status: 'Eligible',
-            chest_number: 102,
-            created_at: new Date(Date.now() - 86400000).toISOString()
-        },
-        {
-            id: 'CDLU-TYM-2026-003',
-            event_id: 'theatre_one_act_play',
-            event_name: 'One Act Play (Hindi / English / Haryanvi)',
-            category: 'Theatre',
-            college_name: 'Janta Girls College, Ellenabad',
-            participant_name: 'Ritika Mittal',
-            father_name: 'Sh. Pawan Mittal',
-            gender: 'Female',
-            class_name: 'MA English',
-            roll_no: '230205010',
-            dob: '2001-11-20',
-            phone: '9416111222',
-            email: 'ritika.jgc@gmail.com',
-            team_manager_name: 'Dr. Meenakshi',
-            team_manager_phone: '9416000003',
-            team_manager_email: 'theatre.jgc@gmail.com',
-            team_members: [
-                { name: 'Simran Kaur', father_name: 'Sh. Harbhajan Singh', class: 'BA III', roll_no: '220205011' },
-                { name: 'Diksha', father_name: 'Sh. Subhash Chander', class: 'BA II', roll_no: '220205012' },
-                { name: 'Muskan', father_name: 'Sh. Rakesh', class: 'B.Com I', roll_no: '230205013' }
-            ],
-            accompanists: [],
-            status: 'Eligible',
-            chest_number: 103,
-            created_at: new Date(Date.now() - 43200000).toISOString()
-        }
-    ];
-
-    const INITIAL_SCORES = [
-        {
-            id: 'score-001',
-            registration_id: 'CDLU-TYM-2026-001',
-            participant_name: 'Aman Sharma',
-            college_name: 'University Teaching Departments (UTD), CDLU Sirsa',
-            event_id: 'music_classical_vocal',
-            event_name: 'Classical Vocal Solo (Hindustani / Carnatic)',
-            judge_id: 'j-001',
-            judge_name: 'Sh. Janardhan Sharma',
-            judge_email: 'judge.roster.001@cdlu.local',
-            criteria_breakdown: { sur: 27, taal: 26, selection_of_raga: 18, overall_impact: 18 },
-            total_score: 89.0,
-            remarks: 'Remarkable command over Raga Bhairav and vilambit khayal.',
-            is_locked: true,
-            created_at: new Date(Date.now() - 3600000).toISOString()
-        }
-    ];
+    const DEMO_REGISTRATION_IDS = new Set([
+        'CDLU-TYM-2026-001',
+        'CDLU-TYM-2026-002',
+        'CDLU-TYM-2026-003'
+    ]);
+    const INITIAL_REGISTRATIONS = [];
+    const INITIAL_SCORES = [];
 
     let isCloudConnected = false;
     let isSchemaPending = false;
@@ -513,8 +416,25 @@ const DBService = (function() {
         const migratedJudges = storedJudges
             .filter(judge => !DEMO_JUDGE_EMAILS.has(String(judge.email || '').toLowerCase()));
         setLocal('judges', migratedJudges.length ? migratedJudges : INITIAL_JUDGES);
-        if (!localStorage.getItem('cdlu_registrations')) setLocal('registrations', INITIAL_REGISTRATIONS);
-        if (!localStorage.getItem('cdlu_scores')) setLocal('scores', INITIAL_SCORES);
+        const registrations = getLocal('registrations', INITIAL_REGISTRATIONS);
+        const hasValidRegistrations = Array.isArray(registrations);
+        if (!hasValidRegistrations) console.error('Invalid local registration cache; clearing it before startup.');
+        const cleanRegistrations = hasValidRegistrations
+            ? registrations.filter(registration => !DEMO_REGISTRATION_IDS.has(registration.id))
+            : INITIAL_REGISTRATIONS;
+        if (!hasValidRegistrations || cleanRegistrations.length !== registrations.length || !localStorage.getItem('cdlu_registrations')) {
+            setLocal('registrations', cleanRegistrations);
+        }
+
+        const scores = getLocal('scores', INITIAL_SCORES);
+        const hasValidScores = Array.isArray(scores);
+        if (!hasValidScores) console.error('Invalid local score cache; clearing it before startup.');
+        const cleanScores = hasValidScores
+            ? scores.filter(score => score.id !== 'score-001' && !DEMO_REGISTRATION_IDS.has(score.registration_id))
+            : INITIAL_SCORES;
+        if (!hasValidScores || cleanScores.length !== scores.length || !localStorage.getItem('cdlu_scores')) {
+            setLocal('scores', cleanScores);
+        }
     }
 
     ensureLocalSeeds();

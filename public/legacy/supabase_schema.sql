@@ -641,7 +641,7 @@ VALUES
     ('Judges Orientation Briefing', 'Judges meeting scheduled at 9:00 AM in Committee Room, Vice-Chancellor Secretariat.', 'Judges', TRUE)
 ON CONFLICT DO NOTHING;
 
--- Insert sample registrations for testing and instant preview
+/* Retained only as historical reference; production schema must not seed demos.
 INSERT INTO public.registrations (
     id, event_id, event_name, category, college_name, college_id, participant_name, father_name, 
     gender, class_name, roll_no, dob, phone, email, team_manager_name, team_manager_phone, 
@@ -747,3 +747,11 @@ SELECT
     TRUE
 FROM public.judges j WHERE j.email = 'judge.music@cdlu.ac.in'
 ON CONFLICT (registration_id, judge_id, event_id) DO NOTHING;
+*/
+
+DELETE FROM public.registrations
+WHERE id IN (
+    'CDLU-TYM-2026-001',
+    'CDLU-TYM-2026-002',
+    'CDLU-TYM-2026-003'
+);
