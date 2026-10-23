@@ -29,6 +29,8 @@
         ['Admin Login', 'प्रशासक लॉगिन'],
         ['Officer Login', 'अधिकारी लॉगिन'],
         ['Super Admin', 'मुख्य प्रशासक'],
+        ['विश्वविद्यालय प्रशासन', 'University administration'],
+        ['13वां त्रिवेणी युवा महोत्सव 2026 • चौधरी देवी लाल विश्वविद्यालय, सिरसा', '13th Triveni Yuva Mahotsav 2026 • Chaudhary Devi Lal University, Sirsa'],
         ['कॉलेज परिणाम (Final Results)', 'महाविद्यालय परिणाम (अंतिम परिणाम)'],
         ['महाविद्यालय-वार एवं श्रेणी-वार परिणाम', 'College-wise and category-wise results'],
         ['केवल अंतिम (locked) जज स्कोर जोड़े जाते हैं। बराबर कुल स्कोर पर समान रैंक दी जाएगी।', 'Only finalized (locked) judge scores are added. Equal totals share the same rank.'],
@@ -491,7 +493,14 @@
     ];
 
     const dictionaries = { en: new Map(), hi: new Map() };
-    pairs.forEach(([english, hindi]) => {
+    pairs.forEach(([first, second]) => {
+        const firstHasHindi = /[\u0900-\u097F]/.test(first);
+        const secondHasHindi = /[\u0900-\u097F]/.test(second);
+        const firstHindiCount = (first.match(/[\u0900-\u097F]/g) || []).length;
+        const secondHindiCount = (second.match(/[\u0900-\u097F]/g) || []).length;
+        const firstIsEnglish = !firstHasHindi || (firstHasHindi && secondHasHindi && firstHindiCount < secondHindiCount);
+        const english = firstIsEnglish ? first : second;
+        const hindi = firstIsEnglish ? second : first;
         dictionaries.en.set(hindi, english);
         dictionaries.hi.set(english, hindi);
     });
@@ -607,7 +616,8 @@
 
     function init() {
         try {
-            language = localStorage.getItem('cdlu-portal-language') === 'hi' ? 'hi' : 'en';
+            language = 'en';
+            localStorage.setItem('cdlu-portal-language', 'en');
         } catch (error) {
             console.error('Unable to restore language preference.', error);
             language = 'en';
