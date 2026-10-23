@@ -234,10 +234,13 @@ Upload an `.xlsx` or `.xls` file whose first sheet contains columns named
 `College ID`, or `Code`). Click **Preview Excel**, resolve any duplicate or
 empty values, then click **Publish to database**.
 
-The publish operation validates the whole file, deactivates colleges no longer
-in the file, upserts the new IDs/names, updates `registrations.college_name`
-for existing college IDs, and reloads the portal. Historical registrations
-and scores are preserved; old college rows are deactivated instead of deleted.
+The publish operation validates the whole file, adds new colleges, updates
+changed IDs/names, deactivates colleges no longer in the uploaded file, updates
+`registrations.college_name` for existing college IDs, and reloads the portal.
+This is a smart replacement of the active directory: historical registrations
+and scores are preserved, and old college rows are deactivated instead of
+deleted. Therefore, an old college reference remains available for history but
+will no longer appear in new registration selectors or active result filters.
 All public portals load the active list from Supabase at startup, so no code
 change or manual SQL command is needed for future uploads.
 
