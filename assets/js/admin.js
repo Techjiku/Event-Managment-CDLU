@@ -612,31 +612,12 @@ const AdminApp = (function() {
     // 4. SCORES & EVALUATION LEADERBOARD
     async function renderScoresBoard() {
         const eventSelect = document.getElementById('admin-score-event-filter');
-        const selectedEvent = eventSelect.value || '';
-
-        if (eventSelect.children.length <= 1) {
-            const allEvents = await DBService.getEvents('All');
-            allEvents.forEach(evt => {
-                const opt = document.createElement('option');
-                opt.value = evt.id;
-                opt.textContent = `[${evt.category}] ${evt.name}`;
-                eventSelect.appendChild(opt);
-            });
-        }
-
-        const container = document.getElementById('admin-scoreboard-list');
-        const [registrations, scores, allEvents] = await Promise.all([
-            DBService.getRegistrations('All'),
-            DBService.getScores(selectedEvent || null),
-            DBService.getEvents('All')
-        ]);
-        const lockedScores = scores.filter(score => score.is_locked);
-        const scoreByRegistration = new Map();
-        lockedScores.forEach(score => {
-            const list = scoreByRegistration.get(score.registration_id) || [];
-            list.push(score);
-            scoreByRegistration.set(score.registration_id, list);
-        });
+        const categorySelect = document.getElementById('admin-score-category-filter');
+        const formatSelect = document.getElementById('admin-score-format-filter');
+        const selectedCategory = categorySelect.value || '';
+        const selectedFormat = formatSelect.value || '';
+        const previousEvent = eventSelect.value || '';
+        const allEvents = await DBService.getEvents('All');
 
         const categoryFor = registration => {
             const category = String(registration.category || '').toLowerCase();
@@ -648,6 +629,47 @@ const AdminApp = (function() {
             if (eventName.includes('instrument')) return 'Music';
             return null;
         };
+        const isTeamEvent = event => (
+            Math.max(Number(event.participants_min) || 0, Number(event.participants_max) || 0) > 1
+        );
+        const isEventFormatMatch = event => (
+            !selectedFormat || (selectedFormat === 'team' ? isTeamEvent(event) : !isTeamEvent(event))
+        );
+        const scoringEvents = allEvents.filter(event =>
+            categoryFor({ category: event.category, event_name: event.name }) &&
+            (!selectedCategory || categoryFor({ category: event.category, event_name: event.name }) === selectedCategory) &&
+            isEventFormatMatch(event)
+        );
+
+        eventSelect.replaceChildren();
+        const allEventsOption = document.createElement('option');
+        allEventsOption.value = '';
+        allEventsOption.textContent = 'All matching events';
+        eventSelect.appendChild(allEventsOption);
+        scoringEvents.forEach(event => {
+            const option = document.createElement('option');
+            option.value = event.id;
+            option.textContent = `[${event.category}] ${event.name}`;
+            eventSelect.appendChild(option);
+        });
+        eventSelect.value = scoringEvents.some(event =>
+            event.id === previousEvent || event.legacy_id === previousEvent
+        ) ? previousEvent : '';
+        const selectedEvent = eventSelect.value || '';
+
+        const container = document.getElementById('admin-scoreboard-list');
+        const [registrations, scores] = await Promise.all([
+            DBService.getRegistrations('All'),
+            DBService.getScores(selectedEvent || null)
+        ]);
+        const lockedScores = scores.filter(score => score.is_locked);
+        const scoreByRegistration = new Map();
+        lockedScores.forEach(score => {
+            const list = scoreByRegistration.get(score.registration_id) || [];
+            list.push(score);
+            scoreByRegistration.set(score.registration_id, list);
+        });
+
         const trophyCategories = ['Music', 'Dance', 'Theatre', 'Literary & Fine Arts'];
         const rows = registrations
             .filter(registration => !selectedEvent || registration.event_id === selectedEvent)
@@ -694,11 +716,9 @@ const AdminApp = (function() {
         });
 
         const activeColleges = DBService.getAffiliatedColleges();
-        const scoringEvents = allEvents.filter(event => {
-            const category = categoryFor({ category: event.category, event_name: event.name });
-            const eventMatches = !selectedEvent || event.id === selectedEvent || event.legacy_id === selectedEvent;
-            return eventMatches && trophyCategories.includes(category);
-        });
+        const visibleEvents = scoringEvents.filter(event =>
+            !selectedEvent || event.id === selectedEvent || event.legacy_id === selectedEvent
+        );
         const scoredRowByEventCollege = new Map();
         rows.forEach(row => {
             const collegeId = row.registration.college_id == null
@@ -707,7 +727,7 @@ const AdminApp = (function() {
             scoredRowByEventCollege.set(`${row.registration.event_id}\u0000${collegeId}`, row);
         });
         const tableRows = [];
-        scoringEvents.forEach(event => {
+        visibleEvents.forEach(event => {
             const category = categoryFor({ category: event.category, event_name: event.name });
             activeColleges.forEach(college => {
                 const scoredRow = scoredRowByEventCollege.get(`${event.id}\u0000${String(college.id)}`) ||
@@ -768,6 +788,9 @@ const AdminApp = (function() {
                     </table>
                 </div>`;
         };
+        const visibleCategories = trophyCategories.filter(category =>
+            visibleEvents.some(event => categoryFor({ category: event.category, event_name: event.name }) === category)
+        );
 
         const collegeTotals = new Map();
         rows.forEach(row => {
@@ -817,7 +840,7 @@ const AdminApp = (function() {
             <div class="mb-5 rounded-xl border border-amber-800/50 bg-amber-950/20 p-4 text-xs text-amber-100">
                 Only locked judge scores are shown. Total marks are the sum of the three judge scores. Trophy points: 1st = 10, 2nd = 8, 3rd = 5.
             </div>
-            ${trophyCategories.map(tableFor).join('')}
+            ${visibleCategories.map(tableFor).join('') || '<p class="text-gray-400">No events match these filters.</p>'}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">${podium || '<p class="text-gray-400">No ranked colleges yet.</p>'}</div>
             <div class="overflow-x-auto">
                 <table class="final-results-table">

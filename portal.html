@@ -1387,9 +1387,21 @@
                                 <p class="text-xs text-gray-400">Music, Dance, Theatre और Literary &amp; Fine Arts के locked judge scores, total marks, positions और trophy points</p>
                             </div>
 
-                            <div class="w-full sm:w-auto min-w-[260px]">
-                                <select id="admin-score-event-filter" onchange="AdminApp.renderScoresBoard()" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500 font-semibold">
-                                    <option value="">-- सभी इवेंट्स देखें --</option>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 w-full xl:w-[720px]">
+                                <select id="admin-score-category-filter" aria-label="Filter scoreboard by category" onchange="AdminApp.renderScoresBoard()" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500 font-semibold">
+                                    <option value="">All categories</option>
+                                    <option value="Music">Music</option>
+                                    <option value="Dance">Dance</option>
+                                    <option value="Theatre">Theatre</option>
+                                    <option value="Literary &amp; Fine Arts">Literary &amp; Fine Arts</option>
+                                </select>
+                                <select id="admin-score-format-filter" aria-label="Filter scoreboard by solo or team event" onchange="AdminApp.renderScoresBoard()" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500 font-semibold">
+                                    <option value="">Solo and team events</option>
+                                    <option value="solo">Solo events</option>
+                                    <option value="team">Team / group events</option>
+                                </select>
+                                <select id="admin-score-event-filter" aria-label="Filter scoreboard by event" onchange="AdminApp.renderScoresBoard()" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500 font-semibold">
+                                    <option value="">All events</option>
                                 </select>
                             </div>
                         </div>
