@@ -611,11 +611,9 @@ const AdminApp = (function() {
 
     // 4. SCORES & EVALUATION LEADERBOARD
     async function renderScoresBoard() {
-        const isSuperAdmin = currentAdmin && currentAdmin.role === 'Super Admin';
         const eventSelect = document.getElementById('admin-score-event-filter');
         const selectedEvent = eventSelect.value || '';
 
-        // Populate event options if needed
         if (eventSelect.children.length <= 1) {
             const allEvents = await DBService.getEvents('All');
             allEvents.forEach(evt => {
@@ -626,95 +624,141 @@ const AdminApp = (function() {
             });
         }
 
-        const leaderboard = await DBService.getLeaderboard(selectedEvent || null);
         const container = document.getElementById('admin-scoreboard-list');
+        const [registrations, scores] = await Promise.all([
+            DBService.getRegistrations('All'),
+            DBService.getScores(selectedEvent || null)
+        ]);
+        const lockedScores = scores.filter(score => score.is_locked);
+        const scoreByRegistration = new Map();
+        lockedScores.forEach(score => {
+            const list = scoreByRegistration.get(score.registration_id) || [];
+            list.push(score);
+            scoreByRegistration.set(score.registration_id, list);
+        });
 
-        if (leaderboard.length === 0) {
-            container.innerHTML = '<div class="p-8 text-center text-gray-400">इस इवेंट के लिए कोई पंजीकरण या स्कोर उपलब्ध नहीं है।</div>';
-            return;
-        }
+        const categoryFor = registration => {
+            const category = String(registration.category || '').toLowerCase();
+            const eventName = String(registration.event_name || '').toLowerCase();
+            if (category.includes('literary')) return 'Literary';
+            if (category.includes('dance')) return 'Dance';
+            if (eventName.includes('instrument')) return 'Instrumental';
+            if (category.includes('music')) return 'Music';
+            return null;
+        };
+        const trophyCategories = ['Music', 'Instrumental', 'Dance', 'Literary'];
+        const rows = registrations
+            .filter(registration => !selectedEvent || registration.event_id === selectedEvent)
+            .map(registration => {
+                const judgeScores = scoreByRegistration.get(registration.id) || [];
+                const values = judgeScores.map(score => Number(score.total_score)).filter(Number.isFinite);
+                return {
+                    registration,
+                    category: categoryFor(registration),
+                    judgeScores,
+                    total: values.reduce((sum, value) => sum + value, 0),
+                    hasCompleteScores: values.length >= 3
+                };
+            })
+            .filter(row => row.category && row.judgeScores.length > 0);
 
-        container.innerHTML = leaderboard.map((item, idx) => {
-            const reg = item.registration;
-            const hasScores = isSuperAdmin && item.judgeScores && item.judgeScores.length > 0;
+        trophyCategories.forEach(category => {
+            rows.filter(row => row.category === category && row.hasCompleteScores)
+                .sort((a, b) => b.total - a.total)
+                .forEach((row, index, ordered) => {
+                    row.position = index + 1;
+                    row.trophyPoints = index === 0 ? 10 : index === 1 ? 8 : index === 2 ? 5 : 0;
+                    if (index > 0 && ordered[index - 1].total === row.total) {
+                        row.position = ordered[index - 1].position;
+                    }
+                });
+        });
 
-            // Ranks badge
-            let rankBadge = '';
-            if (item.avgScore > 0) {
-                if (idx === 0) rankBadge = '<span class="px-3 py-1 rounded-full text-xs font-black bg-gradient-to-r from-amber-400 to-yellow-500 text-gray-950 flex items-center gap-1 shadow-md shadow-amber-500/20"><i class="fas fa-crown"></i> 1st Winner</span>';
-                else if (idx === 1) rankBadge = '<span class="px-3 py-1 rounded-full text-xs font-black bg-slate-300 text-gray-950 flex items-center gap-1"><i class="fas fa-medal"></i> 2nd Runner-up</span>';
-                else if (idx === 2) rankBadge = '<span class="px-3 py-1 rounded-full text-xs font-black bg-amber-700 text-white flex items-center gap-1"><i class="fas fa-award"></i> 3rd Place</span>';
-                else rankBadge = `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-800 text-gray-300">Rank ${idx + 1}</span>`;
-            } else {
-                rankBadge = '<span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-800 text-gray-400">मूल्यांकन लंबित</span>';
-            }
-
-            // Calculate if group or solo for max marks
-            const isGroup = (reg.team_members && reg.team_members.length > 0) || (reg.participants_count && reg.participants_count > 1);
-            const eventMaxScore = isGroup ? 20 : 10;
-
-            // Judge scores breakdown pills
-            let judgeScoresHtml = '';
-            if (hasScores) {
-                judgeScoresHtml = `
-                    <div class="mt-3 pt-3 border-t border-gray-800 flex flex-wrap items-center gap-3">
-                        <span class="text-xs text-gray-400 font-semibold">जज अनुसार स्कोर (Judge Breakdown):</span>
-                        ${item.judgeScores.map(js => `
-                            <div class="bg-gray-900 border border-gray-700 px-3 py-1.5 rounded-xl text-xs flex items-center gap-2">
-                                <span class="text-gray-300 font-medium">${js.judge_name}:</span>
-                                <span class="font-black text-amber-400 text-sm">${js.total_score} / ${js.max_score || eventMaxScore}</span>
-                                ${js.remarks ? `<button onclick="AdminApp.viewJudgeRemarks('${js.judge_name}', '${js.remarks.replace(/'/g, "\\'")}')" class="text-cyan-400 hover:underline text-[10px]" title="टिप्पणी देखें"><i class="fas fa-comment-dots"></i></button>` : ''}
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-            }
-
+        const tableFor = category => {
+            const categoryRows = rows.filter(row => row.category === category)
+                .sort((a, b) => (a.position || 999) - (b.position || 999) || b.total - a.total);
             return `
-                <div class="bg-gray-800/80 border ${idx === 0 && item.avgScore > 0 ? 'border-amber-500/50 bg-amber-950/10' : 'border-gray-700'} rounded-2xl p-5 hover:border-gray-600 transition shadow-lg">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div class="flex items-start gap-4">
-                            <div class="w-12 h-12 rounded-xl flex items-center justify-center font-black text-xl shrink-0 ${idx === 0 && item.avgScore > 0 ? 'bg-amber-500 text-gray-950' : 'bg-gray-700 text-white'}">
-                                ${idx + 1}
-                            </div>
-                            <div>
-                                <div class="flex items-center gap-2 mb-1">
-                                    <span class="font-mono text-xs text-amber-300 font-bold">${reg.id}</span>
-                                    <span class="px-2 py-0.5 rounded text-xs font-semibold bg-indigo-900/40 text-indigo-300">${reg.category}</span>
-                                    <span class="px-2 py-0.5 rounded text-xs font-bold ${isGroup ? 'bg-purple-950 text-purple-300 border border-purple-800' : 'bg-emerald-950 text-emerald-300 border border-emerald-800'}">
-                                        ${isGroup ? 'समूह (Max 20)' : 'एकल (Max 10)'}
-                                    </span>
-                                    ${rankBadge}
-                                </div>
-                                <h4 class="text-lg font-bold text-white">${reg.participant_name}</h4>
-                                <p class="text-sm text-gray-300">${reg.college_name}</p>
-                                <p class="text-xs text-gray-400 mt-1"><i class="fas fa-music text-amber-400 mr-1"></i> ${reg.event_name}</p>
-                            </div>
-                        </div>
+                <div class="overflow-x-auto mb-6">
+                    <table class="final-results-table">
+                        <caption>${category} scoring table · locked judge scores only</caption>
+                        <thead><tr><th>Event name</th><th>College name</th><th>College code</th><th>Student / team</th><th>Judge 1</th><th>Judge 2</th><th>Judge 3</th><th>Total marks</th><th>Position</th></tr></thead>
+                        <tbody>${categoryRows.length ? categoryRows.map(row => {
+                            const scoresByJudge = [...row.judgeScores].sort((a, b) => String(a.judge_email || '').localeCompare(String(b.judge_email || '')));
+                            const scoreCell = index => scoresByJudge[index] ? Number(scoresByJudge[index].total_score).toFixed(2) : '';
+                            return `<tr>
+                                <td>${escapeHtml(row.registration.event_name || '')}</td>
+                                <td>${escapeHtml(row.registration.college_name || '')}</td>
+                                <td>${escapeHtml(row.registration.college_id || '')}</td>
+                                <td>${escapeHtml(row.registration.participant_name || row.registration.id)}</td>
+                                <td>${scoreCell(0)}</td><td>${scoreCell(1)}</td><td>${scoreCell(2)}</td>
+                                <td class="font-bold text-amber-400">${row.total.toFixed(2)}</td>
+                                <td class="font-bold">${row.position || ''}</td>
+                            </tr>`;
+                        }).join('') : '<tr><td colspan="9" class="text-center">No locked scores entered.</td></tr>'}</tbody>
+                    </table>
+                </div>`;
+        };
 
-                        <div class="flex items-center gap-6 shrink-0 self-end md:self-center">
-                            <div class="text-right">
-                                <span class="text-xs text-gray-400 block font-semibold">${isSuperAdmin ? 'औसत स्कोर (Average)' : 'स्थिति (Position)'}</span>
-                                ${isSuperAdmin ? `
-                                    <span class="text-3xl font-black ${item.avgScore > 0 ? 'text-amber-400' : 'text-gray-500'}">
-                                        ${item.avgScore > 0 ? item.avgScore : '--'}
-                                        <span class="text-xs text-gray-400 font-normal"> / ${eventMaxScore}</span>
-                                    </span>
-                                    <span class="text-[11px] text-gray-400 block">${item.judgeCount} जजों द्वारा मूल्यांकित</span>
-                                ` : `
-                                    <span class="text-2xl font-black ${item.avgScore > 0 ? 'text-amber-300' : 'text-gray-500'}">
-                                        ${item.avgScore > 0 ? (idx + 1) : '--'}
-                                    </span>
-                                    <span class="text-[11px] text-gray-400 block">Scores hidden from Admin</span>
-                                `}
-                            </div>
-                        </div>
-                    </div>
-
-                    ${judgeScoresHtml}
-                </div>
-            `;
-        }).join('');
+        const activeColleges = DBService.getAffiliatedColleges();
+        const collegeTotals = new Map();
+        rows.forEach(row => {
+            const activeCollege = activeColleges.find(college =>
+                String(college.id) === String(row.registration.college_id) ||
+                String(college.name).trim().toLowerCase() === String(row.registration.college_name || '').trim().toLowerCase()
+            );
+            if (!activeCollege) return;
+            const id = String(activeCollege.id);
+            const existing = collegeTotals.get(id) || {
+                college: activeCollege.name,
+                code: activeCollege.id,
+                categories: { Music: 0, Instrumental: 0, Dance: 0, Literary: 0 },
+                categoryPoints: { Music: 0, Instrumental: 0, Dance: 0, Literary: 0 },
+                trophyScore: 0
+            };
+            existing.categories[row.category] += row.total;
+            existing.categoryPoints[row.category] += row.trophyPoints;
+            existing.trophyScore += row.trophyPoints;
+            collegeTotals.set(id, existing);
+        });
+        activeColleges.forEach(college => {
+            const id = String(college.id);
+            if (!collegeTotals.has(id)) {
+                collegeTotals.set(id, {
+                    college: college.name,
+                    code: college.id,
+                    categories: { Music: 0, Instrumental: 0, Dance: 0, Literary: 0 },
+                    categoryPoints: { Music: 0, Instrumental: 0, Dance: 0, Literary: 0 },
+                    trophyScore: 0
+                });
+            }
+        });
+        const rankedColleges = [...collegeTotals.values()]
+            .sort((a, b) => b.trophyScore - a.trophyScore || a.college.localeCompare(b.college));
+        const rankBoard = rankedColleges.map((college, index) => `
+            <tr><td>${index + 1}</td><td>${escapeHtml(college.college)}</td><td>${escapeHtml(college.code)}</td>
+                ${trophyCategories.map(category => `<td>${college.categoryPoints[category]}</td>`).join('')}
+                <td class="font-bold text-amber-400">${college.trophyScore}</td></tr>
+        `).join('');
+        const podium = rankedColleges.slice(0, 3).map((college, index) => `
+            <div class="rounded-xl border border-amber-800/50 bg-amber-950/20 p-4 text-center">
+                <span class="text-xs font-bold text-amber-300">${index + 1}${index === 0 ? 'st' : index === 1 ? 'nd' : 'rd'} rank</span>
+                <strong class="mt-1 block text-sm text-white">${escapeHtml(college.college)}</strong>
+                <span class="mt-1 block text-lg font-black text-amber-400">${college.trophyScore} trophy points</span>
+            </div>
+        `).join('');
+        container.innerHTML = `
+            <div class="mb-5 rounded-xl border border-amber-800/50 bg-amber-950/20 p-4 text-xs text-amber-100">
+                Only locked judge scores are shown. Total marks are the sum of the three judge scores. Trophy points: 1st = 10, 2nd = 8, 3rd = 5.
+            </div>
+            ${trophyCategories.map(tableFor).join('')}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">${podium || '<p class="text-gray-400">No ranked colleges yet.</p>'}</div>
+            <div class="overflow-x-auto">
+                <table class="final-results-table">
+                    <caption>College trophy score and rank board</caption>
+                    <thead><tr><th>Rank</th><th>College name</th><th>College code</th>${trophyCategories.map(category => `<th>${category}</th>`).join('')}<th>Trophy score</th></tr></thead>
+                    <tbody>${rankBoard || '<tr><td colspan="8" class="text-center">No locked scores entered.</td></tr>'}</tbody>
+                </table>
+            </div>`;
     }
 
     function escapeHtml(value) {

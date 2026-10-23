@@ -236,8 +236,7 @@ const JudgesApp = (function() {
                             <span class="text-xs font-semibold text-emerald-300 flex items-center gap-2"><i class="fas fa-eye-slash"></i> Submitted · score hidden</span>
                         ` : isScored ? `
                             <div class="text-right mr-2">
-                                <span class="text-xs text-gray-400 block font-semibold">Draft score</span>
-                                <span class="text-2xl font-black text-emerald-400">${myScore.total_score}<span class="text-xs text-gray-400 font-normal">/${myScore.max_score || maxScore}</span></span>
+                                <span class="text-xs font-semibold text-amber-300 block">Draft saved · score hidden</span>
                             </div>
                             <button onclick="JudgesApp.openScoringModal('${reg.id}')" class="px-4 py-2.5 rounded-xl bg-gray-700 hover:bg-gray-600 text-white font-medium text-sm transition flex items-center gap-2 shadow">
                                 <i class="fas fa-edit text-amber-400"></i> एडिट स्कोर (Edit)
