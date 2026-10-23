@@ -640,17 +640,20 @@ const AdminApp = (function() {
         const categoryFor = registration => {
             const category = String(registration.category || '').toLowerCase();
             const eventName = String(registration.event_name || '').toLowerCase();
-            if (category.includes('literary')) return 'Literary';
+            if (category.includes('theatre') || category.includes('theater')) return 'Theatre';
             if (category.includes('dance')) return 'Dance';
-            if (eventName.includes('instrument')) return 'Instrumental';
+            if (category.includes('literary') || category.includes('fine art')) return 'Literary & Fine Arts';
             if (category.includes('music')) return 'Music';
+            if (eventName.includes('instrument')) return 'Music';
             return null;
         };
-        const trophyCategories = ['Music', 'Instrumental', 'Dance', 'Literary'];
+        const trophyCategories = ['Music', 'Dance', 'Theatre', 'Literary & Fine Arts'];
         const rows = registrations
             .filter(registration => !selectedEvent || registration.event_id === selectedEvent)
             .map(registration => {
-                const judgeScores = scoreByRegistration.get(registration.id) || [];
+                const judgeScores = [...(scoreByRegistration.get(registration.id) || [])]
+                    .sort((a, b) => String(a.judge_email || '').localeCompare(String(b.judge_email || '')))
+                    .slice(0, 3);
                 const values = judgeScores.map(score => Number(score.total_score)).filter(Number.isFinite);
                 return {
                     registration,
@@ -674,25 +677,51 @@ const AdminApp = (function() {
                 });
         });
 
+        const rowsByEvent = new Map();
+        rows.filter(row => row.hasCompleteScores).forEach(row => {
+            const eventRows = rowsByEvent.get(row.registration.event_id) || [];
+            eventRows.push(row);
+            rowsByEvent.set(row.registration.event_id, eventRows);
+        });
+        rowsByEvent.forEach(eventRows => {
+            eventRows.sort((a, b) => b.total - a.total);
+            eventRows.forEach((row, index) => {
+                row.eventPosition = index > 0 && eventRows[index - 1].total === row.total
+                    ? eventRows[index - 1].eventPosition
+                    : index + 1;
+            });
+        });
+
         const tableFor = category => {
             const categoryRows = rows.filter(row => row.category === category)
-                .sort((a, b) => (a.position || 999) - (b.position || 999) || b.total - a.total);
+                .sort((a, b) =>
+                    String(a.registration.event_name || '').localeCompare(String(b.registration.event_name || '')) ||
+                    String(a.registration.college_name || '').localeCompare(String(b.registration.college_name || ''))
+                );
             return `
                 <div class="overflow-x-auto mb-6">
                     <table class="final-results-table">
-                        <caption>${category} scoring table · locked judge scores only</caption>
-                        <thead><tr><th>Event name</th><th>College name</th><th>College code</th><th>Student / team</th><th>Judge 1</th><th>Judge 2</th><th>Judge 3</th><th>Total marks</th><th>Position</th></tr></thead>
+                        <caption>${category} scoring table</caption>
+                        <thead><tr><th>Event name </th><th>College name</th><th>college code</th><th>Name of student</th><th>Judge 1</th><th>Judge 2</th><th>Judge 3</th><th>Sume of score</th><th>poistion </th></tr></thead>
                         <tbody>${categoryRows.length ? categoryRows.map(row => {
-                            const scoresByJudge = [...row.judgeScores].sort((a, b) => String(a.judge_email || '').localeCompare(String(b.judge_email || '')));
-                            const scoreCell = index => scoresByJudge[index] ? Number(scoresByJudge[index].total_score).toFixed(2) : '';
+                            const scoresByJudge = row.judgeScores;
+                            const scoreCell = index => {
+                                if (!scoresByJudge[index]) return '';
+                                const score = Number(scoresByJudge[index].total_score);
+                                return Number.isFinite(score) ? score.toFixed(2) : '';
+                            };
+                            const totalScore = scoresByJudge.reduce((sum, score) => {
+                                const value = Number(score.total_score);
+                                return sum + (Number.isFinite(value) ? value : 0);
+                            }, 0);
                             return `<tr>
                                 <td>${escapeHtml(row.registration.event_name || '')}</td>
                                 <td>${escapeHtml(row.registration.college_name || '')}</td>
                                 <td>${escapeHtml(row.registration.college_id || '')}</td>
                                 <td>${escapeHtml(row.registration.participant_name || row.registration.id)}</td>
                                 <td>${scoreCell(0)}</td><td>${scoreCell(1)}</td><td>${scoreCell(2)}</td>
-                                <td class="font-bold text-amber-400">${row.total.toFixed(2)}</td>
-                                <td class="font-bold">${row.position || ''}</td>
+                                <td class="font-bold text-amber-400">${totalScore.toFixed(2)}</td>
+                                <td class="font-bold">${row.eventPosition || ''}</td>
                             </tr>`;
                         }).join('') : '<tr><td colspan="9" class="text-center">No locked scores entered.</td></tr>'}</tbody>
                     </table>
@@ -711,13 +740,12 @@ const AdminApp = (function() {
             const existing = collegeTotals.get(id) || {
                 college: activeCollege.name,
                 code: activeCollege.id,
-                categories: { Music: 0, Instrumental: 0, Dance: 0, Literary: 0 },
-                categoryPoints: { Music: 0, Instrumental: 0, Dance: 0, Literary: 0 },
+                categoryPoints: { Music: 0, Dance: 0, Theatre: 0, 'Literary & Fine Arts': 0 },
                 trophyScore: 0
             };
-            existing.categories[row.category] += row.total;
-            existing.categoryPoints[row.category] += row.trophyPoints;
-            existing.trophyScore += row.trophyPoints;
+            const trophyPoints = Number.isFinite(row.trophyPoints) ? row.trophyPoints : 0;
+            existing.categoryPoints[row.category] += trophyPoints;
+            existing.trophyScore += trophyPoints;
             collegeTotals.set(id, existing);
         });
         activeColleges.forEach(college => {
@@ -726,8 +754,7 @@ const AdminApp = (function() {
                 collegeTotals.set(id, {
                     college: college.name,
                     code: college.id,
-                    categories: { Music: 0, Instrumental: 0, Dance: 0, Literary: 0 },
-                    categoryPoints: { Music: 0, Instrumental: 0, Dance: 0, Literary: 0 },
+                    categoryPoints: { Music: 0, Dance: 0, Theatre: 0, 'Literary & Fine Arts': 0 },
                     trophyScore: 0
                 });
             }
