@@ -191,6 +191,12 @@ ALTER TABLE public.events ADD COLUMN IF NOT EXISTS official_number INT;
 ALTER TABLE public.events ADD COLUMN IF NOT EXISTS trophy_event BOOLEAN DEFAULT TRUE;
 ALTER TABLE public.registrations ADD COLUMN IF NOT EXISTS college_id INT;
 ALTER TABLE public.registrations DROP CONSTRAINT IF EXISTS registrations_college_id_fkey;
+-- The finalized-score trigger protects normal application writes, but an
+-- idempotent schema migration may need to backfill college_id on old scores.
+-- Remove only the trigger during this controlled migration and recreate it
+-- immediately after the backfill. Finalized score values are never changed.
+DROP TRIGGER IF EXISTS prevent_finalized_score_update ON public.scores;
+DROP TRIGGER IF EXISTS prevent_finalized_score_change ON public.scores;
 -- Migrate older/demo college IDs by matching their stored college name to the
 -- authoritative affiliated-colleges list. Any remaining legacy ID is cleared
 -- rather than blocking the entire schema migration with a foreign-key error.

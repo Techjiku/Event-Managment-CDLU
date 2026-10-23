@@ -112,3 +112,101 @@ SELECT COUNT(*) AS college_count FROM public.affiliated_colleges;
 The expected result is a non-null table name and 63 colleges. Do not manually
 insert `2608`; it is an old/demo ID and is intentionally cleared when it
 cannot be matched to the official list.
+
+## If schema apply reports `Finalized judge scores cannot be changed or deleted`
+
+This is caused by an older database trigger blocking the migration's
+`college_id` backfill or the removal of obsolete demo judges. The corrected
+schema temporarily drops only that trigger during the migration, does not
+change finalized score values, and recreates the protection before the schema
+finishes.
+
+If you need to repair the database manually, first back up the affected rows:
+
+```sql
+CREATE TABLE IF NOT EXISTS public.scores_schema_backup_20261023 AS
+SELECT * FROM public.scores;
+
+CREATE TABLE IF NOT EXISTS public.judges_schema_backup_20261023 AS
+SELECT * FROM public.judges;
+```
+
+Then run this one-time repair in the Supabase SQL Editor:
+
+```sql
+BEGIN;
+
+DROP TRIGGER IF EXISTS prevent_finalized_score_update ON public.scores;
+DROP TRIGGER IF EXISTS prevent_finalized_score_change ON public.scores;
+
+ALTER TABLE public.scores
+  ADD COLUMN IF NOT EXISTS college_id INT;
+
+UPDATE public.scores s
+SET college_id = r.college_id
+FROM public.registrations r
+WHERE s.registration_id = r.id
+  AND s.college_id IS NULL;
+
+UPDATE public.scores s
+SET college_id = NULL
+WHERE s.college_id IS NOT NULL
+  AND NOT EXISTS (
+    SELECT 1
+    FROM public.affiliated_colleges c
+    WHERE c.id = s.college_id
+  );
+
+ALTER TABLE public.scores
+  DROP CONSTRAINT IF EXISTS scores_college_id_fkey;
+
+ALTER TABLE public.scores
+  ADD CONSTRAINT scores_college_id_fkey
+  FOREIGN KEY (college_id)
+  REFERENCES public.affiliated_colleges(id);
+
+CREATE OR REPLACE FUNCTION public.prevent_finalized_score_change()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  IF TG_OP = 'DELETE' AND OLD.is_locked THEN
+    IF NOT EXISTS (
+      SELECT 1 FROM public.registrations
+      WHERE id = OLD.registration_id
+    ) THEN
+      RETURN OLD;
+    END IF;
+    RAISE EXCEPTION 'Finalized judge scores cannot be changed or deleted.';
+  END IF;
+
+  IF TG_OP = 'UPDATE' AND OLD.is_locked THEN
+    RAISE EXCEPTION 'Finalized judge scores cannot be changed or deleted.';
+  END IF;
+
+  RETURN CASE WHEN TG_OP = 'DELETE' THEN OLD ELSE NEW END;
+END;
+$$;
+
+CREATE TRIGGER prevent_finalized_score_change
+BEFORE UPDATE OR DELETE ON public.scores
+FOR EACH ROW
+EXECUTE FUNCTION public.prevent_finalized_score_change();
+
+COMMIT;
+```
+
+Verify that the protection was restored:
+
+```sql
+SELECT tgname
+FROM pg_trigger
+WHERE tgrelid = 'public.scores'::regclass
+  AND tgname = 'prevent_finalized_score_change'
+  AND NOT tgisinternal;
+```
+
+Do not permanently delete this trigger and do not run `DELETE FROM scores` to
+solve the migration error. If an obsolete judge must be removed, remove the
+judge only after the trigger is temporarily dropped inside a transaction, and
+verify the backup first.
