@@ -506,7 +506,7 @@ const App = (function() {
         }
 
         const registrationPayload = {
-            event_id: eventId,
+            event_id: currentSelectedEvent.legacy_id || eventId,
             event_name: currentSelectedEvent.name,
             category: category,
             college_name: collegeName,

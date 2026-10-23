@@ -506,7 +506,10 @@ const App = (function() {
         }
 
         const registrationPayload = {
-            event_id: eventId,
+            // The form uses the official E01-style display ID, while the
+            // registrations foreign key must reference the real public.events
+            // primary key (for example, music_classical_vocal).
+            event_id: currentSelectedEvent.legacy_id || eventId,
             event_name: currentSelectedEvent.name,
             category: category,
             college_name: collegeName,
