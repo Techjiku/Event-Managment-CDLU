@@ -70,3 +70,17 @@ ORDER BY created_at;
 The I-card lookup queries Supabase directly by registration ID, roll number, or
 chest number. A cloud query error is now reported instead of silently showing
 offline demo records.
+
+The schema migration also handles old/demo college IDs. It first matches an
+existing registration's `college_name` to the authoritative college list; if
+the old ID cannot be matched, it sets `college_id` to `NULL` instead of
+failing the foreign-key migration. Review those rows after applying:
+
+```sql
+SELECT id, participant_name, college_name, college_id
+FROM public.registrations
+WHERE college_id IS NULL;
+```
+
+Do not assign an old demo number such as `2608` unless that exact ID exists in
+`public.affiliated_colleges`.

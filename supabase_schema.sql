@@ -191,19 +191,43 @@ ALTER TABLE public.events ADD COLUMN IF NOT EXISTS official_number INT;
 ALTER TABLE public.events ADD COLUMN IF NOT EXISTS trophy_event BOOLEAN DEFAULT TRUE;
 ALTER TABLE public.registrations ADD COLUMN IF NOT EXISTS college_id INT;
 ALTER TABLE public.registrations DROP CONSTRAINT IF EXISTS registrations_college_id_fkey;
+-- Migrate older/demo college IDs by matching their stored college name to the
+-- authoritative affiliated-colleges list. Any remaining legacy ID is cleared
+-- rather than blocking the entire schema migration with a foreign-key error.
+UPDATE public.registrations r
+SET college_id = c.id
+FROM public.affiliated_colleges c
+WHERE r.college_id IS NOT NULL
+  AND lower(trim(r.college_name)) = lower(trim(c.name));
+UPDATE public.registrations r
+SET college_id = NULL
+WHERE r.college_id IS NOT NULL
+  AND NOT EXISTS (
+      SELECT 1
+      FROM public.affiliated_colleges c
+      WHERE c.id = r.college_id
+  );
 ALTER TABLE public.registrations ADD CONSTRAINT registrations_college_id_fkey
     FOREIGN KEY (college_id) REFERENCES public.affiliated_colleges(id);
 ALTER TABLE public.scores ADD COLUMN IF NOT EXISTS source_max_score NUMERIC(5,2);
 ALTER TABLE public.scores ADD COLUMN IF NOT EXISTS normalized_score NUMERIC(5,2);
 ALTER TABLE public.judges ADD COLUMN IF NOT EXISTS assigned_events TEXT[] DEFAULT '{}';
 ALTER TABLE public.scores ADD COLUMN IF NOT EXISTS college_id INT;
+ALTER TABLE public.scores DROP CONSTRAINT IF EXISTS scores_college_id_fkey;
 UPDATE public.scores s
 SET college_id = r.college_id
 FROM public.registrations r
 WHERE s.registration_id = r.id
   AND s.college_id IS NULL;
+UPDATE public.scores s
+SET college_id = NULL
+WHERE s.college_id IS NOT NULL
+  AND NOT EXISTS (
+      SELECT 1
+      FROM public.affiliated_colleges c
+      WHERE c.id = s.college_id
+  );
 ALTER TABLE public.scores DROP COLUMN IF EXISTS college_name;
-ALTER TABLE public.scores DROP CONSTRAINT IF EXISTS scores_college_id_fkey;
 ALTER TABLE public.scores ADD CONSTRAINT scores_college_id_fkey
     FOREIGN KEY (college_id) REFERENCES public.affiliated_colleges(id);
 
