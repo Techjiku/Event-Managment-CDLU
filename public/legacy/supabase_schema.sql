@@ -53,70 +53,38 @@ CREATE TABLE IF NOT EXISTS public.affiliated_colleges (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+UPDATE public.affiliated_colleges SET is_active = FALSE WHERE id NOT IN (2601,2644,2628,2661,2639,2633,2647,2606,2638,2660,2654,2632,2617,2669,2614,2635,2618,2636,2655,2607,2622,2619,2640,2641,2620,2657,2643,2645,2637);
+
 INSERT INTO public.affiliated_colleges (id, name) VALUES
-    (1, 'Aakash College of Education, Vill. Chanderkalan, Tohana, Distt. Fatehabad (SFS)'),
-    (2, 'APEX College of Education, Ellenabad, Distt. Sirsa (SFS)'),
-    (3, 'Apex College of Education, VPO-Bidhai Khera, Tohana, Distt. Fatehabad (SFS)'),
-    (4, 'B.S.K. College of Education for Women, Mandi Dabwali, Distt. Sirsa (Govt. Aided)'),
-    (2606, 'C.M.K. National PG College, Sirsa (Govt. Aided)'),
-    (6, 'C.R. D.A.V. Girls College of Education, Ellenabad, Distt. Sirsa (SFS)'),
-    (2621, 'C.R. D.A.V. Girls Degree College, Ellenabad, Distt. Sirsa (SFS)'),
-    (8, 'Ch Mani Ram Johrar, Govt. College, Ellenabad, Distt. Sirsa (Govt.)'),
-    (9, 'Ch. Devi Lal Memorial Lal State Institute of Engineering & Technology, Paniwala Mota, Distt. Sirsa (Govt.)'),
-    (2661, 'Ch. K.R. Memorial Degree College (for Girls), Vill. Jamal, Distt. Sirsa (SFS)'),
-    (2622, 'Ch. Mani Ram Godara Government College for Women, Bhodia Khera Fatehabad (Govt.)'),
-    (12, 'Ch. R.R. Memorial College of Education, Ellenabad, Distt. Sirsa (SFS)'),
-    (13, 'Crescent College of Education, Vill. Bhodia Khera, Distt. Fatehabad (SFS)'),
-    (14, 'Daffodils Colleges of Education, Matana Road, Fatehabad (SFS)'),
-    (15, 'Defence College of Education, Tohana, Distt. Fatehabad (SFS)'),
-    (16, 'Defence Degree College Tohana Fatehabad (SFS)'),
-    (2633, 'Dr. Bhim Rao Ambedkar Government College, Dabwali (Govt.)'),
-    (2620, 'Government College for Women, Sirsa (Govt.)'),
-    (2643, 'Government College, Bhattu Kalan, Distt. Fatehabad (Govt.)'),
-    (2655, 'Government National College, Sirsa (Govt.)'),
-    (2647, 'Govt. College Bhuna, Fatehabad (Govt.)'),
-    (2641, 'Govt. College for Girls, Kalanwali, Sirsa (Govt.)'),
-    (2654, 'Govt. College for Girls, Rania, Sirsa (Govt.)'),
-    (24, 'Govt. College, Ding Mandi, Sirsa (Govt.)'),
-    (25, 'Govt. College, Fatehabad (Govt.)'),
-    (26, 'Govt. College, Goriwala, Mandi Dabwali, Distt. Sirsa (Govt.)'),
-    (27, 'Gramin College of Education, Tohana, Distt. Fatehabad (SFS)'),
-    (28, 'Guru Dronacharya College of Education, Bhuna, Distt. Fatehabad (SFS)'),
-    (29, 'Hakeem Harbans Singh College of Education, Sant Nagar, Distt. Sirsa (SFS)'),
-    (30, 'Haryana College of Education, Ellenabad, Distt. Sirsa (SFS)'),
-    (31, 'I.G. Government College, Tohana, Distt. Fatehabad (Govt.)'),
-    (32, 'J.G. College of Education, Hisar Road, Sirsa (SFS)'),
-    (2607, 'Jan Nayak Ch. Devi Lal Institute of Business Management, Sirsa (SFS)'),
-    (2601, 'Jan Nayak Ch. Devi Lal College of Education, Barnala Road, Sirsa (SFS)'),
-    (2639, 'Jan Nayak Ch. Devi Lal Memorial College of Engineering, Barnala Road, Sirsa (SFS)'),
-    (2619, 'Jan Nayak Ch. Devi Lal Memorial College, Barnala Road, Sirsa (SFS)'),
-    (2618, 'Janta Girls College, Ellenabad, Distt. Sirsa (SFS)'),
-    (2617, 'K.T. Government College, Ratia, Distt. Fatehabad (Govt.)'),
-    (2614, 'Lala Hans Raj Phutela College of Law, Sirsa (SFS)'),
-    (2628, 'M.M. College of Education, Sirsa Road, Fatehabad (SFS)'),
-    (2637, 'M.M. College, Fatehabad (Govt. Aided)'),
-    (2657, 'M.P. College for Women, Dabwali, Distt. Sirsa (Govt. Aided)'),
-    (43, 'Maharshi Arvindo College of Education, Bhattu Mandi, Fatehabad (SFS)'),
-    (2635, 'Mata Harki Devi College for Women, Odhan, Distt. Sirsa (SFS)'),
-    (2640, 'Mata Harki Devi College of Education for Women, Odhan, Distt. Sirsa (SFS)'),
-    (46, 'MUH Jain College of Education, Vill. Chander Kalan, Tohana, Fatehabad (SFS)'),
-    (47, 'Mukhtiar Singh Memorial Degree College, Behbalpur, Fatehabad (A Minority Status) (SFS)'),
-    (48, 'National College of Education, SES Parisar, Distt. Sirsa (SFS)'),
-    (49, 'Nehru College of Education, Vill. Alikan, Teh. Dabwali, Distt. Sirsa (SFS)'),
-    (50, 'Rashoba College of Education, Post Box No. 27, Moriwala, Distt. Sirsa (SFS)'),
-    (2644, 'Shah Satnam Ji Boys College, Begu, Sirsa (SFS)'),
-    (2660, 'Shah Satnam Ji College of Education, Dera Sacha Sauda, Sirsa (SFS)'),
-    (2609, 'Shah Satnam Ji Girls College, Sirsa (SFS)'),
-    (2632, 'Shaheed Baba Deep Singh College of Education, Vill. Aharwan, Ratia, Fatehabad (A Minority Status)'),
-    (2645, 'Shaheed Bhagat Singh College of Education, Kalanwali, Distt. Sirsa (SFS)'),
-    (2636, 'Shaheed Davinder Singh Govt. College for Women, Ratia, Distt. Fatehabad (Govt.)'),
-    (57, 'Shri Durga Mahila Mahavidyal, Tohana, Distt. Fatehabad (SFS)'),
-    (58, 'Shri Sanatan Dharam Sanskrit Maha Vidyalaya, Sirsa (SFS)'),
-    (59, 'Sir Chhotu Ram Jat College of Education, Ellenabad, Distt. Sirsa (SFS)'),
-    (2638, 'Sri Guru Hari Singh College, Sri Jiwan Nagar, Distt. Sirsa (Govt. Aided)'),
-    (61, 'Surya College of Education, Vill. Baliala, Tohana, Distt. Fatehabad (SFS)'),
-    (62, 'Tirupati College of Education, Sardulgarh Road, Ratia, Distt. Fatehabad (SFS)'),
-    (63, 'UTD')
+    (2601, 'JCD M College of Education, Sirsa'),
+    (2644, 'Shah Satnam Ji Boys College, Sirsa'),
+    (2628, 'M.M. College of Education, Fatehabad'),
+    (2661, 'CKRM Degree College, Jamal, Sirsa'),
+    (2639, 'JCDM College of Engineering, Sirsa (Haryana)'),
+    (2633, 'Dr. B.R. Ambedkar College, Mandi Dabwali'),
+    (2647, 'Government College, Bhuna'),
+    (2606, 'CMK National PG College, Sirsa'),
+    (2638, 'Shri Guru Hari Singh College, Jiwan Nagar'),
+    (2660, 'Shah Satnam Ji College of Education, Sirsa'),
+    (2654, 'Government College for Girls, Rania'),
+    (2632, 'Shaheed Baba Deep Singh College of Education, Aherwan, Ratia'),
+    (2617, 'K.T. Government College, Ratia'),
+    (2669, 'Shah Satnam Ji Girls College, Sirsa'),
+    (2614, 'Lala Hansraj Phutela College of Law'),
+    (2635, 'Mata Harki Devi College'),
+    (2618, 'Janta Girls P.G. College'),
+    (2636, 'SDS/GCW, Ratia'),
+    (2655, 'Government National College, Sirsa'),
+    (2607, 'JCD Institute of Business Management, Sirsa'),
+    (2622, 'CMG/GCW Bhodia, Fatehabad'),
+    (2619, 'JCD Memorial College, Sirsa'),
+    (2640, 'Mata Harki Devi College of Education, Odhan'),
+    (2641, 'Government College, Kalawali'),
+    (2620, 'Government College for Women, Sirsa'),
+    (2657, 'MP College Mandi Dabwali'),
+    (2643, 'GOVT. College Bhattu Kallan, Fatehabad'),
+    (2645, 'Shaheed Bhagat Singh College of Education, Kalawali, Sirsa'),
+    (2637, 'M.M.P.G College Fatehabad')
 ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, is_active = TRUE;
 
 -- Table: registrations (Students & Teams)
@@ -190,6 +158,10 @@ ALTER TABLE public.scores ADD COLUMN IF NOT EXISTS max_score NUMERIC(5,2);
 ALTER TABLE public.events ADD COLUMN IF NOT EXISTS official_number INT;
 ALTER TABLE public.events ADD COLUMN IF NOT EXISTS trophy_event BOOLEAN DEFAULT TRUE;
 ALTER TABLE public.registrations ADD COLUMN IF NOT EXISTS college_id INT;
+UPDATE public.registrations r
+SET college_name = c.name
+FROM public.affiliated_colleges c
+WHERE r.college_id = c.id;
 ALTER TABLE public.registrations DROP CONSTRAINT IF EXISTS registrations_college_id_fkey;
 -- The finalized-score trigger protects normal application writes, but an
 -- idempotent schema migration may need to backfill college_id on old scores.

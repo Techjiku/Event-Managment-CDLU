@@ -822,7 +822,7 @@ const App = (function() {
 
         document.getElementById('hero-stat-students').textContent = totalStudents;
         document.getElementById('hero-stat-teams').textContent = regs.length;
-        document.getElementById('hero-stat-colleges').textContent = uniqueColleges.size || 12;
+        document.getElementById('hero-stat-colleges').textContent = uniqueColleges.size || 29;
 
         const heroEvtCount = document.getElementById('hero-stat-events');
         if (heroEvtCount) {
