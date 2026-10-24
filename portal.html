@@ -1047,14 +1047,13 @@
                         <i class="fas fa-gavel"></i>
                     </div>
                     <h3 class="text-xl font-bold text-white text-center mb-1">जज सुरक्षित लॉगिन</h3>
-                    <p class="text-xs text-gray-400 text-center mb-6">एडमिन द्वारा दी गई अपनी आधिकारिक ईमेल आईडी दर्ज करें</p>
 
                     <form onsubmit="event.preventDefault(); JudgesApp.login(document.getElementById('judge-email-input').value, document.getElementById('judge-pin-input').value)">
                         <div class="mb-4">
                             <label class="block text-xs font-semibold text-gray-300 mb-1.5">असाइन की गई ईमेल आईडी (Designated Email) <span class="text-rose-400">*</span></label>
                             <div class="relative">
                                 <i class="fas fa-envelope absolute left-3.5 top-3.5 text-gray-500 text-sm"></i>
-                                <input type="email" id="judge-email-input" placeholder="उदा. आपकी अधिकृत जज ईमेल" required class="w-full bg-gray-900 border border-gray-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 font-mono" />
+                                <input type="email" id="judge-email-input" required class="w-full bg-gray-900 border border-gray-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 font-mono" />
                             </div>
                         </div>
 
@@ -1062,7 +1061,7 @@
                             <label class="block text-xs font-semibold text-gray-300 mb-1.5">सिक्योरिटी पिन (Security PIN)</label>
                             <div class="relative">
                                 <i class="fas fa-lock absolute left-3.5 top-3.5 text-gray-500 text-sm"></i>
-                                <input type="password" id="judge-pin-input" value="1234" placeholder="डिफ़ॉल्ट: 1234" class="w-full bg-gray-900 border border-gray-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 font-mono" />
+                                <input type="password" id="judge-pin-input" required class="w-full bg-gray-900 border border-gray-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 font-mono" />
                             </div>
                         </div>
 
@@ -1081,14 +1080,13 @@
                         <i class="fas fa-shield-halved"></i>
                     </div>
                     <h3 class="text-xl font-bold text-white text-center mb-1">स्टेज एडमिन लॉगिन</h3>
-                    <p class="text-xs text-gray-400 text-center mb-6">Stage operations and coordination access</p>
 
                     <form onsubmit="event.preventDefault(); AdminApp.login(document.getElementById('admin-email-input').value, document.getElementById('admin-password-input').value)">
                         <div class="mb-4">
                             <label class="block text-xs font-semibold text-gray-300 mb-1.5">Stage admin email <span class="text-rose-400">*</span></label>
                             <div class="relative">
                                 <i class="fas fa-envelope absolute left-3.5 top-3.5 text-gray-500 text-sm"></i>
-                                <input type="email" id="admin-email-input" value="stage.admin@cdlu.ac.in" required class="w-full bg-gray-900 border border-gray-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 font-mono" />
+                                <input type="email" id="admin-email-input" required class="w-full bg-gray-900 border border-gray-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 font-mono" />
                             </div>
                         </div>
 
@@ -1096,7 +1094,7 @@
                             <label class="block text-xs font-semibold text-gray-300 mb-1.5">Secure password <span class="text-rose-400">*</span></label>
                             <div class="relative">
                                 <i class="fas fa-key absolute left-3.5 top-3.5 text-gray-500 text-sm"></i>
-                                <input type="password" id="admin-password-input" value="stage@2026" required class="w-full bg-gray-900 border border-gray-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 font-mono" />
+                                <input type="password" id="admin-password-input" required class="w-full bg-gray-900 border border-gray-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 font-mono" />
                             </div>
                         </div>
 
@@ -1105,14 +1103,6 @@
                         </button>
                     </form>
 
-                    <div class="mt-6 pt-4 border-t border-gray-800 text-center">
-                        <span class="text-[11px] text-gray-400 font-semibold uppercase tracking-wider block mb-2.5">Stage coordinator demo access</span>
-                        <div class="flex flex-wrap gap-2 justify-center">
-                            <button onclick="AdminApp.quickDemoAdminLogin('stage.admin@cdlu.ac.in', 'stage@2026')" class="px-3 py-1 rounded-lg text-xs bg-indigo-950 text-indigo-300 border border-indigo-800 hover:bg-indigo-900">
-                                🎪 Fill demo credentials
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -1122,32 +1112,25 @@
                         <i class="fas fa-crown"></i>
                     </div>
                     <h3 class="text-xl font-bold text-white text-center mb-1">Super Admin login</h3>
-                    <p class="text-xs text-gray-400 text-center mb-6">University-wide control and festival management</p>
                     <form onsubmit="event.preventDefault(); AdminApp.login(document.getElementById('super-admin-email-input').value, document.getElementById('super-admin-password-input').value)">
                         <div class="mb-4">
                             <label class="block text-xs font-semibold text-gray-300 mb-1.5">Super Admin email <span class="text-rose-400">*</span></label>
                             <div class="relative">
                                 <i class="fas fa-envelope absolute left-3.5 top-3.5 text-gray-500 text-sm"></i>
-                                <input type="email" id="super-admin-email-input" value="admin@cdlu.ac.in" required class="w-full bg-gray-900 border border-gray-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 font-mono" />
+                                <input type="email" id="super-admin-email-input" required class="w-full bg-gray-900 border border-gray-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 font-mono" />
                             </div>
                         </div>
                         <div class="mb-6">
                             <label class="block text-xs font-semibold text-gray-300 mb-1.5">Secure password <span class="text-rose-400">*</span></label>
                             <div class="relative">
                                 <i class="fas fa-key absolute left-3.5 top-3.5 text-gray-500 text-sm"></i>
-                                <input type="password" id="super-admin-password-input" value="cdlu@2026" required class="w-full bg-gray-900 border border-gray-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 font-mono" />
+                                <input type="password" id="super-admin-password-input" required class="w-full bg-gray-900 border border-gray-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 font-mono" />
                             </div>
                         </div>
                         <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-sm transition shadow-lg flex items-center justify-center gap-2">
                             <i class="fas fa-shield-halved"></i> Enter Super Admin console
                         </button>
                     </form>
-                    <div class="mt-6 pt-4 border-t border-gray-800 text-center">
-                        <span class="text-[11px] text-gray-400 font-semibold uppercase tracking-wider block mb-2.5">Super Admin demo access</span>
-                        <button onclick="AdminApp.quickDemoAdminLogin('admin@cdlu.ac.in', 'cdlu@2026')" class="px-3 py-1 rounded-lg text-xs bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100">
-                            <i class="fas fa-crown mr-1"></i> Fill demo credentials
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
